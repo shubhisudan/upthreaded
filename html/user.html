@@ -35,8 +35,8 @@
                         <li><a class="dropdown-item" href="/profile"><i class="fas fa-user-circle"></i> My Profile</a>
                         </li>
                         <li><a class="dropdown-item" href="/orders"><i class="fas fa-shopping-bag"></i> Orders</a></li>
-                        <li><a class="dropdown-item" href="/imagegen"><i class="fas fa-shopping-bag"></i> Generate
-                                Image</a></li>
+                        <li><a class="dropdown-item" href="/imagegen"><i class="fas fa-image"></i> Generate Image</a>
+                        </li>
                         <li><a class="dropdown-item" href="/requests"><i class="fas fa-clipboard-list"></i> Requests</a>
                         </li>
                         <li><a class="dropdown-item" href="/likes"><i class="fas fa-heart"></i> Likes</a></li>
@@ -111,8 +111,18 @@
                 <div class="card border-0 shadow-sm mb-4">
                     <div class="card-body">
                         <h5 class="card-title mb-3">Top Matches</h5>
-                        <div class="matches-list">
-                            <!-- Matches will be loaded here by JavaScript -->
+                        <div id="matchesContainer" class="matches-list">
+                            <div class="text-center p-4 text-muted" id="noMatchesMessage">
+                                <i class="fas fa-info-circle mb-2" style="font-size: 2rem;"></i>
+                                <p>Fill out the request form above to find tailors that match your requirements.</p>
+                            </div>
+                            <div id="matchesSpinner" class="text-center py-4 d-none">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <p class="mt-2">Finding the best matches for you...</p>
+                            </div>
+                            <div id="matchesList"></div>
                         </div>
                     </div>
                 </div>
@@ -151,31 +161,185 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="/javascripts/user.js"></script>
-    <script>
-        // Form validation
-        (function () {
-            'use strict'
-            var forms = document.querySelectorAll('.needs-validation')
-            Array.prototype.slice.call(forms)
-                .forEach(function (form) {
-                    form.addEventListener('submit', function (event) {
-                        if (!form.checkValidity()) {
-                            event.preventDefault()
-                            event.stopPropagation()
-                        }
-                        form.classList.add('was-validated')
-                    }, false)
-                })
-        })()
+    <!-- Tailor Card Template (Hidden) -->
+    <template id="tailorCardTemplate">
+        <div class="card border-0 shadow-sm mb-3">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-3 text-center">
+                        <div class="position-relative d-inline-block">
+                            <img src="" class="rounded-circle profile-image" width="120" height="120"
+                                alt="Profile Picture">
+                            <span class="position-absolute bottom-0 end-0 bg-success rounded-circle p-2">
+                                <span class="visually-hidden">Online</span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h4 class="mb-1 tailor-name"></h4>
+                        <p class="text-muted mb-2">Professional Tailor</p>
+                        <div class="d-flex gap-2 mb-2">
+                            <span class="badge bg-primary match-score"><i class="fas fa-star"></i> <span
+                                    class="score-value">4.8</span></span>
+                            <span class="badge bg-success">Available</span>
+                        </div>
+                        <p class="mb-0 small tailor-bio"></p>
+                        <p class="mb-1 small"><strong>Location:</strong> <span class="tailor-location"></span></p>
+                        <p class="mb-1 small"><strong>Price Range:</strong> <span class="tailor-price"></span></p>
+                        <div class="specialties-container mt-2">
+                            <strong class="small">Specialties: </strong>
+                            <div class="tailor-specialties d-inline"></div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 text-md-end">
+                        <button class="btn btn-outline-success mb-2 w-100 message-btn">Message</button>
+                        <button class="btn btn-outline-primary w-100 view-profile-btn">View Profile</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
 
-        // Image upload preview and validation
-        document.getElementById('imageUpload').addEventListener('change', function (e) {
-            if (this.files.length > 5) {
-                alert('You can only upload up to 5 images');
-                this.value = '';
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Form validation
+            const requestForm = document.getElementById('requestForm');
+            const matchesContainer = document.getElementById('matchesContainer');
+            const noMatchesMessage = document.getElementById('noMatchesMessage');
+            const matchesSpinner = document.getElementById('matchesSpinner');
+            const matchesList = document.getElementById('matchesList');
+            const tailorCardTemplate = document.getElementById('tailorCardTemplate');
+
+            // Form validation
+            requestForm.addEventListener('submit', async function (event) {
+                event.preventDefault();
+
+                if (!requestForm.checkValidity()) {
+                    event.stopPropagation();
+                    requestForm.classList.add('was-validated');
+                    return;
+                }
+
+                // Form is valid, collect data
+                const formData = {
+                    location: document.getElementById('location').value,
+                    priceRange: document.getElementById('priceRange').value,
+                    description: document.getElementById('description').value
+                };
+
+                // Show spinner, hide no matches message
+                noMatchesMessage.classList.add('d-none');
+                matchesSpinner.classList.remove('d-none');
+                matchesList.innerHTML = '';
+
+                try {
+                    // Submit request to get matches
+                    const response = await fetch('/api/match-tailors', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(formData)
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch matches');
+                    }
+
+                    const tailors = await response.json();
+
+                    // Hide spinner
+                    matchesSpinner.classList.add('d-none');
+
+                    // Display matches or show no matches message
+                    if (tailors.length === 0) {
+                        noMatchesMessage.textContent = 'No tailors found matching your criteria. Try adjusting your search parameters.';
+                        noMatchesMessage.classList.remove('d-none');
+                    } else {
+                        displayTailorMatches(tailors);
+                    }
+
+                } catch (error) {
+                    console.error('Error fetching matches:', error);
+                    matchesSpinner.classList.add('d-none');
+                    noMatchesMessage.textContent = 'An error occurred while finding matches. Please try again.';
+                    noMatchesMessage.classList.remove('d-none');
+                }
+
+                // Mark form as validated
+                requestForm.classList.add('was-validated');
+            });
+
+            // Display tailor matches
+            function displayTailorMatches(tailors) {
+                matchesList.innerHTML = '';
+
+                tailors.forEach(tailor => {
+                    const tailorCard = tailorCardTemplate.content.cloneNode(true);
+
+                    // Set tailor image
+                    const img = tailorCard.querySelector('.profile-image');
+                    img.src = tailor.profilePicture || 'https://via.placeholder.com/150';
+
+                    // Set tailor name
+                    const nameElement = tailorCard.querySelector('.tailor-name');
+                    nameElement.textContent = tailor.fullname || 'Unnamed Tailor';
+
+                    // Set match score
+                    const scoreElement = tailorCard.querySelector('.score-value');
+                    // Convert score to a decimal between 3.5 and 5.0 for display
+                    const displayScore = Math.min(5, Math.max(3.5, 3.5 + (tailor.score / 10) * 1.5)).toFixed(1);
+                    scoreElement.textContent = displayScore;
+
+                    // Set bio
+                    const bioElement = tailorCard.querySelector('.tailor-bio');
+                    bioElement.textContent = tailor.bio || 'No bio information available.';
+
+                    // Set location
+                    const locationElement = tailorCard.querySelector('.tailor-location');
+                    locationElement.textContent = tailor.location || 'Not specified';
+
+                    // Set price range
+                    const priceElement = tailorCard.querySelector('.tailor-price');
+                    priceElement.textContent = tailor.priceRange || 'Not specified';
+
+                    // Set specialties
+                    const specialtiesElement = tailorCard.querySelector('.tailor-specialties');
+                    if (tailor.specialties && tailor.specialties.length > 0) {
+                        tailor.specialties.forEach(specialty => {
+                            const badge = document.createElement('span');
+                            badge.className = 'badge bg-light text-dark me-1 mb-1';
+                            badge.textContent = specialty;
+                            specialtiesElement.appendChild(badge);
+                        });
+                    } else {
+                        specialtiesElement.textContent = 'None specified';
+                    }
+
+                    // Add event listeners to buttons
+                    const messageBtn = tailorCard.querySelector('.message-btn');
+                    messageBtn.addEventListener('click', () => {
+                        alert('Messaging functionality will be implemented in the future.');
+                    });
+
+                    const viewProfileBtn = tailorCard.querySelector('.view-profile-btn');
+                    viewProfileBtn.addEventListener('click', () => {
+                        alert('View profile functionality will be implemented in the future.');
+                    });
+
+                    // Add card to the list
+                    matchesList.appendChild(tailorCard);
+                });
             }
+
+            // Image upload preview and validation
+            document.getElementById('imageUpload').addEventListener('change', function (e) {
+                if (this.files.length > 5) {
+                    alert('You can only upload up to 5 images');
+                    this.value = '';
+                }
+            });
         });
     </script>
 </body>

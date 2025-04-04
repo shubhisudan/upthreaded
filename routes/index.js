@@ -379,4 +379,94 @@ router.delete('/api/tailor-profile/designs/:designId', async (req, res) => {
   }
 });
 
+// Get tailors matching user request criteria
+router.post('/api/match-tailors', isUser, async (req, res) => {
+  try {
+    const { location, priceRange, description } = req.body;
+
+    // Start with basic query to find tailors
+    let query = { role: 'tailor' };
+
+    // Filter by location if provided
+    if (location && location.trim() !== '') {
+      // Case-insensitive search for location
+      query.location = { $regex: new RegExp(location, 'i') };
+    }
+
+    // Get all tailors matching the query
+    let tailors = await User.find(query)
+      .select('fullname location priceRange bio specialties profilePicture designs')
+      .lean();
+
+    // If no tailors found with exact location, get all tailors
+    if (tailors.length === 0) {
+      tailors = await User.find({ role: 'tailor' })
+        .select('fullname location priceRange bio specialties profilePicture designs')
+        .lean();
+    }
+
+    // Add relevance score based on matching criteria
+    tailors = tailors.map(tailor => {
+      let score = 0;
+
+      // Location match
+      if (location && tailor.location && tailor.location.toLowerCase().includes(location.toLowerCase())) {
+        score += 3;
+      }
+
+      // Price range match
+      if (priceRange && tailor.priceRange) {
+        // Simple check if the tailor's price range contains any part of the requested range
+        if (priceRange === tailor.priceRange) {
+          score += 2;
+        }
+      }
+
+      // Description keywords match with specialties or bio
+      if (description && description.trim() !== '') {
+        const keywords = description.toLowerCase().split(/\s+/);
+
+        // Check bio for keywords
+        if (tailor.bio) {
+          const bioLower = tailor.bio.toLowerCase();
+          keywords.forEach(keyword => {
+            if (keyword.length > 3 && bioLower.includes(keyword)) {
+              score += 1;
+            }
+          });
+        }
+
+        // Check specialties for keywords
+        if (tailor.specialties && Array.isArray(tailor.specialties)) {
+          const specialtiesLower = tailor.specialties.map(s => s.toLowerCase());
+          keywords.forEach(keyword => {
+            if (keyword.length > 3) {
+              specialtiesLower.forEach(specialty => {
+                if (specialty.includes(keyword)) {
+                  score += 2;
+                }
+              });
+            }
+          });
+        }
+      }
+
+      return {
+        ...tailor,
+        score
+      };
+    });
+
+    // Sort by score descending
+    tailors.sort((a, b) => b.score - a.score);
+
+    // Return top 5 matches
+    res.json(tailors.slice(0, 5));
+
+  } catch (error) {
+    console.error('Error matching tailors:', error);
+    res.status(500).json({ error: 'Failed to match tailors' });
+  }
+});
+
 module.exports = router;

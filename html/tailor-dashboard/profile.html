@@ -82,6 +82,54 @@
         .hidden {
             display: none;
         }
+
+        /* Modal container */
+        .modal {
+            display: none;
+            /* Hidden by default */
+            position: fixed;
+            /* Stay in place */
+            z-index: 1;
+            /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%;
+            /* Full width */
+            height: 100%;
+            /* Full height */
+            overflow: auto;
+            /* Enable scroll if needed */
+            background-color: rgb(0, 0, 0);
+            /* Fallback color */
+            background-color: rgba(0, 0, 0, 0.4);
+            /* Black w/ opacity */
+        }
+
+        /* Modal content */
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            /* 15% from the top and centered */
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            /* Could be more or less, depending on screen size */
+        }
+
+        /* Close button */
+        .close-btn {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close-btn:hover,
+        .close-btn:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
     </style>
 </head>
 
@@ -111,6 +159,7 @@
                     <p id="tailorPhone">📱 Loading...</p>
                     <p class="location" id="tailorLocation">📍 <span id="locationText">Not set</span></p>
                     <p class="price-range" id="priceRange">💰 Price Range: <span id="priceRangeText">Not set</span></p>
+                    <button class="edit-btn" id="editProfileBtn">Edit Profile</button>
                 </div>
             </div>
 
@@ -124,12 +173,28 @@
             </div>
 
             <div class="profile-section">
+                <h2>Location</h2>
+                <div class="location-container">
+                    <p id="locationText">📍 Not set</p>
+                    <button class="edit-btn" id="editLocationBtn">Edit Location</button>
+                </div>
+            </div>
+
+            <div class="profile-section">
                 <h2>Specialties</h2>
                 <div class="specialties-container">
                     <div class="specialty-tags" id="specialtyTags">
                         <span id="noSpecialties">No specialties added yet.</span>
                     </div>
                     <button class="edit-btn" id="editSpecialtiesBtn">Edit Specialties</button>
+                </div>
+            </div>
+
+            <div class="profile-section">
+                <h2>Price Range</h2>
+                <div class="price-range-container">
+                    <p id="priceRangeText">💰 Not set</p>
+                    <button class="edit-btn" id="editPriceRangeBtn">Edit Price Range</button>
                 </div>
             </div>
 
@@ -183,12 +248,25 @@
                 </div>
             </div>
 
-            <div id="priceRangeModal" class="modal hidden">
+            <div id="profileModal" class="modal hidden">
                 <div class="modal-content">
                     <span class="close-btn">&times;</span>
-                    <h2>Edit Price Range</h2>
+                    <h2>Edit Profile</h2>
+                    <input type="text" id="nameInput" placeholder="Enter your name">
+                    <input type="email" id="emailInput" placeholder="Enter your email">
+                    <input type="tel" id="phoneInput" placeholder="Enter your phone number">
+                    <input type="text" id="locationInput" placeholder="Enter your location">
                     <input type="text" id="priceRangeInput" placeholder="e.g. $50 - $200">
-                    <button id="savePriceRangeBtn" class="save-btn">Save</button>
+                    <button id="saveProfileBtn" class="save-btn">Save</button>
+                </div>
+            </div>
+
+            <div id="locationModal" class="modal hidden">
+                <div class="modal-content">
+                    <span class="close-btn">&times;</span>
+                    <h2>Edit Location</h2>
+                    <input type="text" id="locationInput" placeholder="Enter your location">
+                    <button id="saveLocationBtn" class="save-btn">Save</button>
                 </div>
             </div>
         </main>
@@ -216,24 +294,30 @@
             // Edit buttons
             const editBioBtn = document.getElementById('editBioBtn');
             const editSpecialtiesBtn = document.getElementById('editSpecialtiesBtn');
-            const priceRange = document.getElementById('priceRange');
+            const editProfileBtn = document.getElementById('editProfileBtn');
+            const editLocationBtn = document.getElementById('editLocationBtn');
 
             // Modals
             const bioModal = document.getElementById('bioModal');
             const specialtiesModal = document.getElementById('specialtiesModal');
-            const priceRangeModal = document.getElementById('priceRangeModal');
+            const profileModal = document.getElementById('profileModal');
             const closeBtns = document.querySelectorAll('.close-btn');
 
             // Modal inputs
             const bioText = document.getElementById('bioText');
             const specialtyInput = document.getElementById('specialtyInput');
             const specialtyList = document.getElementById('specialtyList');
+            const nameInput = document.getElementById('nameInput');
+            const emailInput = document.getElementById('emailInput');
+            const phoneInput = document.getElementById('phoneInput');
+            const locationInput = document.getElementById('locationInput');
             const priceRangeInput = document.getElementById('priceRangeInput');
 
             // Save buttons
             const saveBioBtn = document.getElementById('saveBioBtn');
             const saveSpecialtiesBtn = document.getElementById('saveSpecialtiesBtn');
-            const savePriceRangeBtn = document.getElementById('savePriceRangeBtn');
+            const saveProfileBtn = document.getElementById('saveProfileBtn');
+            const saveLocationBtn = document.getElementById('saveLocationBtn');
 
             // Store tailor data
             let tailorData = {
@@ -430,37 +514,6 @@
                 }
             });
 
-            // Price range editing
-            priceRange.addEventListener('click', () => {
-                priceRangeInput.value = tailorData.priceRange || '';
-                priceRangeModal.classList.remove('hidden');
-            });
-
-            savePriceRangeBtn.addEventListener('click', async () => {
-                const priceRange = priceRangeInput.value.trim();
-
-                try {
-                    const response = await fetch('/api/tailor-profile', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ priceRange })
-                    });
-
-                    if (!response.ok) {
-                        throw new Error('Failed to update price range');
-                    }
-
-                    tailorData.priceRange = priceRange;
-                    priceRangeText.textContent = priceRange || 'Not set';
-                    priceRangeModal.classList.add('hidden');
-                } catch (error) {
-                    console.error('Error updating price range:', error);
-                    alert('Failed to update price range');
-                }
-            });
-
             // Specialties editing
             editSpecialtiesBtn.addEventListener('click', () => {
                 // Clear previous list
@@ -609,7 +662,7 @@
                 btn.addEventListener('click', function () {
                     bioModal.classList.add('hidden');
                     specialtiesModal.classList.add('hidden');
-                    priceRangeModal.classList.add('hidden');
+                    profileModal.classList.add('hidden');
                 });
             });
 
@@ -617,7 +670,83 @@
             window.addEventListener('click', function (event) {
                 if (event.target === bioModal) bioModal.classList.add('hidden');
                 if (event.target === specialtiesModal) specialtiesModal.classList.add('hidden');
-                if (event.target === priceRangeModal) priceRangeModal.classList.add('hidden');
+                if (event.target === profileModal) profileModal.classList.add('hidden');
+            });
+
+            // Profile editing
+            editProfileBtn.addEventListener('click', () => {
+                nameInput.value = tailorData.fullname || '';
+                emailInput.value = tailorData.email || '';
+                phoneInput.value = tailorData.phone || '';
+                locationInput.value = tailorData.location || '';
+                priceRangeInput.value = tailorData.priceRange || '';
+                profileModal.classList.remove('hidden');
+            });
+
+            saveProfileBtn.addEventListener('click', async () => {
+                const updatedData = {
+                    fullname: nameInput.value.trim(),
+                    email: emailInput.value.trim(),
+                    phone: phoneInput.value.trim(),
+                    location: locationInput.value.trim(),
+                    priceRange: priceRangeInput.value.trim()
+                };
+
+                try {
+                    const response = await fetch('/api/tailor-profile', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(updatedData)
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Failed to update profile');
+                    }
+
+                    tailorData = { ...tailorData, ...updatedData };
+                    tailorName.textContent = updatedData.fullname || 'Name not set';
+                    tailorEmail.textContent = '📧 ' + (updatedData.email || 'Email not set');
+                    tailorPhone.textContent = '📱 ' + (updatedData.phone || 'Phone not set');
+                    locationText.textContent = updatedData.location || 'Not set';
+                    priceRangeText.textContent = updatedData.priceRange || 'Not set';
+                    profileModal.classList.add('hidden');
+                } catch (error) {
+                    console.error('Error updating profile:', error);
+                    alert('Failed to update profile');
+                }
+            });
+
+            // Location editing
+            editLocationBtn.addEventListener('click', () => {
+                locationInput.value = tailorData.location || '';
+                locationModal.classList.remove('hidden');
+            });
+
+            saveLocationBtn.addEventListener('click', async () => {
+                const location = locationInput.value.trim();
+
+                try {
+                    const response = await fetch('/api/tailor-profile', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ location })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Failed to update location');
+                    }
+
+                    tailorData.location = location;
+                    locationText.textContent = location || 'Not set';
+                    locationModal.classList.add('hidden');
+                } catch (error) {
+                    console.error('Error updating location:', error);
+                    alert('Failed to update location');
+                }
             });
 
             // Load profile data
