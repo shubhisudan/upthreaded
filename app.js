@@ -26,6 +26,8 @@ app.use(cookieParser());
 // Serve static files from both public and html directories
 app.use('/html', express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'html')));
+
 
 app.use('/', indexRouter);
 
