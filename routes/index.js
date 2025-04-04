@@ -20,12 +20,12 @@ router.get('/login', (req, res) => {
 });
 
 // Profile page route
-router.get('/profile.html', (req, res) => {
+router.get('/profile', (req, res) => {
   res.sendFile(path.join(__dirname, '../html/profile.html'));
 });
 
 // Orders page route
-router.get('/orders.html', (req, res) => {
+router.get('/orders', (req, res) => {
   res.sendFile(path.join(__dirname, '../html/orders.html'));
 });
 
@@ -40,9 +40,11 @@ router.post('/register', async (req, res) => {
   try {
     const { fullname, phone, email, password, role } = req.body;
     const existingUser = await User.findOne({ email });
+    console.log(existingUser);
     if (existingUser) {
       return res.status(400).send('Email already registered.');
     }
+    console.log(req.body);
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = new User({
       fullname,
@@ -89,7 +91,7 @@ router.get('/html/tailor.html', function(req, res) {
 });
 
 router.get('/html/tailor-dashboard/:page', function(req, res) {
-    res.sendFile(path.join(__dirname, `../html/tailor-dashboard/${req.params.page}`));
+    res.sendFile(path.join(__dirname, '../html/tailor-dashboard/' + req.params.page));
 });
 
 module.exports = router;
