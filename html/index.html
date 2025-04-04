@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Landing Page</title>
+  <link rel="stylesheet" href="/stylesheets/style.css">
+  <link rel="icon" type="image/png" href="/images/logo.png">
+</head>
+
+<body>
+  <section class="main">
+    <header>
+      <a href="#"><img src="/images/logo.png" class="logo"></a>
+      <h2 class="change-message"><span>U</span>p<span>T</span>hreaded</h2>
+      <div class="toggle"></div>
+      <ul class="navigation">
+        <script>
+          let titles = ['home', 'menu', 'about', 'contact'].map(s => s[0].toUpperCase() + s.slice(1))
+          for (let t of titles) {
+            document.write(`<li><a href="#">${t}</a></li>`)
+          }
+        </script>
+      </ul>
+    </header>
+    <div class="content">
+      <div class="text">
+        <h3>Wear the change<br>You want to see</h3>
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
+          magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+          consequat.</p>
+        <a href="/signup" class="btn">Sign Up</a>
+        <a href="/login" class="btn">Log In</a>
+      </div>
+      <div class="slider">
+        <div class="slides">
+          <img src="/images/star.jpeg" alt="Slider Image">
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <ul class="sci">
+        <script>
+          let icons = ['facebook', 'twitter', 'instagram']
+          for (let i of icons) {
+            document.write(`<li><a href="#"><ion-icon name="logo-${i}"></ion-icon></a></li>`)
+          }
+        </script>
+      </ul>
+    </div>
+  </section>
+  <!-- partial -->
+  <script src='https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js'></script>
+  <script src='https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js'></script>
+  <script src="../js/script.js"></script>
+
+</body>
+
+</html>

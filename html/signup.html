@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Sign Up</title>
+    <link rel="stylesheet" href="/stylesheets/signup.css">
+    <link rel="icon" type="image/png" href="/images/logo.png">
+</head>
+
+<body>
+    <section class="signup-container">
+        <div class="signup-left">
+            <header>
+                <a href="/"><img src="/images/logo.png" class="logo" alt="Logo"></a>
+                <a href="/" class="title">UpThreaded</a>
+                <h2>SIGN UP</h2>
+            </header>
+
+            <form class="signup-form" action="/register" method="post">
+                <div class="form-group">
+                    <label for="fullname">Full Name</label>
+                    <input type="text" id="fullname" name="fullname" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="tel" id="phone" name="phone" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="role">Choose Role</label>
+                    <select id="role" name="role" required>
+                        <option value="" disabled selected>No Option Selected</option>
+                        <option value="user">User</option>
+                        <option value="tailor">Tailor</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn">Sign Up</button>
+                <div class="login-link">
+                    <p>Are you a member? <a href="/login" class="login-text">Log in now</a></p>
+                </div>
+            </form>
+        </div>
+
+        <div class="signup-right">
+            <img src="https://images.pexels.com/photos/8453424/pexels-photo-8453424.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
+                alt="Signup Image">
+        </div>
+
+    </section>
+</body>
+
+</html>

@@ -1,0 +1,130 @@
+/* Orders Page Specific Styles */
+
+/* Order Cards */
+.order-card {
+    border-left: 4px solid #285A84;
+    margin-bottom: 1rem;
+    transition: transform 0.3s ease;
+}
+
+.order-card:hover {
+    transform: translateX(5px);
+}
+
+.order-card.active {
+    border-left-color: #85C872;
+}
+
+.order-card.completed {
+    border-left-color: #6c757d;
+}
+
+/* Order Status Badges */
+.badge.status-active {
+    background-color: #85C872;
+}
+
+.badge.status-completed {
+    background-color: #6c757d;
+}
+
+.badge.status-pending {
+    background-color: #ffc107;
+}
+
+/* Order Details */
+.order-details {
+    font-size: 0.9rem;
+}
+
+.order-price {
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: #285A84;
+}
+
+.order-date {
+    color: #666;
+    font-size: 0.85rem;
+}
+
+/* Order Actions */
+.order-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+/* Order Filters */
+.order-filters {
+    margin-bottom: 2rem;
+}
+
+.filter-btn {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+}
+
+.filter-btn.active {
+    background-color: #285A84;
+    color: white;
+}
+
+/* Order Images */
+.order-images {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.order-image-thumbnail {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.order-image-thumbnail:hover {
+    transform: scale(1.1);
+}
+
+/* Pagination */
+.pagination {
+    margin-top: 2rem;
+}
+
+.page-link {
+    color: #285A84;
+    border: none;
+    padding: 0.5rem 1rem;
+}
+
+.page-item.active .page-link {
+    background-color: #285A84;
+    border-color: #285A84;
+}
+
+.page-link:hover {
+    background-color: #e9ecef;
+    color: #285A84;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .order-actions {
+        flex-direction: column;
+    }
+
+    .order-filters {
+        overflow-x: auto;
+        white-space: nowrap;
+        padding-bottom: 1rem;
+    }
+
+    .filter-btn {
+        display: inline-block;
+        margin-right: 0.5rem;
+    }
+} 

@@ -1,0 +1,123 @@
+@import url("https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap");
+
+/* Base styles */
+body {
+    background-color: #f9f9f9;
+    font-family: "Ubuntu", sans-serif;
+    color: #333;
+}
+
+/* Navigation */
+.navbar {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-brand {
+    font-weight: 500;
+    font-size: 1.4rem;
+}
+
+.brand-text {
+    color: #ffffff;
+    font-weight: 500;
+}
+
+/* Form Controls */
+.form-control {
+    border: 1px solid #e0e0e0;
+    padding: 0.75rem 1rem;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: #85C872;
+    box-shadow: 0 0 0 0.2rem rgba(133, 200, 114, 0.25);
+}
+
+.form-select:focus {
+    border-color: #85C872;
+    box-shadow: 0 0 0 0.2rem rgba(133, 200, 114, 0.25);
+}
+
+/* Cards */
+.card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: none;
+    border-radius: 10px;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.card-body {
+    padding: 1.5rem;
+}
+
+.card-title {
+    color: #285A84;
+    font-weight: 500;
+}
+
+/* Buttons */
+.btn {
+    padding: 0.5rem 1.5rem;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+.btn-success {
+    background-color: #85C872;
+    border-color: #85C872;
+}
+
+.btn-success:hover {
+    background-color: #6daf5a;
+    border-color: #6daf5a;
+}
+
+.btn-outline-success {
+    color: #85C872;
+    border-color: #85C872;
+}
+
+.btn-outline-success:hover {
+    background-color: #85C872;
+    border-color: #85C872;
+}
+
+/* Image Upload */
+.form-text {
+    color: #666;
+    font-size: 0.875rem;
+}
+
+/* Validation Styles */
+.was-validated .form-control:valid {
+    border-color: #85C872;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%2385C872' d='M2.3 6.73L.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3e%3c/svg%3e");
+}
+
+.was-validated .form-control:invalid {
+    border-color: #dc3545;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        padding: 1rem;
+    }
+
+    .card-body {
+        padding: 1rem;
+    }
+
+    .brand-text {
+        display: none;
+    }
+
+    .logo {
+        width: 30px;
+    }
+} 
