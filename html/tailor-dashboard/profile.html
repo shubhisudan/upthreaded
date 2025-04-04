@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tailor Profile - Upthreaded</title>
+    <link rel="stylesheet" href="/stylesheets/style.css">
+    <link rel="stylesheet" href="/stylesheets/tailor-dashboard.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <nav class="dashboard-nav">
+            <div class="nav-logo">Upthreaded</div>
+            <ul class="nav-links">
+                <li><a href="profile.html" class="active">Profile</a></li>
+                <li><a href="requests.html">Requests</a></li>
+                <li><a href="orders.html">Orders</a></li>
+                <li><a href="../tailor.html">Back to Main</a></li>
+            </ul>
+        </nav>
+
+        <main class="dashboard-content">
+            <div class="profile-header">
+                <div class="profile-image">
+                    <img src="/images/default-profile.jpg" alt="Tailor Profile" id="profileImage">
+                    <button class="edit-image-btn">Change Photo</button>
+                </div>
+                <div class="profile-info">
+                    <h1 id="tailorName">John Doe</h1>
+                    <p class="location" id="tailorLocation">📍 New York, USA</p>
+                    <p class="price-range" id="priceRange">💰 Price Range: $50 - $200</p>
+                </div>
+            </div>
+
+            <div class="profile-section">
+                <h2>About Me</h2>
+                <div class="bio-container">
+                    <p id="tailorBio">Experienced tailor with 10+ years of expertise in custom clothing and alterations. Specializing in formal wear and wedding attire.</p>
+                    <button class="edit-btn" id="editBioBtn">Edit Bio</button>
+                </div>
+            </div>
+
+            <div class="profile-section">
+                <h2>Specialties</h2>
+                <div class="specialties-container">
+                    <div class="specialty-tags" id="specialtyTags">
+                        <span class="tag">Wedding Suits</span>
+                        <span class="tag">Formal Wear</span>
+                        <span class="tag">Custom Fitting</span>
+                    </div>
+                    <button class="edit-btn" id="editSpecialtiesBtn">Edit Specialties</button>
+                </div>
+            </div>
+
+            <div class="profile-section">
+                <h2>Sample Designs</h2>
+                <div class="sample-designs">
+                    <div class="design-card">
+                        <img src="/images/sample1.jpg" alt="Sample Design 1">
+                        <p>Classic Wedding Suit</p>
+                    </div>
+                    <div class="design-card">
+                        <img src="/images/sample2.jpg" alt="Sample Design 2">
+                        <p>Modern Business Attire</p>
+                    </div>
+                    <div class="design-card">
+                        <img src="/images/sample3.jpg" alt="Sample Design 3">
+                        <p>Custom Evening Wear</p>
+                    </div>
+                </div>
+                <button class="edit-btn" id="editDesignsBtn">Edit Designs</button>
+            </div>
+        </main>
+    </div>
+
+    <script src="/javascripts/tailor-dashboard.js"></script>
+</body>
+</html> 

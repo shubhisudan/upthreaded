@@ -84,4 +84,12 @@ router.post('/login', async (req, res) => {
   }
 });
 
+router.get('/html/tailor.html', function(req, res) {
+    res.sendFile(path.join(__dirname, '../html/tailor.html'));
+});
+
+router.get('/html/tailor-dashboard/:page', function(req, res) {
+    res.sendFile(path.join(__dirname, `../html/tailor-dashboard/${req.params.page}`));
+});
+
 module.exports = router;

@@ -4,14 +4,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tailor</title>
+    <title>Tailor Dashboard - Upthreaded</title>
     <link rel="stylesheet" href="/stylesheets/style.css">
+    <link rel="stylesheet" href="/stylesheets/tailor-dashboard.css">
 </head>
 
 <body>
-    <header>
-        <h1>Tailors interface</h1>
-    </header>
+    <div class="dashboard-container">
+        <nav class="dashboard-nav">
+            <div class="nav-logo">Upthreaded</div>
+            <ul class="nav-links">
+                <li><a href="tailor-dashboard/profile.html">Profile</a></li>
+                <li><a href="tailor-dashboard/requests.html">Requests</a></li>
+                <li><a href="tailor-dashboard/orders.html">Orders</a></li>
+            </ul>
+        </nav>
+
+        <main class="dashboard-content">
+            <div class="welcome-section">
+                <h1>Welcome to Your Tailor Dashboard</h1>
+                <p>Manage your profile, requests, and orders all in one place.</p>
+                
+                <div class="quick-stats">
+                    <div class="stat-card">
+                        <h3>Pending Requests</h3>
+                        <p class="stat-number">5</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Active Orders</h3>
+                        <p class="stat-number">3</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Completed Orders</h3>
+                        <p class="stat-number">12</p>
+                    </div>
+                </div>
+
+                <div class="quick-actions">
+                    <a href="tailor-dashboard/profile.html" class="action-button">
+                        <span class="icon">👤</span>
+                        Edit Profile
+                    </a>
+                    <a href="tailor-dashboard/requests.html" class="action-button">
+                        <span class="icon">📝</span>
+                        View Requests
+                    </a>
+                    <a href="tailor-dashboard/orders.html" class="action-button">
+                        <span class="icon">📦</span>
+                        Manage Orders
+                    </a>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="/javascripts/tailor-dashboard.js"></script>
 </body>
 
 </html>

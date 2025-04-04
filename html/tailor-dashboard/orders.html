@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tailor Orders - Upthreaded</title>
+    <link rel="stylesheet" href="/stylesheets/style.css">
+    <link rel="stylesheet" href="/stylesheets/tailor-dashboard.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <nav class="dashboard-nav">
+            <div class="nav-logo">Upthreaded</div>
+            <ul class="nav-links">
+                <li><a href="profile.html">Profile</a></li>
+                <li><a href="requests.html">Requests</a></li>
+                <li><a href="orders.html" class="active">Orders</a></li>
+                <li><a href="../tailor.html">Back to Main</a></li>
+            </ul>
+        </nav>
+
+        <main class="dashboard-content">
+            <div class="orders-header">
+                <h1>Orders Management</h1>
+                <div class="order-filters">
+                    <select id="orderStatusFilter">
+                        <option value="all">All Orders</option>
+                        <option value="in-progress">In Progress</option>
+                        <option value="shipped">Shipped</option>
+                        <option value="completed">Completed</option>
+                        <option value="cancelled">Cancelled</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="orders-list" id="ordersList">
+                <!-- Sample Order Card -->
+                <div class="order-card">
+                    <div class="order-header">
+                        <div class="order-info">
+                            <h3>Order #12345</h3>
+                            <p class="order-date">Ordered on: March 10, 2024</p>
+                        </div>
+                        <span class="status-badge in-progress">In Progress</span>
+                    </div>
+                    <div class="customer-info">
+                        <img src="/images/user2.jpg" alt="Customer" class="customer-avatar">
+                        <div>
+                            <h4>Michael Brown</h4>
+                            <p>📧 michael.brown@email.com</p>
+                            <p>📱 +1 (555) 123-4567</p>
+                        </div>
+                    </div>
+                    <div class="order-details">
+                        <h4>Order Details</h4>
+                        <ul>
+                            <li>Item: Custom Wedding Suit</li>
+                            <li>Style: Modern Slim Fit</li>
+                            <li>Color: Navy Blue</li>
+                            <li>Delivery Date: April 15, 2024</li>
+                        </ul>
+                    </div>
+                    <div class="order-actions">
+                        <button class="update-status-btn" onclick="updateOrderStatus('12345', 'shipped')">
+                            Mark as Shipped
+                        </button>
+                        <button class="view-details-btn" onclick="viewOrderDetails('12345')">
+                            View Details
+                        </button>
+                    </div>
+                </div>
+
+                <!-- More order cards will be dynamically added here -->
+            </div>
+        </main>
+    </div>
+
+    <script src="/javascripts/tailor-dashboard.js"></script>
+</body>
+</html> 

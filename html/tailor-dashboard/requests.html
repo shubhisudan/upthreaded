@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tailor Requests - Upthreaded</title>
+    <link rel="stylesheet" href="/stylesheets/style.css">
+    <link rel="stylesheet" href="/stylesheets/tailor-dashboard.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <nav class="dashboard-nav">
+            <div class="nav-logo">Upthreaded</div>
+            <ul class="nav-links">
+                <li><a href="profile.html">Profile</a></li>
+                <li><a href="requests.html" class="active">Requests</a></li>
+                <li><a href="orders.html">Orders</a></li>
+                <li><a href="../tailor.html">Back to Main</a></li>
+            </ul>
+        </nav>
+
+        <main class="dashboard-content">
+            <div class="requests-header">
+                <h1>Tailor Requests</h1>
+                <div class="request-filters">
+                    <select id="statusFilter">
+                        <option value="all">All Requests</option>
+                        <option value="pending">Pending</option>
+                        <option value="accepted">Accepted</option>
+                        <option value="rejected">Rejected</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="requests-list" id="requestsList">
+                <!-- Sample Request Card -->
+                <div class="request-card">
+                    <div class="request-header">
+                        <div class="user-info">
+                            <img src="/images/user1.jpg" alt="User" class="user-avatar">
+                            <div>
+                                <h3>Sarah Johnson</h3>
+                                <p class="request-date">Requested on: March 15, 2024</p>
+                            </div>
+                        </div>
+                        <span class="status-badge pending">Pending</span>
+                    </div>
+                    <div class="request-details">
+                        <h4>Request Description</h4>
+                        <p>Need a custom-made wedding suit for my upcoming wedding in June. Looking for a modern, slim-fit design in navy blue.</p>
+                        <div class="measurements">
+                            <h4>Measurements</h4>
+                            <ul>
+                                <li>Chest: 42"</li>
+                                <li>Waist: 34"</li>
+                                <li>Shoulder: 18"</li>
+                                <li>Length: 30"</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="request-actions">
+                        <button class="accept-btn" onclick="handleRequest('accept', '1')">Accept Request</button>
+                        <button class="reject-btn" onclick="handleRequest('reject', '1')">Reject Request</button>
+                    </div>
+                </div>
+
+                <!-- More request cards will be dynamically added here -->
+            </div>
+        </main>
+    </div>
+
+    <script src="/javascripts/tailor-dashboard.js"></script>
+</body>
+</html> 
