@@ -5,20 +5,21 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var indexRouter = require('./routes/index');
 var session = require('express-session');
-var app = express();
-const mongoose = require('mongoose')
+var fileUpload = require('express-fileupload');
+const mongoose = require('mongoose');
 
+// Create Express app
+const app = express();
+
+// Connect to MongoDB
 mongoose.connect("mongodb://127.0.0.1:27017/UpThreaded", {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
   .then(() => { console.log('Connected to MongoDB'); })
-  .catch((err) => { console.error('Could not connect to MongoDB', err); })
+  .catch((err) => { console.error('Could not connect to MongoDB', err); });
 
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'ejs');
-
+// Middleware setup
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -32,6 +33,14 @@ app.use(session({
   cookie: {
     secure: false, // Set to true if using HTTPS
     maxAge: 24 * 60 * 60 * 1000 // 24 hours
+  }
+}));
+
+// File upload middleware
+app.use(fileUpload({
+  createParentPath: true,
+  limits: {
+    fileSize: 5 * 1024 * 1024 // 5MB limit
   }
 }));
 
@@ -57,6 +66,7 @@ app.use(function (err, req, res, next) {
   res.render('error');
 });
 
+// Start the server
 const PORT = 4001;
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);

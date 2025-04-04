@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs');
 const User = require('../models/User');
 const path = require('path');
 const { isUser } = require('../middleware/auth');
+const fs = require('fs');
 
 // Public routes
 router.get('/', (req, res) => {
@@ -105,6 +106,64 @@ router.get('/*.html', (req, res) => {
     return res.sendFile(path.join(__dirname, '..', req.path));
   }
   res.redirect('/login');
+});
+
+// Get user profile data
+router.get('/api/profile', isUser, async (req, res) => {
+  try {
+    const user = await User.findById(req.session.userId).select('-password');
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    res.json(user);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error fetching profile data' });
+  }
+});
+
+// Update profile route
+router.post('/api/profile', isUser, async (req, res) => {
+  try {
+    const userId = req.session.userId;
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Handle profile picture upload
+    if (req.files && req.files.profilePicture) {
+      const profilePicture = req.files.profilePicture;
+      const uploadPath = path.join(__dirname, '../public/uploads/profile-pictures');
+
+      // Create directory if it doesn't exist
+      if (!fs.existsSync(uploadPath)) {
+        fs.mkdirSync(uploadPath, { recursive: true });
+      }
+
+      // Generate unique filename
+      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+      const filename = `${user._id}-${uniqueSuffix}${path.extname(profilePicture.name)}`;
+      const filePath = path.join(uploadPath, filename);
+
+      // Move file to uploads directory
+      await profilePicture.mv(filePath);
+
+      // Update profile picture path
+      user.profilePicture = `/uploads/profile-pictures/${filename}`;
+    }
+
+    // Update other fields
+    if (req.body.location) user.location = req.body.location;
+    if (req.body.bio) user.bio = req.body.bio;
+
+    await user.save();
+    res.json({ message: 'Profile updated successfully' });
+  } catch (error) {
+    console.error('Error updating profile:', error);
+    res.status(500).json({ error: 'Failed to update profile' });
+  }
 });
 
 module.exports = router;
