@@ -36,6 +36,40 @@ router.get('/imagegen', isUser, (req, res) => {
   res.sendFile(path.join(__dirname, '../html/imagegen.html'));
 });
 
+// Tailor routes
+router.get('/tailor', (req, res) => {
+  if (req.session.userId && req.session.role === 'tailor') {
+    res.sendFile(path.join(__dirname, '../html/tailor.html'));
+  } else {
+    res.redirect('/login');
+  }
+});
+
+// Tailor dashboard routes
+router.get('/tailor-dashboard/profile.html', (req, res) => {
+  if (req.session.userId && req.session.role === 'tailor') {
+    res.sendFile(path.join(__dirname, '../html/tailor-dashboard/profile.html'));
+  } else {
+    res.redirect('/login');
+  }
+});
+
+router.get('/tailor-dashboard/requests.html', (req, res) => {
+  if (req.session.userId && req.session.role === 'tailor') {
+    res.sendFile(path.join(__dirname, '../html/tailor-dashboard/requests.html'));
+  } else {
+    res.redirect('/login');
+  }
+});
+
+router.get('/tailor-dashboard/orders.html', (req, res) => {
+  if (req.session.userId && req.session.role === 'tailor') {
+    res.sendFile(path.join(__dirname, '../html/tailor-dashboard/orders.html'));
+  } else {
+    res.redirect('/login');
+  }
+});
+
 // Logout route
 router.get('/logout', (req, res) => {
   req.session.destroy((err) => {

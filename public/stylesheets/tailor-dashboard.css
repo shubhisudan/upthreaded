@@ -46,6 +46,19 @@
     background-color: #3498db;
 }
 
+.nav-links a.logout-link {
+    color: #ff6b6b;
+    border: 1px solid #ff6b6b;
+    margin-top: 20px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.nav-links a.logout-link:hover {
+    background-color: #ff6b6b;
+    color: white;
+}
+
 .dashboard-content {
     flex: 1;
     margin-left: 250px;
