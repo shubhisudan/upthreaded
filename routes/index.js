@@ -3,48 +3,57 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 const User = require('../models/User');
 const path = require('path');
+const { isUser } = require('../middleware/auth');
 
-//landing page route
+// Public routes
 router.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../html/index.html'));
 });
 
-// Signup page route
 router.get('/signup', (req, res) => {
   res.sendFile(path.join(__dirname, '../html/signup.html'));
 });
 
-//login route
 router.get('/login', (req, res) => {
   res.sendFile(path.join(__dirname, '../html/login.html'));
 });
 
-// Profile page route
-router.get('/profile', (req, res) => {
+// Protected routes
+router.get('/user.html', isUser, (req, res) => {
+  res.sendFile(path.join(__dirname, '../html/user.html'));
+});
+
+router.get('/profile', isUser, (req, res) => {
   res.sendFile(path.join(__dirname, '../html/profile.html'));
 });
 
-// Orders page route
-router.get('/orders', (req, res) => {
+router.get('/orders', isUser, (req, res) => {
   res.sendFile(path.join(__dirname, '../html/orders.html'));
+});
+
+router.get('/imagegen', isUser, (req, res) => {
+  res.sendFile(path.join(__dirname, '../html/imagegen.html'));
 });
 
 // Logout route
 router.get('/logout', (req, res) => {
-  // TODO: Implement proper session cleanup
-  res.redirect('/login');
+  req.session.destroy((err) => {
+    if (err) {
+      console.error('Error destroying session:', err);
+    }
+    res.redirect('/login');
+  });
 });
 
-//signup route
+// Signup route
 router.post('/register', async (req, res) => {
   try {
     const { fullname, phone, email, password, role } = req.body;
     const existingUser = await User.findOne({ email });
-    console.log(existingUser);
     if (existingUser) {
       return res.status(400).send('Email already registered.');
     }
-    console.log(req.body);
+
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = new User({
       fullname,
@@ -75,6 +84,10 @@ router.post('/login', async (req, res) => {
       return res.redirect('/login?message=User not found or invalid credentials');
     }
 
+    // Set session
+    req.session.userId = user._id;
+    req.session.role = user.role;
+
     if (user.role === 'tailor') {
       return res.sendFile(path.join(__dirname, '../html/tailor.html'));
     } else if (user.role === 'user') {
@@ -86,12 +99,12 @@ router.post('/login', async (req, res) => {
   }
 });
 
-router.get('/html/tailor.html', function (req, res) {
-  res.sendFile(path.join(__dirname, '../html/tailor.html'));
-});
-
-router.get('/html/tailor-dashboard/:page', function (req, res) {
-  res.sendFile(path.join(__dirname, '../html/tailor-dashboard/' + req.params.page));
+// Redirect any direct access to HTML files to login
+router.get('/*.html', (req, res) => {
+  if (['/index.html', '/login.html', '/signup.html'].includes(req.path)) {
+    return res.sendFile(path.join(__dirname, '..', req.path));
+  }
+  res.redirect('/login');
 });
 
 module.exports = router;

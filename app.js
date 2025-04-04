@@ -4,6 +4,7 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var indexRouter = require('./routes/index');
+var session = require('express-session');
 var app = express();
 const mongoose = require('mongoose')
 
@@ -23,12 +24,21 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// Serve static files from both public and html directories
-app.use('/html', express.static(path.join(__dirname, 'public')));
+// Session middleware configuration
+app.use(session({
+  secret: 'your-secret-key', // Change this to a secure secret key
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: false, // Set to true if using HTTPS
+    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+  }
+}));
+
+// Serve static files from public directory only
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.static(path.join(__dirname, 'html')));
 
-
+// Mount the router before static file serving for html directory
 app.use('/', indexRouter);
 
 // catch 404 and forward to error handler
