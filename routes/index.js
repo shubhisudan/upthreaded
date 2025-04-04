@@ -156,6 +156,25 @@ router.get('/api/profile', isUser, async (req, res) => {
   }
 });
 
+// Get tailor profile data
+router.get('/api/tailor-profile', async (req, res) => {
+  try {
+    // Check if user is logged in and is a tailor
+    if (!req.session.userId || req.session.role !== 'tailor') {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    const tailor = await User.findById(req.session.userId).select('-password');
+    if (!tailor) {
+      return res.status(404).json({ error: 'Tailor not found' });
+    }
+    res.json(tailor);
+  } catch (error) {
+    console.error('Error fetching tailor profile:', error);
+    res.status(500).json({ error: 'Failed to fetch profile data' });
+  }
+});
+
 // Update profile route
 router.post('/api/profile', isUser, async (req, res) => {
   try {
@@ -197,6 +216,166 @@ router.post('/api/profile', isUser, async (req, res) => {
   } catch (error) {
     console.error('Error updating profile:', error);
     res.status(500).json({ error: 'Failed to update profile' });
+  }
+});
+
+// Update tailor profile route
+router.post('/api/tailor-profile', async (req, res) => {
+  try {
+    // Check if user is logged in and is a tailor
+    if (!req.session.userId || req.session.role !== 'tailor') {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    const tailor = await User.findById(req.session.userId);
+    if (!tailor) {
+      return res.status(404).json({ error: 'Tailor not found' });
+    }
+
+    // Handle profile picture upload
+    if (req.files && req.files.profilePicture) {
+      const profilePicture = req.files.profilePicture;
+      const uploadPath = path.join(__dirname, '../public/uploads/profile-pictures');
+
+      // Create directory if it doesn't exist
+      if (!fs.existsSync(uploadPath)) {
+        fs.mkdirSync(uploadPath, { recursive: true });
+      }
+
+      // Generate unique filename
+      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+      const filename = `${tailor._id}-${uniqueSuffix}${path.extname(profilePicture.name)}`;
+      const filePath = path.join(uploadPath, filename);
+
+      // Move file to uploads directory
+      await profilePicture.mv(filePath);
+
+      // Update profile picture path
+      tailor.profilePicture = `/uploads/profile-pictures/${filename}`;
+    }
+
+    // Update other fields
+    if (req.body.location) tailor.location = req.body.location;
+    if (req.body.bio) tailor.bio = req.body.bio;
+    if (req.body.specialties) {
+      try {
+        tailor.specialties = JSON.parse(req.body.specialties);
+      } catch (e) {
+        return res.status(400).json({ error: 'Invalid specialties format' });
+      }
+    }
+    if (req.body.priceRange) tailor.priceRange = req.body.priceRange;
+
+    await tailor.save();
+    res.json({ message: 'Profile updated successfully' });
+  } catch (error) {
+    console.error('Error updating tailor profile:', error);
+    res.status(500).json({ error: 'Failed to update profile' });
+  }
+});
+
+// Add design to tailor profile
+router.post('/api/tailor-profile/designs', async (req, res) => {
+  try {
+    // Check if user is logged in and is a tailor
+    if (!req.session.userId || req.session.role !== 'tailor') {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    const tailor = await User.findById(req.session.userId);
+    if (!tailor) {
+      return res.status(404).json({ error: 'Tailor not found' });
+    }
+
+    // Check if design image was uploaded
+    if (!req.files || !req.files.designImage) {
+      return res.status(400).json({ error: 'Design image is required' });
+    }
+
+    const designImage = req.files.designImage;
+    const uploadPath = path.join(__dirname, '../public/uploads/design-images');
+
+    // Create directory if it doesn't exist
+    if (!fs.existsSync(uploadPath)) {
+      fs.mkdirSync(uploadPath, { recursive: true });
+    }
+
+    // Generate unique filename
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    const filename = `${tailor._id}-${uniqueSuffix}${path.extname(designImage.name)}`;
+    const filePath = path.join(uploadPath, filename);
+
+    // Move file to uploads directory
+    await designImage.mv(filePath);
+
+    // Create new design
+    const newDesign = {
+      imageUrl: `/uploads/design-images/${filename}`,
+      title: req.body.title || 'Untitled Design'
+    };
+
+    // Add to tailor's designs
+    if (!tailor.designs) {
+      tailor.designs = [];
+    }
+    tailor.designs.push(newDesign);
+    await tailor.save();
+
+    res.json({
+      message: 'Design added successfully',
+      design: newDesign
+    });
+  } catch (error) {
+    console.error('Error adding design:', error);
+    res.status(500).json({ error: 'Failed to add design' });
+  }
+});
+
+// Delete a design from tailor profile
+router.delete('/api/tailor-profile/designs/:designId', async (req, res) => {
+  try {
+    // Check if user is logged in and is a tailor
+    if (!req.session.userId || req.session.role !== 'tailor') {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    const tailor = await User.findById(req.session.userId);
+    if (!tailor) {
+      return res.status(404).json({ error: 'Tailor not found' });
+    }
+
+    const designId = req.params.designId;
+
+    // Check if tailor has designs
+    if (!tailor.designs || tailor.designs.length === 0) {
+      return res.status(404).json({ error: 'No designs found' });
+    }
+
+    // Find the design index
+    const designIndex = tailor.designs.findIndex(design => design._id.toString() === designId);
+    if (designIndex === -1) {
+      return res.status(404).json({ error: 'Design not found' });
+    }
+
+    // Remove design
+    const removedDesign = tailor.designs.splice(designIndex, 1)[0];
+
+    // Try to delete the physical file (but don't fail if it doesn't exist)
+    try {
+      const filePath = path.join(__dirname, '../public', removedDesign.imageUrl);
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+      }
+    } catch (error) {
+      console.error('Error deleting design file:', error);
+      // Continue with deletion even if file removal fails
+    }
+
+    await tailor.save();
+    res.json({ message: 'Design deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting design:', error);
+    res.status(500).json({ error: 'Failed to delete design' });
   }
 });
 

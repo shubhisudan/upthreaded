@@ -4,9 +4,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Profile </title>
+    <title>My Profile</title>
     <link rel="stylesheet" href="/stylesheets/style.css">
     <link rel="stylesheet" href="/stylesheets/tailor-dashboard.css">
+    <style>
+        /* Additional styles for design section */
+        .design-upload-container {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 2px dashed #3498db;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+        }
+
+        .design-upload-form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .designs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .design-card {
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            background-color: white;
+            transition: transform 0.3s ease;
+        }
+
+        .design-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .design-card img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+        }
+
+        .design-card-title {
+            padding: 10px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .delete-design {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background-color: rgba(255, 0, 0, 0.7);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            font-size: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .no-designs-message {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-style: italic;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
 </head>
 
 <body>
@@ -25,21 +101,24 @@
         <main class="dashboard-content">
             <div class="profile-header">
                 <div class="profile-image">
-                    <img src="/images/default-profile.jpg" alt="Tailor Profile" id="profileImage">
-                    <button class="edit-image-btn">Change Photo</button>
+                    <img src="/images/default-profile.png" alt="Tailor Profile" id="profileImage">
+                    <button class="edit-image-btn" id="changePhotoBtn">Change Photo</button>
+                    <input type="file" id="profilePictureUpload" class="hidden" accept="image/*">
                 </div>
                 <div class="profile-info">
-                    <h1 id="tailorName">John Doe</h1>
-                    <p class="location" id="tailorLocation">📍 New York, USA</p>
-                    <p class="price-range" id="priceRange">💰 Price Range: $50 - $200</p>
+                    <h1 id="tailorName">Loading...</h1>
+                    <p id="tailorEmail">📧 Loading...</p>
+                    <p id="tailorPhone">📱 Loading...</p>
+                    <p class="location" id="tailorLocation">📍 <span id="locationText">Not set</span></p>
+                    <p class="price-range" id="priceRange">💰 Price Range: <span id="priceRangeText">Not set</span></p>
                 </div>
             </div>
 
             <div class="profile-section">
                 <h2>About Me</h2>
                 <div class="bio-container">
-                    <p id="tailorBio">Experienced tailor with 10+ years of expertise in custom clothing and alterations.
-                        Specializing in formal wear and wedding attire.</p>
+                    <p id="tailorBio">Add your bio information here to tell customers about yourself and your expertise.
+                    </p>
                     <button class="edit-btn" id="editBioBtn">Edit Bio</button>
                 </div>
             </div>
@@ -48,9 +127,7 @@
                 <h2>Specialties</h2>
                 <div class="specialties-container">
                     <div class="specialty-tags" id="specialtyTags">
-                        <span class="tag">Wedding Suits</span>
-                        <span class="tag">Formal Wear</span>
-                        <span class="tag">Custom Fitting</span>
+                        <span id="noSpecialties">No specialties added yet.</span>
                     </div>
                     <button class="edit-btn" id="editSpecialtiesBtn">Edit Specialties</button>
                 </div>
@@ -58,26 +135,495 @@
 
             <div class="profile-section">
                 <h2>Sample Designs</h2>
-                <div class="sample-designs">
-                    <div class="design-card">
-                        <img src="/images/sample1.jpg" alt="Sample Design 1">
-                        <p>Classic Wedding Suit</p>
-                    </div>
-                    <div class="design-card">
-                        <img src="/images/sample2.jpg" alt="Sample Design 2">
-                        <p>Modern Business Attire</p>
-                    </div>
-                    <div class="design-card">
-                        <img src="/images/sample3.jpg" alt="Sample Design 3">
-                        <p>Custom Evening Wear</p>
+                <div class="design-upload-container"
+                    style="margin-bottom: 20px; padding: 15px; border: 2px dashed #3498db; border-radius: 8px; background-color: #f8f9fa;">
+                    <h3>Add New Design</h3>
+                    <form id="designUploadForm" style="display: flex; flex-direction: column; gap: 10px;">
+                        <div>
+                            <label for="designTitle">Design Title:</label>
+                            <input type="text" id="designTitle" class="form-control"
+                                placeholder="e.g. Wedding Suit, Formal Dress">
+                        </div>
+                        <div>
+                            <label for="designImage">Design Image:</label>
+                            <input type="file" id="designImage" accept="image/*" class="form-control">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Upload Design</button>
+                    </form>
+                </div>
+
+                <div class="designs-container">
+                    <p id="noDesignsMessage"
+                        style="text-align: center; padding: 20px; color: #666; font-style: italic;">No sample designs
+                        added yet.</p>
+                    <div id="designsGrid"
+                        style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; margin-top: 20px;">
                     </div>
                 </div>
-                <button class="edit-btn" id="editDesignsBtn">Edit Designs</button>
+            </div>
+
+            <!-- Edit Modals -->
+            <div id="bioModal" class="modal hidden">
+                <div class="modal-content">
+                    <span class="close-btn">&times;</span>
+                    <h2>Edit Bio</h2>
+                    <textarea id="bioText" rows="6"
+                        placeholder="Tell customers about yourself and your expertise"></textarea>
+                    <button id="saveBioBtn" class="save-btn">Save</button>
+                </div>
+            </div>
+
+            <div id="specialtiesModal" class="modal hidden">
+                <div class="modal-content">
+                    <span class="close-btn">&times;</span>
+                    <h2>Edit Specialties</h2>
+                    <input type="text" id="specialtyInput" placeholder="Enter specialty and press Enter">
+                    <div id="specialtyList"></div>
+                    <button id="saveSpecialtiesBtn" class="save-btn">Save</button>
+                </div>
+            </div>
+
+            <div id="priceRangeModal" class="modal hidden">
+                <div class="modal-content">
+                    <span class="close-btn">&times;</span>
+                    <h2>Edit Price Range</h2>
+                    <input type="text" id="priceRangeInput" placeholder="e.g. $50 - $200">
+                    <button id="savePriceRangeBtn" class="save-btn">Save</button>
+                </div>
             </div>
         </main>
     </div>
 
     <script src="/javascripts/tailor-dashboard.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // DOM elements
+            const profileImage = document.getElementById('profileImage');
+            const changePhotoBtn = document.getElementById('changePhotoBtn');
+            const profilePictureUpload = document.getElementById('profilePictureUpload');
+            const tailorName = document.getElementById('tailorName');
+            const tailorEmail = document.getElementById('tailorEmail');
+            const tailorPhone = document.getElementById('tailorPhone');
+            const locationText = document.getElementById('locationText');
+            const priceRangeText = document.getElementById('priceRangeText');
+            const tailorBio = document.getElementById('tailorBio');
+            const specialtyTags = document.getElementById('specialtyTags');
+            const noSpecialties = document.getElementById('noSpecialties');
+            const designsGrid = document.getElementById('designsGrid');
+            const noDesignsMessage = document.getElementById('noDesignsMessage');
+            const designUploadForm = document.getElementById('designUploadForm');
+
+            // Edit buttons
+            const editBioBtn = document.getElementById('editBioBtn');
+            const editSpecialtiesBtn = document.getElementById('editSpecialtiesBtn');
+            const priceRange = document.getElementById('priceRange');
+
+            // Modals
+            const bioModal = document.getElementById('bioModal');
+            const specialtiesModal = document.getElementById('specialtiesModal');
+            const priceRangeModal = document.getElementById('priceRangeModal');
+            const closeBtns = document.querySelectorAll('.close-btn');
+
+            // Modal inputs
+            const bioText = document.getElementById('bioText');
+            const specialtyInput = document.getElementById('specialtyInput');
+            const specialtyList = document.getElementById('specialtyList');
+            const priceRangeInput = document.getElementById('priceRangeInput');
+
+            // Save buttons
+            const saveBioBtn = document.getElementById('saveBioBtn');
+            const saveSpecialtiesBtn = document.getElementById('saveSpecialtiesBtn');
+            const savePriceRangeBtn = document.getElementById('savePriceRangeBtn');
+
+            // Store tailor data
+            let tailorData = {
+                specialties: []
+            };
+
+            // Fetch tailor profile data
+            async function fetchTailorProfile() {
+                try {
+                    const response = await fetch('/api/tailor-profile');
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch profile data');
+                    }
+
+                    const data = await response.json();
+                    tailorData = data;
+
+                    // Update profile display with fetched data
+                    tailorName.textContent = data.fullname || 'Name not set';
+                    tailorEmail.textContent = '📧 ' + (data.email || 'Email not set');
+                    tailorPhone.textContent = '📱 ' + (data.phone || 'Phone not set');
+                    locationText.textContent = data.location || 'Not set';
+                    priceRangeText.textContent = data.priceRange || 'Not set';
+                    tailorBio.textContent = data.bio || 'Add your bio information here to tell customers about yourself and your expertise.';
+
+                    // Set profile picture if available
+                    if (data.profilePicture) {
+                        profileImage.src = data.profilePicture;
+                    }
+
+                    // Display specialties
+                    updateSpecialtiesDisplay();
+
+                    // Display designs
+                    updateDesignsDisplay(data.designs || []);
+
+                } catch (error) {
+                    console.error('Error fetching profile:', error);
+                    alert('Failed to load profile data');
+                }
+            }
+
+            // Update specialties display
+            function updateSpecialtiesDisplay() {
+                specialtyTags.innerHTML = '';
+
+                if (tailorData.specialties && tailorData.specialties.length > 0) {
+                    noSpecialties.style.display = 'none';
+
+                    tailorData.specialties.forEach(specialty => {
+                        const tag = document.createElement('span');
+                        tag.className = 'tag';
+                        tag.textContent = specialty;
+                        specialtyTags.appendChild(tag);
+                    });
+                } else {
+                    noSpecialties.style.display = 'block';
+                    specialtyTags.appendChild(noSpecialties);
+                }
+            }
+
+            // Update designs display
+            function updateDesignsDisplay(designs) {
+                designsGrid.innerHTML = '';
+
+                if (designs && designs.length > 0) {
+                    noDesignsMessage.style.display = 'none';
+
+                    designs.forEach(design => {
+                        const designCard = document.createElement('div');
+                        designCard.className = 'design-card';
+                        designCard.style.position = 'relative';
+                        designCard.style.borderRadius = '8px';
+                        designCard.style.overflow = 'hidden';
+                        designCard.style.boxShadow = '0 2px 5px rgba(0, 0, 0, 0.1)';
+                        designCard.style.backgroundColor = 'white';
+                        designCard.dataset.id = design._id;
+
+                        const img = document.createElement('img');
+                        img.src = design.imageUrl;
+                        img.alt = design.title;
+                        img.style.width = '100%';
+                        img.style.height = '180px';
+                        img.style.objectFit = 'cover';
+
+                        const title = document.createElement('div');
+                        title.className = 'design-card-title';
+                        title.style.padding = '10px';
+                        title.style.fontWeight = 'bold';
+                        title.style.textAlign = 'center';
+                        title.textContent = design.title;
+
+                        const deleteBtn = document.createElement('button');
+                        deleteBtn.className = 'delete-design';
+                        deleteBtn.style.position = 'absolute';
+                        deleteBtn.style.top = '5px';
+                        deleteBtn.style.right = '5px';
+                        deleteBtn.style.backgroundColor = 'rgba(255, 0, 0, 0.7)';
+                        deleteBtn.style.color = 'white';
+                        deleteBtn.style.border = 'none';
+                        deleteBtn.style.borderRadius = '50%';
+                        deleteBtn.style.width = '25px';
+                        deleteBtn.style.height = '25px';
+                        deleteBtn.style.fontSize = '12px';
+                        deleteBtn.style.cursor = 'pointer';
+                        deleteBtn.style.display = 'flex';
+                        deleteBtn.style.alignItems = 'center';
+                        deleteBtn.style.justifyContent = 'center';
+                        deleteBtn.innerHTML = '&times;';
+                        deleteBtn.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            deleteDesign(design._id);
+                        });
+
+                        designCard.appendChild(img);
+                        designCard.appendChild(title);
+                        designCard.appendChild(deleteBtn);
+
+                        designsGrid.appendChild(designCard);
+                    });
+                } else {
+                    noDesignsMessage.style.display = 'block';
+                }
+            }
+
+            // Handle profile picture change
+            changePhotoBtn.addEventListener('click', () => {
+                profilePictureUpload.click();
+            });
+
+            profilePictureUpload.addEventListener('change', async (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                if (file.size > 5 * 1024 * 1024) { // 5MB limit
+                    alert('Image size should be less than 5MB');
+                    return;
+                }
+
+                // Show preview
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    profileImage.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+
+                // Upload to server
+                const formData = new FormData();
+                formData.append('profilePicture', file);
+
+                try {
+                    const response = await fetch('/api/tailor-profile', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Failed to upload profile picture');
+                    }
+                } catch (error) {
+                    console.error('Error uploading profile picture:', error);
+                    alert('Failed to upload profile picture');
+                }
+            });
+
+            // Bio editing
+            editBioBtn.addEventListener('click', () => {
+                bioText.value = tailorData.bio || '';
+                bioModal.classList.remove('hidden');
+            });
+
+            saveBioBtn.addEventListener('click', async () => {
+                const bio = bioText.value.trim();
+
+                try {
+                    const response = await fetch('/api/tailor-profile', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ bio })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Failed to update bio');
+                    }
+
+                    tailorData.bio = bio;
+                    tailorBio.textContent = bio || 'Add your bio information here...';
+                    bioModal.classList.add('hidden');
+                } catch (error) {
+                    console.error('Error updating bio:', error);
+                    alert('Failed to update bio');
+                }
+            });
+
+            // Price range editing
+            priceRange.addEventListener('click', () => {
+                priceRangeInput.value = tailorData.priceRange || '';
+                priceRangeModal.classList.remove('hidden');
+            });
+
+            savePriceRangeBtn.addEventListener('click', async () => {
+                const priceRange = priceRangeInput.value.trim();
+
+                try {
+                    const response = await fetch('/api/tailor-profile', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ priceRange })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Failed to update price range');
+                    }
+
+                    tailorData.priceRange = priceRange;
+                    priceRangeText.textContent = priceRange || 'Not set';
+                    priceRangeModal.classList.add('hidden');
+                } catch (error) {
+                    console.error('Error updating price range:', error);
+                    alert('Failed to update price range');
+                }
+            });
+
+            // Specialties editing
+            editSpecialtiesBtn.addEventListener('click', () => {
+                // Clear previous list
+                specialtyList.innerHTML = '';
+
+                // Add current specialties
+                if (tailorData.specialties) {
+                    tailorData.specialties.forEach(specialty => {
+                        addSpecialtyToList(specialty);
+                    });
+                }
+
+                specialtiesModal.classList.remove('hidden');
+            });
+
+            specialtyInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const specialty = specialtyInput.value.trim();
+                    if (specialty) {
+                        addSpecialtyToList(specialty);
+                        specialtyInput.value = '';
+                    }
+                }
+            });
+
+            function addSpecialtyToList(specialty) {
+                const item = document.createElement('div');
+                item.className = 'specialty-item';
+
+                const text = document.createElement('span');
+                text.textContent = specialty;
+
+                const removeBtn = document.createElement('span');
+                removeBtn.className = 'remove-specialty';
+                removeBtn.textContent = '✕';
+                removeBtn.addEventListener('click', () => {
+                    item.remove();
+                });
+
+                item.appendChild(text);
+                item.appendChild(removeBtn);
+                specialtyList.appendChild(item);
+            }
+
+            saveSpecialtiesBtn.addEventListener('click', async () => {
+                const specialtyItems = specialtyList.querySelectorAll('.specialty-item');
+                const specialties = [];
+
+                specialtyItems.forEach(item => {
+                    specialties.push(item.querySelector('span').textContent);
+                });
+
+                try {
+                    const response = await fetch('/api/tailor-profile', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ specialties })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Failed to update specialties');
+                    }
+
+                    tailorData.specialties = specialties;
+                    updateSpecialtiesDisplay();
+                    specialtiesModal.classList.add('hidden');
+                } catch (error) {
+                    console.error('Error updating specialties:', error);
+                    alert('Failed to update specialties');
+                }
+            });
+
+            // Design upload
+            designUploadForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                const designTitle = document.getElementById('designTitle').value.trim();
+                const designImage = document.getElementById('designImage').files[0];
+
+                if (!designImage) {
+                    alert('Please select an image to upload');
+                    return;
+                }
+
+                if (designImage.size > 5 * 1024 * 1024) { // 5MB limit
+                    alert('Image size should be less than 5MB');
+                    return;
+                }
+
+                const formData = new FormData();
+                formData.append('designImage', designImage);
+                formData.append('title', designTitle || 'Untitled Design');
+
+                try {
+                    const response = await fetch('/api/tailor-profile/designs', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Failed to upload design');
+                    }
+
+                    // Clear form
+                    document.getElementById('designTitle').value = '';
+                    document.getElementById('designImage').value = '';
+
+                    // Refresh profile data
+                    fetchTailorProfile();
+
+                } catch (error) {
+                    console.error('Error uploading design:', error);
+                    alert('Failed to upload design');
+                }
+            });
+
+            // Delete design
+            async function deleteDesign(designId) {
+                if (!confirm('Are you sure you want to delete this design?')) {
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`/api/tailor-profile/designs/${designId}`, {
+                        method: 'DELETE'
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Failed to delete design');
+                    }
+
+                    // Refresh profile data
+                    fetchTailorProfile();
+
+                } catch (error) {
+                    console.error('Error deleting design:', error);
+                    alert('Failed to delete design');
+                }
+            }
+
+            // Close modals
+            closeBtns.forEach(btn => {
+                btn.addEventListener('click', function () {
+                    bioModal.classList.add('hidden');
+                    specialtiesModal.classList.add('hidden');
+                    priceRangeModal.classList.add('hidden');
+                });
+            });
+
+            // Close modals when clicking outside
+            window.addEventListener('click', function (event) {
+                if (event.target === bioModal) bioModal.classList.add('hidden');
+                if (event.target === specialtiesModal) specialtiesModal.classList.add('hidden');
+                if (event.target === priceRangeModal) priceRangeModal.classList.add('hidden');
+            });
+
+            // Load profile data
+            fetchTailorProfile();
+        });
+    </script>
 </body>
 
 </html>

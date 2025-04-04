@@ -37,6 +37,21 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: '/images/default-profile.png'
   },
+  specialties: {
+    type: [String],
+    default: []
+  },
+  priceRange: {
+    type: String,
+    default: ''
+  },
+  designs: {
+    type: [{
+      imageUrl: String,
+      title: String
+    }],
+    default: []
+  },
   createdAt: {
     type: Date,
     default: Date.now
