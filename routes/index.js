@@ -5,6 +5,8 @@ const User = require('../models/User');
 const path = require('path');
 const { isUser } = require('../middleware/auth');
 const fs = require('fs');
+const axios = require('axios');
+require('dotenv').config();
 
 // Public routes
 router.get('/', (req, res) => {
@@ -495,6 +497,47 @@ router.post('/api/match-tailors', isUser, async (req, res) => {
     console.error('Error matching tailors:', error);
     res.status(500).json({ error: 'Failed to match tailors' });
   }
+});
+
+router.post('/api/generate-upcycle-ideas', async (req, res) => {
+    try {
+        const { clothing, style } = req.body;
+
+        // Prepare prompt for Gemini
+        const prompt = `I have ${clothing} and want to transform it into something new in ${style} style. Suggest creative ways to upcycle this clothing item into something new. Include specific steps and what the final result will be.`;
+
+        // Make request to Gemini API
+        const response = await axios.post(
+            `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
+            {
+                contents: [{
+                    parts: [{
+                        text: prompt
+                    }]
+                }]
+            },
+            {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }
+        );
+
+        // Extract the suggestion from Gemini's response
+        const suggestion = response.data.candidates[0].content.parts[0].text;
+
+        res.json({
+            success: true,
+            suggestion: suggestion
+        });
+
+    } catch (error) {
+        console.error('Error generating ideas:', error.response?.data || error.message);
+        res.status(500).json({
+            success: false,
+            error: 'Failed to generate upcycling ideas'
+        });
+    }
 });
 
 module.exports = router;

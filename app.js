@@ -60,6 +60,7 @@ app.use(fileUpload({
 
 // Serve static files from public directory only
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/html', express.static(path.join(__dirname, 'html')));
 
 // Mount the router before static file serving for html directory
 app.use('/', indexRouter);
