@@ -3,7 +3,8 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Sign Up</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - UpThreaded</title>
     <link rel="stylesheet" href="/stylesheets/signup.css">
     <link rel="icon" type="image/png" href="/images/logo.png">
 </head>
@@ -12,12 +13,14 @@
     <section class="signup-container">
         <div class="signup-left">
             <header>
-                <a href="/"><img src="/images/logo.png" class="logo" alt="Logo"></a>
-                <a href="/" class="title">UpThreaded</a>
-                <h2>SIGN UP</h2>
+                <div class="logo-container">
+                    <a href="/"><img src="/images/logo.png" class="logo" alt="Logo"></a>
+                    <a href="/" class="title">UpThreaded</a>
+                </div>
             </header>
 
             <form class="signup-form" action="/register" method="post">
+                <h2>SIGN UP</h2>
                 <div class="form-group">
                     <label for="fullname">Full Name</label>
                     <input type="text" id="fullname" name="fullname" required>
