@@ -84,12 +84,21 @@ router.get('/logout', (req, res) => {
 router.post('/register', async (req, res) => {
   try {
     const { fullname, phone, email, password, role } = req.body;
+    console.log('Signup attempt for email:', email);
+    console.log('Raw password:', password);
+
     const existingUser = await User.findOne({ email });
     if (existingUser) {
+      console.log('Email already exists');
       return res.status(400).send('Email already registered.');
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    console.log('Hashing password with bcrypt');
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+    console.log('Generated salt:', salt);
+    console.log('Hashed password:', hashedPassword);
+
     const newUser = new User({
       fullname,
       phone,
@@ -97,10 +106,12 @@ router.post('/register', async (req, res) => {
       password: hashedPassword,
       role,
     });
+
     await newUser.save();
+    console.log('User saved successfully with hashed password');
     res.redirect('/login');
   } catch (error) {
-    console.error(error);
+    console.error('Signup error:', error);
     res.status(500).send('An error occurred during registration.');
   }
 });
@@ -109,12 +120,21 @@ router.post('/register', async (req, res) => {
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
+    console.log('Login attempt for email:', email);
+    console.log('Attempted password:', password);
+
     const user = await User.findOne({ email });
+    console.log('User found:', user ? 'Yes' : 'No');
+
     if (!user) {
       return res.redirect('/login?message=User not found or invalid credentials');
     }
 
+    console.log('Stored password hash:', user.password);
+    console.log('Attempting password comparison with bcrypt.compare');
     const isPasswordValid = await bcrypt.compare(password, user.password);
+    console.log('Password comparison result:', isPasswordValid);
+
     if (!isPasswordValid) {
       return res.redirect('/login?message=User not found or invalid credentials');
     }
@@ -129,7 +149,7 @@ router.post('/login', async (req, res) => {
       return res.sendFile(path.join(__dirname, '../html/user.html'));
     }
   } catch (error) {
-    console.error(error);
+    console.error('Login error:', error);
     res.status(500).send('An error occurred during login.');
   }
 });
