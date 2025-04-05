@@ -12,6 +12,10 @@ const multer = require('multer');
 // Create Express app
 const app = express();
 
+// View engine setup
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'ejs');
+
 // // Connect to MongoDB
 // mongoose.connect("mongodb://127.0.0.1:27017/UpThreaded", {
 //   useNewUrlParser: true,
@@ -101,9 +105,13 @@ app.use(function (err, req, res, next) {
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-  // render the error page
+  // send the error page
   res.status(err.status || 500);
-  res.render('error');
+  if (err.status === 404) {
+    res.sendFile(path.join(__dirname, 'html', '404.html'));
+  } else {
+    res.send('Error: ' + err.message);
+  }
 });
 
 // Start the server

@@ -11,24 +11,18 @@
 <body>
   <section class="main">
     <header>
-      <a href="#"><img src="/images/logo.png" class="logo"></a>
+      <a href="/"><img src="/images/logo.png" class="logo"></a>
       <h2 class="change-message"><span>U</span>p<span>T</span>hreaded</h2>
       <div class="toggle"></div>
       <ul class="navigation">
-        <script>
-          let titles = ['home', 'menu', 'about', 'contact'].map(s => s[0].toUpperCase() + s.slice(1))
-          for (let t of titles) {
-            document.write(`<li><a href="#">${t}</a></li>`)
-          }
-        </script>
+        <li><a href="/about">About</a></li>
+        <li><a href="/contact">Contact</a></li>
       </ul>
     </header>
     <div class="content">
       <div class="text">
         <h3>Wear the change<br>You want to see</h3>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
-          magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-          consequat.</p>
+        <p>Transform your wardrobe with expert tailoring. Connect with skilled tailors, get personalized alterations, and give your clothes a new life with UpThreaded.</p>
         <a href="/signup" class="btn">Sign Up</a>
         <a href="/login" class="btn">Log In</a>
       </div>
@@ -41,12 +35,9 @@
 
     <div class="footer">
       <ul class="sci">
-        <script>
-          let icons = ['facebook', 'twitter', 'instagram']
-          for (let i of icons) {
-            document.write(`<li><a href="#"><ion-icon name="logo-${i}"></ion-icon></a></li>`)
-          }
-        </script>
+        <li><a href="#"><ion-icon name="logo-facebook"></ion-icon></a></li>
+        <li><a href="#"><ion-icon name="logo-twitter"></ion-icon></a></li>
+        <li><a href="#"><ion-icon name="logo-instagram"></ion-icon></a></li>
       </ul>
     </div>
   </section>

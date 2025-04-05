@@ -19,6 +19,14 @@ router.get('/login', (req, res) => {
   res.sendFile(path.join(__dirname, '../html/login.html'));
 });
 
+router.get('/about',(req, res) => {
+  res.sendFile(path.join(__dirname, '../html/about.html'));
+});
+
+router.get('/contact', (req, res) => {
+  res.sendFile(path.join(__dirname, '../html/contact.html'));
+});
+
 // Protected routes
 router.get('/user.html', isUser, (req, res) => {
   res.sendFile(path.join(__dirname, '../html/user.html'));
@@ -156,8 +164,8 @@ router.post('/login', async (req, res) => {
 
 // Redirect any direct access to HTML files to login
 router.get('/*.html', (req, res) => {
-  if (['/index.html', '/login.html', '/signup.html'].includes(req.path)) {
-    return res.sendFile(path.join(__dirname, '..', req.path));
+  if (['/index.html', '/login.html', '/signup.html', '/about.html', '/contact.html'].includes(req.path)) {
+    return res.sendFile(path.join(__dirname, '..', 'html', req.path));
   }
   res.redirect('/login');
 });
