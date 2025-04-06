@@ -204,7 +204,21 @@ router.get('/api/tailor-profile', async (req, res) => {
     if (!tailor) {
       return res.status(404).json({ error: 'Tailor not found' });
     }
-    res.json(tailor);
+
+    // Get tailor's designs from Design model
+    const designs = await Design.find({ userId: tailor._id }).sort({ createdAt: -1 });
+
+    console.log('Fetched designs:', designs); // Debug log
+
+    res.json({
+      ...tailor.toObject(),
+      designs: designs.map(design => ({
+        _id: design._id,
+        title: design.title,
+        imageUrl: design.imageUrl,
+        description: design.description
+      }))
+    });
   } catch (error) {
     console.error('Error fetching tailor profile:', error);
     res.status(500).json({ error: 'Failed to fetch profile data' });
@@ -344,22 +358,27 @@ router.post('/api/tailor-profile/designs', async (req, res) => {
     // Move file to uploads directory
     await designImage.mv(filePath);
 
-    // Create new design
-    const newDesign = {
+    // Create new design using Design model
+    const newDesign = new Design({
+      userId: tailor._id,
+      title: req.body.title || 'Untitled Design',
       imageUrl: `/uploads/design-images/${filename}`,
-      title: req.body.title || 'Untitled Design'
-    };
+      description: req.body.description || ''
+    });
 
-    // Add to tailor's designs
-    if (!tailor.designs) {
-      tailor.designs = [];
-    }
-    tailor.designs.push(newDesign);
-    await tailor.save();
+    await newDesign.save();
+
+    // Get all designs for the tailor
+    const designs = await Design.find({ userId: tailor._id }).sort({ createdAt: -1 });
 
     res.json({
       message: 'Design added successfully',
-      design: newDesign
+      designs: designs.map(design => ({
+        _id: design._id,
+        title: design.title,
+        imageUrl: design.imageUrl,
+        description: design.description
+      }))
     });
   } catch (error) {
     console.error('Error adding design:', error);
@@ -375,39 +394,29 @@ router.delete('/api/tailor-profile/designs/:designId', async (req, res) => {
       return res.status(401).json({ error: 'Unauthorized' });
     }
 
-    const tailor = await User.findById(req.session.userId);
-    if (!tailor) {
-      return res.status(404).json({ error: 'Tailor not found' });
-    }
-
-    const designId = req.params.designId;
-
-    // Check if tailor has designs
-    if (!tailor.designs || tailor.designs.length === 0) {
-      return res.status(404).json({ error: 'No designs found' });
-    }
-
-    // Find the design index
-    const designIndex = tailor.designs.findIndex(design => design._id.toString() === designId);
-    if (designIndex === -1) {
+    const design = await Design.findById(req.params.designId);
+    if (!design) {
       return res.status(404).json({ error: 'Design not found' });
     }
 
-    // Remove design
-    const removedDesign = tailor.designs.splice(designIndex, 1)[0];
+    // Check if the design belongs to the current user
+    if (design.userId.toString() !== req.session.userId) {
+      return res.status(403).json({ error: 'Unauthorized to delete this design' });
+    }
 
-    // Try to delete the physical file (but don't fail if it doesn't exist)
+    // Try to delete the physical file
     try {
-      const filePath = path.join(__dirname, '../public', removedDesign.imageUrl);
+      const filePath = path.join(__dirname, '../public', design.imageUrl);
       if (fs.existsSync(filePath)) {
         fs.unlinkSync(filePath);
       }
     } catch (error) {
       console.error('Error deleting design file:', error);
-      // Continue with deletion even if file removal fails
     }
 
-    await tailor.save();
+    // Delete the design from database
+    await Design.findByIdAndDelete(req.params.designId);
+
     res.json({ message: 'Design deleted successfully' });
   } catch (error) {
     console.error('Error deleting design:', error);
@@ -554,8 +563,10 @@ router.get('/api/tailor/:id', async (req, res) => {
       return res.status(404).json({ error: 'Tailor not found' });
     }
 
-    // Get tailor's designs
-    const designs = await Design.find({ userId: tailor._id });
+    // Get tailor's designs from Design model
+    const designs = await Design.find({ userId: tailor._id }).sort({ createdAt: -1 });
+
+    console.log('Fetched designs for public profile:', designs); // Debug log
 
     res.json({
       _id: tailor._id,
