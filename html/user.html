@@ -308,6 +308,36 @@
                 }
             });
 
+            function displayMatches(tailors) {
+                const matchesList = document.getElementById('matchesList');
+                matchesList.innerHTML = '';
+
+                tailors.forEach(tailor => {
+                    const card = document.createElement('div');
+                    card.className = 'card mb-3';
+                    card.innerHTML = `
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-md-2 text-center">
+                                    <img src="${tailor.profilePicture || '/images/default-profile.png'}" 
+                                         class="rounded-circle" width="80" height="80" alt="Profile Picture">
+                                </div>
+                                <div class="col-md-7">
+                                    <h5 class="mb-1">${tailor.fullname}</h5>
+                                    <p class="text-muted mb-2">${tailor.location}</p>
+                                    <p class="mb-0 small">${tailor.bio || 'No bio available'}</p>
+                                </div>
+                                <div class="col-md-3 text-end">
+                                    <a href="/tailor-profile?id=${tailor._id}" class="btn btn-outline-primary w-100 mb-2">View Profile</a>
+                                    <button class="btn btn-outline-success w-100">Send Request</button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    matchesList.appendChild(card);
+                });
+            }
+
             document.getElementById('imageUpload').addEventListener('change', function (e) {
                 if (this.files.length > 5) {
                     alert('You can only upload up to 5 images');
@@ -315,36 +345,6 @@
                 }
             });
         });
-
-        function displayMatches(tailors) {
-            const matchesList = document.getElementById('matchesList');
-            matchesList.innerHTML = '';
-
-            tailors.forEach(tailor => {
-                const card = document.createElement('div');
-                card.className = 'card mb-3';
-                card.innerHTML = `
-                    <div class="card-body">
-                        <div class="row align-items-center">
-                            <div class="col-md-2 text-center">
-                                <img src="${tailor.profilePicture || '/images/default-profile.png'}" 
-                                     class="rounded-circle" width="80" height="80" alt="Profile Picture">
-                            </div>
-                            <div class="col-md-7">
-                                <h5 class="mb-1">${tailor.fullname}</h5>
-                                <p class="text-muted mb-2">${tailor.location}</p>
-                                <p class="mb-0 small">${tailor.bio || 'No bio available'}</p>
-                            </div>
-                            <div class="col-md-3 text-end">
-                                <button class="btn btn-outline-primary w-100 mb-2">View Profile</button>
-                                <button class="btn btn-outline-success w-100">Send Request</button>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                matchesList.appendChild(card);
-            });
-        }
     </script>
 </body>
 

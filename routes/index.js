@@ -6,6 +6,7 @@ const path = require('path');
 const { isUser } = require('../middleware/auth');
 const fs = require('fs');
 const axios = require('axios');
+const Design = require('../models/Design');
 require('dotenv').config();
 
 // Public routes
@@ -78,6 +79,11 @@ router.get('/tailor-dashboard/orders.html', (req, res) => {
   } else {
     res.redirect('/login');
   }
+});
+
+// Tailor profile page route
+router.get('/tailor-profile', (req, res) => {
+  res.sendFile(path.join(__dirname, '../html/tailor-profile.html'));
 });
 
 // Logout route
@@ -537,6 +543,39 @@ router.post('/api/generate-upcycle-ideas', async (req, res) => {
       success: false,
       error: 'Failed to generate upcycling ideas'
     });
+  }
+});
+
+// API endpoint to fetch tailor data
+router.get('/api/tailor/:id', async (req, res) => {
+  try {
+    const tailor = await User.findById(req.params.id);
+    if (!tailor) {
+      return res.status(404).json({ error: 'Tailor not found' });
+    }
+
+    // Get tailor's designs
+    const designs = await Design.find({ userId: tailor._id });
+
+    res.json({
+      _id: tailor._id,
+      fullname: tailor.fullname,
+      email: tailor.email,
+      phone: tailor.phone,
+      location: tailor.location,
+      bio: tailor.bio,
+      priceRange: tailor.priceRange,
+      profilePicture: tailor.profilePicture,
+      designs: designs.map(design => ({
+        _id: design._id,
+        title: design.title,
+        imageUrl: design.imageUrl,
+        description: design.description
+      }))
+    });
+  } catch (error) {
+    console.error('Error fetching tailor profile:', error);
+    res.status(500).json({ error: 'Failed to fetch tailor profile' });
   }
 });
 
