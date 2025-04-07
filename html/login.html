@@ -5,59 +5,295 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - UpThreaded</title>
-    <link rel="stylesheet" href="/stylesheets/login.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="icon" type="image/png" href="/images/logo.png">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&display=swap');
+
+        :root {
+            --primary-color: #285A84;
+            --secondary-color: #1d4361;
+            --accent-color: #4CAF50;
+            --text-color: #333;
+            --light-bg: #f8f9fa;
+        }
+
+        body {
+            font-family: 'Ubuntu', sans-serif;
+            background-color: var(--light-bg);
+            color: var(--text-color);
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+
+        .login-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .login-left {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-left::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(40, 90, 132, 0.8), rgba(29, 67, 97, 0.8));
+            z-index: 1;
+        }
+
+        .login-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 0;
+        }
+
+        .welcome-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            text-align: center;
+            z-index: 2;
+            width: 80%;
+        }
+
+        .welcome-text h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .welcome-text p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .login-right {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            background: white;
+        }
+
+        .login-form-container {
+            width: 100%;
+            max-width: 400px;
+            padding: 2rem;
+        }
+
+        .logo {
+            width: 50px;
+            height: 50px;
+            margin-right: 10px;
+        }
+
+        .title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(40, 90, 132, 0.25);
+            outline: none;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 0.75rem;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+        }
+
+        .btn:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        .signup-link {
+            text-align: center;
+            margin: 1.5rem 0;
+        }
+
+        .signup-link a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .signup-link a:hover {
+            color: var(--secondary-color);
+        }
+
+        .message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem;
+            background-color: #f8d7da;
+            color: #721c24;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            display: none;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .login-container {
+                flex-direction: column;
+            }
+
+            .login-left {
+                height: 40vh;
+            }
+
+            .login-right {
+                padding: 1.5rem;
+            }
+
+            .welcome-text h2 {
+                font-size: 2rem;
+            }
+
+            .welcome-text p {
+                font-size: 1rem;
+            }
+        }
+    </style>
 </head>
 
 <body>
-    <section class="login-container">
+    <div class="login-container">
         <div class="login-left">
-            <header>
-                <a href="/"><img src="/images/logo.png" class="logo" alt="Logo"></a>
-                <a href="/" class="title">UpThreaded</a>
-            </header>
-            <h2>LOG IN</h2>
-
-            <form class="login-form" action="/login" method="post">
-                <div class="form-group">
-                    <label for="email">Email</label>
-                    <input type="email" id="email" name="email" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" name="password" required>
-                </div>
-
-                <div class="signup-link">
-                    <p><a href="/signup" class="forgot-text">Forgot Password?</a></p>
-                </div>
-
-                <button type="submit" class="btn">Log In</button>
-                <div class="signup-link">
-                    <p>Not a member yet? <a href="/signup" class="signup-text">Register now</a></p>
-                </div>
-            </form>
+            <img src="https://images.pexels.com/photos/8453424/pexels-photo-8453424.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
+                alt="Login Image" class="login-image">
+            <div class="welcome-text">
+                <h2>Welcome Back</h2>
+                <p>Transform your wardrobe with expert tailoring</p>
+            </div>
         </div>
 
         <div class="login-right">
-            <img src="https://images.pexels.com/photos/8453424/pexels-photo-8453424.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
-                alt="Login Image">
-        </div>
-    </section>
+            <div class="login-form-container">
+                <a href="/" class="title">
+                    <img src="/images/logo.png" class="logo" alt="Logo">
+                    UpThreaded
+                </a>
 
-    <div class="message">
-        <p id="error-message">
-            <%= message %>
-        </p>
+                <form class="login-form" action="/login" method="post">
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" required placeholder="Enter your email">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" required placeholder="Enter your password">
+                    </div>
+
+                    <div class="signup-link">
+                        <p><a href="/signup" class="forgot-text">Forgot Password?</a></p>
+                    </div>
+
+                    <button type="submit" class="btn">Log In</button>
+                    <div class="signup-link">
+                        <p>Not a member yet? <a href="/signup" class="signup-text">Register now</a></p>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 
+    <div class="message" id="error-message">
+        <%= message %>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         const params = new URLSearchParams(window.location.search);
         const message = params.get('message');
+        const errorMessage = document.getElementById('error-message');
+
         if (message) {
-            document.getElementById('error-message').textContent = message;
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+            setTimeout(() => {
+                errorMessage.style.display = 'none';
+            }, 5000);
         }
+
+        // Add focus effects to form inputs
+        document.querySelectorAll('.form-group input').forEach(input => {
+            input.addEventListener('focus', function () {
+                this.parentElement.querySelector('label').style.color = 'var(--primary-color)';
+            });
+            input.addEventListener('blur', function () {
+                this.parentElement.querySelector('label').style.color = 'var(--text-color)';
+            });
+        });
     </script>
 </body>
 
