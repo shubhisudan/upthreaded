@@ -7,7 +7,6 @@ const { isUser } = require('../middleware/auth');
 const fs = require('fs');
 const axios = require('axios');
 const Design = require('../models/Design');
-const Request = require('../models/Request');
 require('dotenv').config();
 
 // Public routes
@@ -193,63 +192,26 @@ router.get('/api/profile', isUser, async (req, res) => {
   }
 });
 
-// Get tailor statistics
-router.get('/api/tailor/stats', async (req, res) => {
+// Get tailor profile data
+router.get('/api/tailor-profile', async (req, res) => {
   try {
     // Check if user is logged in and is a tailor
     if (!req.session.userId || req.session.role !== 'tailor') {
       return res.status(401).json({ error: 'Unauthorized' });
     }
 
-    const tailorId = req.session.userId;
-
-    // Get pending requests (requests that haven't been accepted yet)
-    const pendingRequests = await Request.countDocuments({
-      tailorId: tailorId,
-      status: 'pending'
-    });
-
-    // Get active orders (requests that have been accepted but not completed)
-    const activeOrders = await Request.countDocuments({
-      tailorId: tailorId,
-      status: 'accepted'
-    });
-
-    // Get completed orders
-    const completedOrders = await Request.countDocuments({
-      tailorId: tailorId,
-      status: 'completed'
-    });
-
-    res.json({
-      pendingRequests,
-      activeOrders,
-      completedOrders
-    });
-  } catch (error) {
-    console.error('Error fetching tailor statistics:', error);
-    res.status(500).json({ error: 'Failed to fetch statistics' });
-  }
-});
-
-// Get public tailor profile
-router.get('/api/tailor/:id', async (req, res) => {
-  try {
-    const tailor = await User.findById(req.params.id).select('-password');
+    const tailor = await User.findById(req.session.userId).select('-password');
     if (!tailor) {
       return res.status(404).json({ error: 'Tailor not found' });
     }
 
-    // Get tailor's designs
+    // Get tailor's designs from Design model
     const designs = await Design.find({ userId: tailor._id }).sort({ createdAt: -1 });
 
+    console.log('Fetched designs:', designs); // Debug log
+
     res.json({
-      _id: tailor._id,
-      fullname: tailor.fullname,
-      location: tailor.location,
-      bio: tailor.bio,
-      priceRange: tailor.priceRange,
-      profilePicture: tailor.profilePicture,
+      ...tailor.toObject(),
       designs: designs.map(design => ({
         _id: design._id,
         title: design.title,
@@ -259,7 +221,7 @@ router.get('/api/tailor/:id', async (req, res) => {
     });
   } catch (error) {
     console.error('Error fetching tailor profile:', error);
-    res.status(500).json({ error: 'Failed to fetch tailor profile' });
+    res.status(500).json({ error: 'Failed to fetch profile data' });
   }
 });
 
@@ -590,6 +552,39 @@ router.post('/api/generate-upcycle-ideas', async (req, res) => {
       success: false,
       error: 'Failed to generate upcycling ideas'
     });
+  }
+});
+
+// API endpoint to fetch tailor data
+router.get('/api/tailor/:id', async (req, res) => {
+  try {
+    const tailor = await User.findById(req.params.id);
+    if (!tailor) {
+      return res.status(404).json({ error: 'Tailor not found' });
+    }
+
+    // Get tailor's designs from Design model
+    const designs = await Design.find({ userId: tailor._id }).sort({ createdAt: -1 });
+
+    console.log('Fetched designs for public profile:', designs); // Debug log
+
+    res.json({
+      _id: tailor._id,
+      fullname: tailor.fullname,
+      location: tailor.location,
+      bio: tailor.bio,
+      priceRange: tailor.priceRange,
+      profilePicture: tailor.profilePicture,
+      designs: designs.map(design => ({
+        _id: design._id,
+        title: design.title,
+        imageUrl: design.imageUrl,
+        description: design.description
+      }))
+    });
+  } catch (error) {
+    console.error('Error fetching tailor profile:', error);
+    res.status(500).json({ error: 'Failed to fetch tailor profile' });
   }
 });
 
