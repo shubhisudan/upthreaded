@@ -146,10 +146,6 @@
                                 <h4 class="mb-3">Specialization</h4>
                                 <p id="tailorPriceRange" class="mb-4">Loading...</p>
 
-                                <h4 class="mb-3">Contact Information</h4>
-                                <p id="tailorEmail" class="mb-2"><i class="fas fa-envelope me-2"></i>Loading...</p>
-                                <p id="tailorPhone" class="mb-4"><i class="fas fa-phone me-2"></i>Loading...</p>
-
                                 <button id="sendRequestBtn" class="btn btn-success btn-lg">
                                     <i class="fas fa-paper-plane me-2"></i>Send Request
                                 </button>
@@ -196,8 +192,6 @@
                     document.getElementById('tailorLocation').innerHTML = `<i class="fas fa-map-marker-alt me-2"></i>${tailor.location || 'Location not specified'}`;
                     document.getElementById('tailorBio').textContent = tailor.bio || 'No bio available';
                     document.getElementById('tailorPriceRange').textContent = tailor.priceRange || 'Price range not specified';
-                    document.getElementById('tailorEmail').innerHTML = `<i class="fas fa-envelope me-2"></i>${tailor.email}`;
-                    document.getElementById('tailorPhone').innerHTML = `<i class="fas fa-phone me-2"></i>${tailor.phone || 'Phone not specified'}`;
 
                     if (tailor.profilePicture) {
                         document.getElementById('tailorProfilePicture').src = tailor.profilePicture;

@@ -3,49 +3,420 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>Landing Page</title>
-  <link rel="stylesheet" href="/stylesheets/style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UpThreaded - Sustainable Fashion</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <link rel="icon" type="image/png" href="/images/logo.png">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&display=swap');
+
+    :root {
+      --primary-color: #285A84;
+      --secondary-color: #1d4361;
+      --accent-color: #4CAF50;
+      --text-color: #333;
+      --light-bg: #f8f9fa;
+    }
+
+    body {
+      font-family: 'Ubuntu', sans-serif;
+      background-color: var(--light-bg);
+      color: var(--text-color);
+      overflow-x: hidden;
+    }
+
+    /* Hero Section Animations */
+    .hero-section {
+      position: relative;
+      overflow: hidden;
+      animation: fadeIn 1s ease-out;
+    }
+
+    .hero-section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(45deg, rgba(40, 90, 132, 0.8), rgba(29, 67, 97, 0.8));
+      animation: gradientShift 10s ease infinite;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      animation: slideUp 1s ease-out;
+    }
+
+    /* Feature Cards Animations */
+    .feature-card {
+      transition: all 0.3s ease;
+      transform: translateY(0);
+      opacity: 0;
+      animation: fadeInUp 0.5s ease forwards;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .feature-card:nth-child(1) {
+      animation-delay: 0.2s;
+    }
+
+    .feature-card:nth-child(2) {
+      animation-delay: 0.4s;
+    }
+
+    .feature-card:nth-child(3) {
+      animation-delay: 0.6s;
+    }
+
+    /* Button Animations */
+    .btn-primary {
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .btn-primary::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      transition: width 0.3s ease, height 0.3s ease;
+    }
+
+    .btn-primary:hover::after {
+      width: 300px;
+      height: 300px;
+    }
+
+    /* Stats Section Animations */
+    .stat-card {
+      transition: all 0.3s ease;
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    .stat-card.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Keyframe Animations */
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(50px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes gradientShift {
+      0% {
+        background-position: 0% 50%;
+      }
+
+      50% {
+        background-position: 100% 50%;
+      }
+
+      100% {
+        background-position: 0% 50%;
+      }
+    }
+
+    /* Scroll Animations */
+    .animate-on-scroll {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.6s ease;
+    }
+
+    .animate-on-scroll.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Loading Animation */
+    .loading-spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+      .hero-content {
+        text-align: center;
+      }
+
+      .feature-card {
+        margin-bottom: 20px;
+      }
+    }
+  </style>
 </head>
 
 <body>
-  <section class="main">
-    <header>
-      <a href="/"><img src="/images/logo.png" class="logo"></a>
-      <h2 class="change-message"><span>U</span>p<span>T</span>hreaded</h2>
-      <div class="toggle"></div>
-      <ul class="navigation">
-        <li><a href="/about">About</a></li>
-        <li><a href="/contact">Contact</a></li>
-      </ul>
-    </header>
-    <div class="content">
-      <div class="text">
-        <h3>Wear the change<br>You want to see</h3>
-        <p>Transform your wardrobe with expert tailoring. Connect with skilled tailors, get personalized alterations, and give your clothes a new life with UpThreaded.</p>
-        <a href="/signup" class="btn">Sign Up</a>
-        <a href="/login" class="btn">Log In</a>
+  <!-- Navigation -->
+  <nav class="navbar navbar-expand-lg navbar-dark fixed-top" style="background-color: var(--primary-color);">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center" href="#">
+        <img src="/images/logo.png" alt="Logo" class="me-2" style="width: 40px;">
+        <span>UpThreaded</span>
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="#features">Features</a></li>
+          <li class="nav-item"><a class="nav-link" href="#how-it-works">How It Works</a></li>
+          <li class="nav-item"><a class="nav-link" href="/login">Login</a></li>
+          <li class="nav-item"><a class="btn btn-outline-light ms-2" href="/signup">Sign Up</a></li>
+        </ul>
       </div>
-      <div class="slider">
-        <div class="slides">
-          <img src="/images/star.jpeg" alt="Slider Image">
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero-section text-white py-5">
+    <div class="container">
+      <div class="row align-items-center min-vh-100">
+        <div class="col-lg-6 hero-content">
+          <h1 class="display-4 fw-bold mb-4">Transform Your Wardrobe Sustainably</h1>
+          <p class="lead mb-4">Connect with skilled tailors to upcycle your clothes and create unique, eco-friendly
+            fashion pieces.</p>
+          <div class="d-flex gap-3">
+            <a href="/signup" class="btn btn-primary btn-lg">Get Started</a>
+            <a href="#features" class="btn btn-outline-light btn-lg">Learn More</a>
+          </div>
+        </div>
+        <div class="col-lg-6">
+          <img src="/images/star.jpeg" alt="Sustainable Fashion" class="img-fluid rounded shadow-lg animate-on-scroll">
         </div>
       </div>
     </div>
+  </section>
 
-    <div class="footer">
-      <ul class="sci">
-        <li><a href="#"><ion-icon name="logo-facebook"></ion-icon></a></li>
-        <li><a href="#"><ion-icon name="logo-twitter"></ion-icon></a></li>
-        <li><a href="#"><ion-icon name="logo-instagram"></ion-icon></a></li>
-      </ul>
+  <!-- Features Section -->
+  <section id="features" class="py-5">
+    <div class="container">
+      <h2 class="text-center mb-5">Why Choose UpThreaded?</h2>
+      <div class="row">
+        <div class="col-md-4">
+          <div class="feature-card card h-100 border-0 shadow-sm p-4">
+            <div class="card-body text-center">
+              <i class="fas fa-leaf fa-3x mb-3 text-primary"></i>
+              <h3 class="h4">Sustainable Fashion</h3>
+              <p>Reduce waste by transforming your existing clothes into new, trendy pieces.</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="feature-card card h-100 border-0 shadow-sm p-4">
+            <div class="card-body text-center">
+              <i class="fas fa-users fa-3x mb-3 text-primary"></i>
+              <h3 class="h4">Skilled Tailors</h3>
+              <p>Connect with experienced tailors who specialize in upcycling and custom designs.</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="feature-card card h-100 border-0 shadow-sm p-4">
+            <div class="card-body text-center">
+              <i class="fas fa-lightbulb fa-3x mb-3 text-primary"></i>
+              <h3 class="h4">Creative Ideas</h3>
+              <p>Get inspired with our AI-powered design suggestions for your clothing transformations.</p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
-  <!-- partial -->
-  <script src='https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js'></script>
-  <script src='https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js'></script>
-  <script src="../js/script.js"></script>
 
+  <!-- How It Works Section -->
+  <section id="how-it-works" class="py-5 bg-light">
+    <div class="container">
+      <h2 class="text-center mb-5">How It Works</h2>
+      <div class="row">
+        <div class="col-md-4">
+          <div class="card border-0 shadow-sm mb-4 animate-on-scroll">
+            <div class="card-body text-center p-4">
+              <div class="step-number mb-3">1</div>
+              <h3 class="h4">Upload Your Clothes</h3>
+              <p>Share photos of the clothes you want to transform.</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card border-0 shadow-sm mb-4 animate-on-scroll">
+            <div class="card-body text-center p-4">
+              <div class="step-number mb-3">2</div>
+              <h3 class="h4">Get Design Ideas</h3>
+              <p>Receive creative suggestions for upcycling your clothes.</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card border-0 shadow-sm mb-4 animate-on-scroll">
+            <div class="card-body text-center p-4">
+              <div class="step-number mb-3">3</div>
+              <h3 class="h4">Connect with Tailors</h3>
+              <p>Find and collaborate with skilled tailors in your area.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats Section -->
+  <section class="py-5">
+    <div class="container">
+      <div class="row text-center">
+        <div class="col-md-4">
+          <div class="stat-card">
+            <h3 class="display-4 fw-bold text-primary">500+</h3>
+            <p class="text-muted">Happy Customers</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="stat-card">
+            <h3 class="display-4 fw-bold text-primary">1000+</h3>
+            <p class="text-muted">Clothes Upcycled</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="stat-card">
+            <h3 class="display-4 fw-bold text-primary">50+</h3>
+            <p class="text-muted">Skilled Tailors</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="py-5 bg-primary text-white">
+    <div class="container text-center">
+      <h2 class="mb-4">Ready to Transform Your Wardrobe?</h2>
+      <p class="lead mb-4">Join our community of sustainable fashion enthusiasts today.</p>
+      <a href="/signup" class="btn btn-light btn-lg">Get Started Now</a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-dark text-white py-4">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6">
+          <h5>UpThreaded</h5>
+          <p>Making sustainable fashion accessible to everyone.</p>
+        </div>
+        <div class="col-md-6 text-md-end">
+          <a href="#" class="text-white me-3"><i class="fab fa-facebook"></i></a>
+          <a href="#" class="text-white me-3"><i class="fab fa-twitter"></i></a>
+          <a href="#" class="text-white me-3"><i class="fab fa-instagram"></i></a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Intersection Observer for scroll animations
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          if (entry.target.classList.contains('stat-card')) {
+            startCounting(entry.target);
+          }
+        }
+      });
+    }, {
+      threshold: 0.1
+    });
+
+    // Observe all elements with animate-on-scroll class
+    document.querySelectorAll('.animate-on-scroll, .stat-card').forEach((el) => observer.observe(el));
+
+    // Counter animation for stats
+    function startCounting(element) {
+      const target = parseInt(element.querySelector('h3').textContent);
+      let count = 0;
+      const duration = 2000; // 2 seconds
+      const increment = target / (duration / 16); // 60fps
+
+      const updateCount = () => {
+        count += increment;
+        if (count < target) {
+          element.querySelector('h3').textContent = Math.floor(count) + '+';
+          requestAnimationFrame(updateCount);
+        } else {
+          element.querySelector('h3').textContent = target + '+';
+        }
+      };
+
+      updateCount();
+    }
+
+    // Smooth scroll for navigation links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        document.querySelector(this.getAttribute('href')).scrollIntoView({
+          behavior: 'smooth'
+        });
+      });
+    });
+  </script>
 </body>
 
 </html>

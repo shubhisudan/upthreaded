@@ -29,15 +29,15 @@
                 <div class="quick-stats">
                     <div class="stat-card">
                         <h3>Pending Requests</h3>
-                        <p class="stat-number">5</p>
+                        <p class="stat-number" id="pendingRequests">0</p>
                     </div>
                     <div class="stat-card">
                         <h3>Active Orders</h3>
-                        <p class="stat-number">3</p>
+                        <p class="stat-number" id="activeOrders">0</p>
                     </div>
                     <div class="stat-card">
                         <h3>Completed Orders</h3>
-                        <p class="stat-number">12</p>
+                        <p class="stat-number" id="completedOrders">0</p>
                     </div>
                 </div>
 
@@ -59,7 +59,35 @@
         </main>
     </div>
 
-    <script src="/javascripts/tailor-dashboard.js"></script>
+    <script>
+        // Function to fetch and update statistics
+        async function fetchStatistics() {
+            try {
+                const response = await fetch('/api/tailor/stats');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch statistics');
+                }
+                const stats = await response.json();
+
+                // Update the statistics in the UI, defaulting to 0 if undefined
+                document.getElementById('pendingRequests').textContent = stats.pendingRequests || 0;
+                document.getElementById('activeOrders').textContent = stats.activeOrders || 0;
+                document.getElementById('completedOrders').textContent = stats.completedOrders || 0;
+            } catch (error) {
+                console.error('Error fetching statistics:', error);
+                // Set all stats to 0 on error
+                document.getElementById('pendingRequests').textContent = '0';
+                document.getElementById('activeOrders').textContent = '0';
+                document.getElementById('completedOrders').textContent = '0';
+            }
+        }
+
+        // Fetch statistics when the page loads
+        document.addEventListener('DOMContentLoaded', fetchStatistics);
+
+        // Refresh statistics every 30 seconds
+        setInterval(fetchStatistics, 30000);
+    </script>
 </body>
 
 </html>
