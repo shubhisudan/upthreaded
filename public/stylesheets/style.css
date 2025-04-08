@@ -8,6 +8,12 @@
   font-family: "Ubuntu", sans-serif;
 }
 
+html {
+  scroll-behavior: smooth;
+  padding-top: 20px;
+  margin-top: 20px;
+}
+
 /* Landing Page Styles */
 .main {
   position: relative;
