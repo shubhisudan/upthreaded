@@ -1,0 +1,27 @@
+<nav class="navbar navbar-expand-lg navbar-dark user-navbar">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center" href="/user.html">
+            <img src="/images/logo.png" alt="Logo" class="logo me-2">
+            <span class="brand-text">UpThreaded</span>
+        </a>
+        <div class="d-flex align-items-center">
+            <form id="searchForm" class="d-flex me-3">
+                <input id="searchInput" class="form-control me-2" type="search" placeholder="Search..." aria-label="Search">
+                <button class="btn btn-outline-light" type="submit"><i class="fas fa-search"></i></button>
+            </form>
+            <div class="dropdown me-3">
+                <button class="btn btn-outline-light dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-user"></i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
+                    <li><a class="dropdown-item" href="/profile"><i class="fas fa-user-circle"></i> My Profile</a></li>
+                    <li><a class="dropdown-item" href="/orders"><i class="fas fa-shopping-bag"></i> Orders</a></li>
+                    <li><a class="dropdown-item" href="/imagegen"><i class="fas fa-lightbulb"></i> Generate Idea</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                </ul>
+            </div>
+            <div id="google_translate_element"></div>
+        </div>
+    </div>
+</nav> 

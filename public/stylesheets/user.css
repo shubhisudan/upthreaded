@@ -44,6 +44,7 @@ body {
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     border: none;
     border-radius: 10px;
+    margin-top: 20px;
 }
 
 .card:hover {

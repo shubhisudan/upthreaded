@@ -1,0 +1,135 @@
+@import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&display=swap');
+
+:root {
+    --primary-color: #285A84;
+    --secondary-color: #1d4361;
+    --accent-color: #4CAF50;
+    --text-color: #333;
+    --light-bg: #f8f9fa;
+}
+
+.user-navbar {
+    background-color: var(--primary-color);
+    padding: 8px 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.user-navbar .navbar-brand {
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: white !important;
+}
+
+.user-navbar .logo {
+    width: 30px;
+    height: auto;
+}
+
+.user-navbar .brand-text {
+    color: white;
+    font-weight: 500;
+}
+
+.user-navbar .form-control {
+    height: 32px;
+    font-size: 0.9rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
+}
+
+.user-navbar .btn-outline-light {
+    height: 32px;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.9rem;
+    border-radius: 4px;
+}
+
+.user-navbar .dropdown-toggle {
+    height: 32px;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.9rem;
+}
+
+.user-navbar .dropdown-menu {
+    min-width: 200px;
+    padding: 0.5rem 0;
+    border-radius: 8px;
+    border: none;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+}
+
+.user-navbar .dropdown-item {
+    padding: 10px 20px;
+    font-size: 15px;
+    color: var(--text-color);
+}
+
+.user-navbar .dropdown-item i {
+    width: 20px;
+    margin-right: 10px;
+    color: var(--primary-color);
+}
+
+.user-navbar .dropdown-item:hover {
+    background-color: var(--light-bg);
+    color: var(--primary-color);
+}
+
+.user-navbar .dropdown-divider {
+    margin: 0.5rem 0;
+}
+
+/* Google Translate Styles */
+.user-navbar .goog-te-gadget {
+    font-family: 'Ubuntu', sans-serif !important;
+    text-transform: none !important;
+}
+
+.user-navbar .goog-te-gadget-simple {
+    background-color: transparent !important;
+    border: 1px solid rgba(255, 255, 255, 0.5) !important;
+    padding: 4px !important;
+    border-radius: 4px !important;
+    cursor: pointer !important;
+}
+
+.user-navbar .goog-te-menu-value {
+    color: white !important;
+    text-decoration: none !important;
+    font-size: 0.9rem !important;
+}
+
+.user-navbar .goog-te-menu-value span {
+    color: white !important;
+}
+
+.user-navbar .goog-te-menu-value:hover {
+    text-decoration: none !important;
+}
+
+.user-navbar .goog-te-gadget .goog-te-combo {
+    background-color: transparent !important;
+    color: white !important;
+    border: none !important;
+    padding: 4px !important;
+    font-size: 0.9rem !important;
+}
+
+.user-navbar .goog-te-banner-frame {
+    display: none !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .user-navbar .navbar-brand {
+        font-size: 1rem;
+    }
+    
+    .user-navbar .logo {
+        width: 25px;
+    }
+    
+    .user-navbar .form-control {
+        width: 150px;
+    }
+} 
