@@ -1,0 +1,163 @@
+
+        /* Sample Designs Section Styles */
+        .design-upload-container {
+            background-color: #fff;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .design-upload-container h3 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            font-weight: 500;
+            font-size: 1.4rem;
+        }
+
+        .design-upload-form {
+            display: grid;
+            gap: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .design-upload-form label {
+            color: var(--text-color);
+            font-weight: 500;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .design-upload-form input[type="text"],
+        .design-upload-form input[type="file"] {
+            padding: 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .design-upload-form input[type="text"]:focus,
+        .design-upload-form input[type="file"]:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(40, 90, 132, 0.1);
+            outline: none;
+        }
+
+        .design-upload-form button {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .design-upload-form button:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        .designs-container {
+            margin-top: 30px;
+        }
+
+        .no-designs-message {
+            text-align: center;
+            color: #666;
+            padding: 40px;
+            background-color: #f8f9fa;
+            border-radius: 12px;
+            font-size: 1.1rem;
+        }
+
+        .designs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+
+        .design-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .design-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .design-card img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            border-bottom: 1px solid #eee;
+        }
+
+        .design-card-body {
+            padding: 20px;
+        }
+
+        .design-card-body h5 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+
+        .design-card-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .design-card-actions button {
+            flex: 1;
+            padding: 8px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .design-card-actions .edit-btn {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .design-card-actions .delete-btn {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .design-card-actions button:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .designs-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                gap: 20px;
+            }
+
+            .design-upload-form {
+                gap: 15px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .designs-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .design-card-actions {
+                flex-direction: column;
+            }
+        }
