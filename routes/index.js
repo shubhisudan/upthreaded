@@ -387,14 +387,14 @@ router.post('/api/tailor-profile', async (req, res) => {
 });
 
 // Add design to tailor profile
-router.post('/api/tailor-profile/designs', upload.single('designImage'), async (req, res) => {
+router.post('/api/tailor-profile/designs', async (req, res) => {
   try {
     console.log('Design upload request received');
     console.log('Request body:', req.body);
-    console.log('Uploaded file:', req.file ? {
-      originalname: req.file.originalname,
-      mimetype: req.file.mimetype,
-      size: req.file.size
+    console.log('Uploaded file:', req.files && req.files.designImage ? {
+      name: req.files.designImage.name,
+      mimetype: req.files.designImage.mimetype,
+      size: req.files.designImage.size
     } : 'No file uploaded');
 
     // Check if user is logged in and is a tailor
@@ -408,36 +408,23 @@ router.post('/api/tailor-profile/designs', upload.single('designImage'), async (
     }
 
     // Check if design image was uploaded
-    if (!req.file) {
+    if (!req.files || !req.files.designImage) {
       return res.status(400).json({ error: 'Design image is required' });
     }
 
     // Upload to Cloudinary
     console.log('Starting Cloudinary upload for design...');
     try {
-      const result = await new Promise((resolve, reject) => {
-        console.log('Creating upload stream...');
-        const uploadStream = cloudinary.uploader.upload_stream({
-          resource_type: 'auto',
-          folder: 'upthreaded/design-images',
-          public_id: `${tailor._id}-${Date.now()}`
-        }, (error, result) => {
-          if (error) {
-            console.error('Cloudinary upload error:', error);
-            reject(error);
-          } else {
-            console.log('Cloudinary upload successful:', {
-              url: result.secure_url,
-              public_id: result.public_id,
-              format: result.format,
-              bytes: result.bytes
-            });
-            resolve(result);
-          }
-        });
+      // Convert the file to base64
+      const fileBuffer = req.files.designImage.data;
+      const base64String = fileBuffer.toString('base64');
+      const dataUri = `data:${req.files.designImage.mimetype};base64,${base64String}`;
 
-        console.log('Sending file buffer to Cloudinary...');
-        uploadStream.end(req.file.buffer);
+      // Upload to Cloudinary using base64
+      const result = await cloudinary.uploader.upload(dataUri, {
+        folder: 'upthreaded/design-images',
+        public_id: `${tailor._id}-${Date.now()}`,
+        resource_type: 'auto'
       });
 
       // Create new design using Design model
@@ -496,23 +483,38 @@ router.delete('/api/tailor-profile/designs/:designId', async (req, res) => {
     }
 
     // Delete from Cloudinary if it's a Cloudinary URL
-    if (design.imageUrl.includes('cloudinary.com')) {
+    if (design.imageUrl && typeof design.imageUrl === 'string' && design.imageUrl.includes('cloudinary.com')) {
       try {
         const publicId = design.imageUrl.split('/').pop().split('.')[0];
         await cloudinary.uploader.destroy(publicId);
         console.log('Deleted image from Cloudinary:', publicId);
       } catch (error) {
         console.error('Error deleting from Cloudinary:', error);
+        // Continue with deletion even if Cloudinary deletion fails
       }
     }
 
     // Delete the design from database
     await Design.findByIdAndDelete(req.params.designId);
 
-    res.json({ message: 'Design deleted successfully' });
+    // Get updated list of designs
+    const designs = await Design.find({ userId: req.session.userId }).sort({ createdAt: -1 });
+
+    res.json({
+      message: 'Design deleted successfully',
+      designs: designs.map(design => ({
+        _id: design._id,
+        title: design.title,
+        imageUrl: design.imageUrl,
+        description: design.description
+      }))
+    });
   } catch (error) {
     console.error('Error deleting design:', error);
-    res.status(500).json({ error: 'Failed to delete design' });
+    res.status(500).json({
+      error: 'Failed to delete design',
+      details: error.message || 'Unknown error occurred'
+    });
   }
 });
 

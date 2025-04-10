@@ -50,6 +50,8 @@
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             background-color: white;
             transition: transform 0.3s ease;
+            display: flex;
+            flex-direction: column;
         }
 
         .design-card:hover {
@@ -58,14 +60,17 @@
 
         .design-card img {
             width: 100%;
-            height: 180px;
+            height: 200px;
             object-fit: cover;
+            display: block;
+            background-color: #f8f9fa;
         }
 
         .design-card-title {
             padding: 10px;
             font-weight: bold;
             text-align: center;
+            background-color: white;
         }
 
         .delete-design {
@@ -373,6 +378,10 @@
                         const img = document.createElement('img');
                         img.src = design.imageUrl;
                         img.alt = design.title;
+                        img.onerror = function () {
+                            console.error('Failed to load image:', design.imageUrl);
+                            this.src = '/images/logo.png'; // Fallback image
+                        };
 
                         const title = document.createElement('div');
                         title.className = 'design-card-title';
@@ -519,15 +528,18 @@
                     });
 
                     if (!response.ok) {
-                        throw new Error('Failed to delete design');
+                        const errorData = await response.json();
+                        throw new Error(errorData.details || 'Failed to delete design');
                     }
 
-                    // Refresh profile data
-                    fetchTailorProfile();
+                    const result = await response.json();
+
+                    // Update the designs grid with the new list
+                    updateDesignsDisplay(result.designs || []);
 
                 } catch (error) {
                     console.error('Error deleting design:', error);
-                    alert('Failed to delete design');
+                    alert(error.message || 'Failed to delete design');
                 }
             }
 
