@@ -13,12 +13,13 @@
     <script type="text/javascript">
         function googleTranslateElementInit() {
             new google.translate.TranslateElement(
-                {pageLanguage: 'en', includedLanguages: 'hi,ta,te,kn,ml,bn,gu,mr,pa,ur'},
+                { pageLanguage: 'en', includedLanguages: 'hi,ta,te,kn,ml,bn,gu,mr,pa,ur' },
                 'google_translate_element'
             );
         }
     </script>
-    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+    <script type="text/javascript"
+        src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
     <script src="/javascripts/navbar-loader.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&display=swap');
@@ -36,6 +37,7 @@
             font-family: 'Ubuntu', sans-serif !important;
             text-transform: none !important;
         }
+
         .goog-te-gadget-simple {
             background-color: transparent !important;
             border: 1px solid rgba(255, 255, 255, 0.5) !important;
@@ -43,25 +45,31 @@
             border-radius: 4px !important;
             cursor: pointer !important;
         }
+
         .goog-te-menu-value {
             color: white !important;
             text-decoration: none !important;
         }
+
         .goog-te-menu-value span {
             color: white !important;
         }
+
         .goog-te-menu-value:hover {
             text-decoration: none !important;
         }
+
         .goog-te-gadget .goog-te-combo {
             background-color: transparent !important;
             color: rgb(0, 0, 0) !important;
             border: none !important;
             padding: 5px !important;
         }
+
         .goog-te-banner-frame {
             display: none !important;
         }
+
         body {
             top: 0 !important;
         }
@@ -82,9 +90,8 @@
                             <!-- Profile Picture Section -->
                             <div class="text-center mb-4">
                                 <div class="position-relative d-inline-block">
-                                    <img id="profilePicture" src="/images/default-profile.png"
-                                        class="rounded-circle profile-image" width="150" height="150"
-                                        alt="Profile Picture">
+                                    <img id="profilePicture" src="/images/logo.png" class="rounded-circle profile-image"
+                                        width="150" height="150" alt="Profile Picture">
                                     <label for="profilePictureUpload"
                                         class="position-absolute bottom-0 end-0 bg-success rounded-circle p-2 cursor-pointer">
                                         <i class="fas fa-camera text-white"></i>
@@ -148,7 +155,7 @@
                     document.getElementById('phone').value = user.phone;
                     document.getElementById('location').value = user.location || '';
                     document.getElementById('bio').value = user.bio || '';
-                    profilePicture.src = user.profilePicture || '/images/default-profile.png';
+                    profilePicture.src = user.profilePicture || '/images/logo.png';
                 } catch (error) {
                     console.error('Error fetching profile:', error);
                     alert('Failed to load profile data');
@@ -193,13 +200,21 @@
                         body: formData
                     });
 
-                    if (!response.ok) throw new Error('Failed to update profile');
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.details || 'Failed to update profile');
+                    }
 
                     const result = await response.json();
                     alert('Profile updated successfully!');
+
+                    // Update the profile picture if it was changed
+                    if (result.profilePicture) {
+                        profilePicture.src = result.profilePicture;
+                    }
                 } catch (error) {
                     console.error('Error updating profile:', error);
-                    alert('Failed to update profile');
+                    alert(error.message || 'Failed to update profile');
                 }
             });
 

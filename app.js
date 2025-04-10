@@ -100,8 +100,10 @@ app.use(session({
 // File upload middleware
 app.use(fileUpload({
   createParentPath: true,
-  tempFileDir: '/tmp/',
-  useTempFiles: true
+  limits: {
+    fileSize: 5 * 1024 * 1024 // 5MB max file size
+  },
+  abortOnLimit: true
 }));
 
 // Serve static files from public directory only

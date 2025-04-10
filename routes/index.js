@@ -232,14 +232,14 @@ router.get('/api/tailor-profile', async (req, res) => {
 });
 
 // Update profile route
-router.post('/api/profile', isUser, upload.single('profilePicture'), async (req, res) => {
+router.post('/api/profile', isUser, async (req, res) => {
   try {
     console.log('Profile update request received');
     console.log('Request body:', req.body);
-    console.log('Uploaded file:', req.file ? {
-      originalname: req.file.originalname,
-      mimetype: req.file.mimetype,
-      size: req.file.size
+    console.log('Uploaded file:', req.files && req.files.profilePicture ? {
+      originalname: req.files.profilePicture.name,
+      mimetype: req.files.profilePicture.mimetype,
+      size: req.files.profilePicture.size
     } : 'No file uploaded');
 
     // Validate session and user ID
@@ -264,32 +264,19 @@ router.post('/api/profile', isUser, upload.single('profilePicture'), async (req,
     }
 
     // Handle profile picture upload
-    if (req.file) {
+    if (req.files && req.files.profilePicture) {
       console.log('Starting Cloudinary upload...');
       try {
-        // Upload to Cloudinary
-        const result = await new Promise((resolve, reject) => {
-          console.log('Creating upload stream...');
-          const uploadStream = cloudinary.uploader.upload_stream({
-            resource_type: 'auto',
-            folder: 'upthreaded/user-profiles'
-          }, (error, result) => {
-            if (error) {
-              console.error('Cloudinary upload error:', error);
-              reject(error);
-            } else {
-              console.log('Cloudinary upload successful:', {
-                url: result.secure_url,
-                public_id: result.public_id,
-                format: result.format,
-                bytes: result.bytes
-              });
-              resolve(result);
-            }
-          });
+        // Convert the file to base64
+        const fileBuffer = req.files.profilePicture.data;
+        const base64String = fileBuffer.toString('base64');
+        const dataUri = `data:${req.files.profilePicture.mimetype};base64,${base64String}`;
 
-          console.log('Sending file buffer to Cloudinary...');
-          uploadStream.end(req.file.buffer);
+        // Upload to Cloudinary using base64
+        const result = await cloudinary.uploader.upload(dataUri, {
+          folder: 'upthreaded/user-profiles',
+          public_id: `${user._id}-${Date.now()}`,
+          resource_type: 'auto'
         });
 
         user.profilePicture = result.secure_url;
