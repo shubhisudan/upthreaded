@@ -9,7 +9,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="/stylesheets/style.css">
     <link rel="stylesheet" href="/stylesheets/user-navbar.css">
-    <link rel="stylesheet" href="/stylesheets/tailor-profile.css">
     <link rel="icon" type="image/png" href="/images/logo.png">
     <script type="text/javascript">
         function googleTranslateElementInit() {
@@ -72,110 +71,202 @@
         body {
             top: 0 !important;
         }
+        
+        .profile-header {
+            background-color: var(--light-bg);
+            padding: 3rem 0;
+            margin-bottom: 2rem;
+        }
+        
+        .profile-image {
+            width: 180px;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 5px solid white;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .design-card {
+            transition: transform 0.3s, box-shadow 0.3s;
+            border-radius: 8px;
+            overflow: hidden;
+            height: 100%;
+        }
+        
+        .design-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        
+        .design-image {
+            height: 250px;
+            object-fit: cover;
+        }
+        
+        .contact-info {
+            background-color: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+        }
+        
+        .contact-info i {
+            color: var(--primary-color);
+            margin-right: 10px;
+        }
+        
+        .specialties-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .specialty-tag {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+        
+        .request-button {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 30px;
+            font-weight: 500;
+            transition: background-color 0.3s;
+        }
+        
+        .request-button:hover {
+            background-color: #3d8b40;
+            color: white;
+        }
     </style>
 </head>
 
 <body>
     <script src="/javascripts/navbar-loader.js"></script>
 
-    <div class="dashboard-container">
-        <main class="dashboard-content">
-            <div class="container py-4">
-                <div class="row">
-                    <div class="col-12">
-                        <div class="card border-0 shadow-sm">
-                            <div class="card-body">
-                                <h4 class="card-title mb-4">Profile Information</h4>
-                                <form id="profileForm">
-                                    <!-- Profile Picture Section -->
-                                    <div class="text-center mb-4">
-                                        <div class="position-relative d-inline-block">
-                                            <img id="profileImage" src="/images/default-profile.png"
-                                                class="rounded-circle profile-image" width="150" height="150"
-                                                alt="Profile Picture">
-                                            <label for="profilePictureUpload"
-                                                class="position-absolute bottom-0 end-0 bg-success rounded-circle p-2 cursor-pointer">
-                                                <i class="fas fa-camera text-white"></i>
-                                            </label>
-                                            <input type="file" id="profilePictureUpload" class="d-none"
-                                                accept="image/*">
-                                        </div>
-                                    </div>
-
-                                    <div class="row mb-3">
-                                        <div class="col-md-6">
-                                            <label class="form-label">Full Name</label>
-                                            <input type="text" class="form-control" id="fullname" readonly>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label class="form-label">Email</label>
-                                            <input type="email" class="form-control" id="email" readonly>
-                                        </div>
-                                    </div>
-                                    <div class="row mb-3">
-                                        <div class="col-md-6">
-                                            <label class="form-label">Phone Number</label>
-                                            <input type="text" class="form-control" id="phone" readonly>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label class="form-label">Location</label>
-                                            <input type="text" class="form-control" id="location">
-                                        </div>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">Bio</label>
-                                        <textarea class="form-control" id="bio" rows="3"></textarea>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">Specialization</label>
-                                        <input type="text" class="form-control" id="priceRange"
-                                            placeholder="e.g. sarees, kurta, etc.">
-                                    </div>
-                                    <div class="d-grid gap-2">
-                                        <button type="submit" class="btn btn-success">Update Profile</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
+    <div class="profile-header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-3 text-center">
+                    <img id="profile-image" src="/images/default-profile.png" alt="Profile Picture" class="profile-image mb-3">
                 </div>
-
-                <!-- Sample Designs Section -->
-                <div class="row mt-4">
-                    <div class="col-12">
-                        <div class="card border-0 shadow-sm">
-                            <div class="card-body">
-                                <h4 class="card-title mb-4">Sample Designs</h4>
-                                <div class="design-upload-container">
-                                    <h3>Add New Design</h3>
-                                    <form id="designUploadForm" class="design-upload-form">
-                                        <div>
-                                            <label for="designTitle">Design Title:</label>
-                                            <input type="text" id="designTitle" class="form-control"
-                                                placeholder="e.g. Wedding Suit, Formal Dress">
-                                        </div>
-                                        <div>
-                                            <label for="designImage">Design Image:</label>
-                                            <input type="file" id="designImage" accept="image/*" class="form-control">
-                                        </div>
-                                        <button type="submit" class="btn btn-primary">Upload Design</button>
-                                    </form>
-                                </div>
-
-                                <div class="designs-container">
-                                    <p id="noDesignsMessage" class="no-designs-message">No sample designs added yet.</p>
-                                    <div id="designsGrid" class="designs-grid"></div>
-                                </div>
-                            </div>
-                        </div>
+                <div class="col-md-9">
+                    <h1 id="tailor-name" class="mb-2">Loading...</h1>
+                    <p id="tailor-location" class="text-muted mb-3"><i class="fas fa-map-marker-alt"></i> Loading...</p>
+                    <p id="tailor-bio" class="lead mb-3">Loading...</p>
+                    <div class="mt-4">
+                        <button id="request-button" class="request-button">
+                            <i class="fas fa-envelope me-2"></i> Send Request
+                        </button>
                     </div>
                 </div>
             </div>
-        </main>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="contact-info">
+                    <h4 class="mb-3">Information</h4>
+                    <p><i class="fas fa-map-marker-alt"></i> <span id="tailor-location-detail">Loading...</span></p>
+                    <p><i class="fas fa-tag"></i> <span id="tailor-price-range">Loading...</span></p>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <h3 class="mb-4">Sample Designs</h3>
+                <div class="row" id="designs-container">
+                    <!-- Designs will be loaded here -->
+                    <div class="col-12 text-center">
+                        <p class="text-muted">Loading designs...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="/javascripts/tailor-dashboard.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get tailor ID from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const tailorId = urlParams.get('id');
+
+            if (!tailorId) {
+                window.location.href = '/';
+                return;
+            }
+
+            // Fetch tailor's profile data
+            fetch(`/api/tailor/${tailorId}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch tailor profile');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Update profile information
+                    document.getElementById('tailor-name').textContent = data.fullname;
+                    document.getElementById('tailor-location').textContent = data.location || 'Location not specified';
+                    document.getElementById('tailor-location-detail').textContent = data.location || 'Location not specified';
+                    document.getElementById('tailor-bio').textContent = data.bio || 'No bio available';
+                    document.getElementById('tailor-price-range').textContent = data.priceRange || 'Price range not specified';
+                    
+                    if (data.profilePicture) {
+                        document.getElementById('profile-image').src = data.profilePicture;
+                    }
+
+                    // Load designs
+                    const designsContainer = document.getElementById('designs-container');
+                    if (data.designs && data.designs.length > 0) {
+                        designsContainer.innerHTML = data.designs.map(design => `
+                            <div class="col-md-6 mb-4">
+                                <div class="card design-card">
+                                    <img src="${design.imageUrl}" class="card-img-top design-image" alt="${design.title}">
+                                    <div class="card-body">
+                                        <h5 class="card-title">${design.title}</h5>
+                                        <p class="card-text">${design.description || 'No description available'}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('');
+                    } else {
+                        designsContainer.innerHTML = '<div class="col-12"><p class="text-center">No designs available</p></div>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Failed to load tailor profile');
+                });
+
+            // Handle request button click
+            document.getElementById('request-button').addEventListener('click', function() {
+                // Check if user is logged in
+                fetch('/api/profile')
+                    .then(response => {
+                        if (!response.ok) {
+                            // User not logged in, redirect to login
+                            window.location.href = '/login?redirect=tailor-profile?id=' + tailorId;
+                            return;
+                        }
+                        // User is logged in, proceed to request form
+                        window.location.href = '/request-tailor?id=' + tailorId;
+                    })
+                    .catch(error => {
+                        console.error('Error checking login status:', error);
+                        window.location.href = '/login?redirect=tailor-profile?id=' + tailorId;
+                    });
+            });
+        });
+    </script>
 </body>
 
 </html>
