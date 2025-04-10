@@ -8,6 +8,25 @@ var session = require('express-session');
 var fileUpload = require('express-fileupload');
 const mongoose = require('mongoose');
 const multer = require('multer');
+const cloudinary = require('cloudinary').v2;
+const fs = require('fs');
+
+// Configure Cloudinary
+cloudinary.config({
+  cloud_name: 'df0jikbzb',
+  api_key: '259449875815954',
+  api_secret: '-zJhaaLKLcmboY5RI-0ww8jHdgY',
+  secure: true
+});
+
+// Test Cloudinary connection
+cloudinary.api.ping()
+  .then(result => {
+    console.log('Cloudinary connection successful:', result);
+  })
+  .catch(error => {
+    console.error('Cloudinary connection failed:', error);
+  });
 
 // Create Express app
 const app = express();
@@ -55,7 +74,9 @@ app.use(fileUpload({
   createParentPath: true,
   limits: {
     fileSize: 5 * 1024 * 1024 // 5MB limit
-  }
+  },
+  useTempFiles: true,
+  tempFileDir: '/tmp/'
 }));
 
 // Serve static files from public directory only
@@ -65,33 +86,222 @@ app.use('/html', express.static(path.join(__dirname, 'html')));
 // Mount the router before static file serving for html directory
 app.use('/', indexRouter);
 
-// Configure multer for file uploads
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, 'uploads/'); // Directory to save uploaded files
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + '-' + file.originalname); // Unique filename
+// Route to handle tailor profile updates
+app.post('/api/tailor-profile', async (req, res) => {
+  try {
+    console.log('Profile update request received');
+    console.log('Request body:', req.body);
+    console.log('Uploaded file:', req.files && req.files.profilePicture ? {
+      originalname: req.files.profilePicture.name,
+      mimetype: req.files.profilePicture.mimetype,
+      size: req.files.profilePicture.size
+    } : 'No file uploaded');
+
+    // Validate session and user ID
+    if (!req.session || !req.session.userId) {
+      return res.status(401).json({
+        success: false,
+        error: 'Unauthorized',
+        details: 'User session not found'
+      });
+    }
+
+    const userId = req.session.userId;
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        error: 'User not found',
+        details: 'The requested user profile could not be found'
+      });
+    }
+
+    // Verify user is a tailor
+    if (user.role !== 'tailor') {
+      return res.status(403).json({
+        success: false,
+        error: 'Forbidden',
+        details: 'Only tailors can update profiles'
+      });
+    }
+
+    // Handle profile picture upload
+    if (req.files && req.files.profilePicture) {
+      console.log('Starting Cloudinary upload for profile picture...');
+      try {
+        // Upload to Cloudinary
+        const result = await cloudinary.uploader.upload(req.files.profilePicture.tempFilePath, {
+          folder: 'upthreaded/profile-pictures',
+          public_id: `${user._id}-${Date.now()}`,
+          resource_type: 'auto'
+        });
+
+        console.log('Cloudinary upload successful:', {
+          url: result.secure_url,
+          public_id: result.public_id,
+          folder: result.folder,
+          format: result.format,
+          bytes: result.bytes
+        });
+
+        // Update user profile with Cloudinary URL
+        user.profilePicture = result.secure_url;
+        await user.save();
+        console.log('Profile updated successfully with Cloudinary URL');
+
+        // Clean up temporary file
+        if (req.files.profilePicture.tempFilePath) {
+          fs.unlinkSync(req.files.profilePicture.tempFilePath);
+        }
+
+        return res.json({
+          success: true,
+          message: 'Profile updated successfully',
+          profilePicture: result.secure_url
+        });
+      } catch (error) {
+        console.error('Error uploading to Cloudinary:', error);
+        return res.status(500).json({
+          success: false,
+          error: 'Failed to upload profile picture',
+          details: error.message || 'Unknown error occurred during upload'
+        });
+      }
+    } else {
+      return res.status(400).json({
+        success: false,
+        error: 'No profile picture provided',
+        details: 'Please upload a profile picture'
+      });
+    }
+  } catch (error) {
+    console.error('Detailed error updating profile:', error);
+    return res.status(500).json({
+      success: false,
+      error: 'Failed to update profile',
+      details: error.message || 'Unknown error occurred'
+    });
   }
 });
 
-const upload = multer({ storage: storage });
-
-// Route to handle profile picture upload
-app.post('/api/tailor-profile', upload.single('profilePicture'), async (req, res) => {
+// Route to handle design uploads
+app.post('/api/tailor-profile/designs', fileUpload(), async (req, res) => {
   try {
-    const userId = req.session.userId; // Assuming session contains user ID
-    const imagePath = `/uploads/${req.file.filename}`; // Path where image is saved
+    console.log('Design upload request received');
+    console.log('Request body:', req.body);
+    console.log('Uploaded file:', req.files && req.files.designImage ? {
+      originalname: req.files.designImage.name,
+      mimetype: req.files.designImage.mimetype,
+      size: req.files.designImage.size
+    } : 'No file uploaded');
 
-    // Update user profile with image path
-    await User.findByIdAndUpdate(userId, { profilePicture: imagePath });
+    // Validate session and user ID
+    if (!req.session || !req.session.userId) {
+      return res.status(401).json({
+        success: false,
+        error: 'Unauthorized',
+        details: 'User session not found'
+      });
+    }
 
-    console.log(`Profile picture updated for user ${userId}: ${imagePath}`); // Log for verification
+    const userId = req.session.userId;
+    const user = await User.findById(userId);
 
-    res.status(200).send('Profile picture updated');
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        error: 'User not found',
+        details: 'The requested user profile could not be found'
+      });
+    }
+
+    // Verify user is a tailor
+    if (user.role !== 'tailor') {
+      return res.status(403).json({
+        success: false,
+        error: 'Forbidden',
+        details: 'Only tailors can upload designs'
+      });
+    }
+
+    // Handle design image upload
+    if (req.files && req.files.designImage) {
+      console.log('Starting Cloudinary upload for design...');
+      try {
+        // Upload to Cloudinary
+        const result = await new Promise((resolve, reject) => {
+          console.log('Creating upload stream...');
+          const uploadStream = cloudinary.uploader.upload_stream({
+            resource_type: 'auto',
+            folder: 'upthreaded/designs',
+            public_id: `${user._id}-${Date.now()}`
+          }, (error, result) => {
+            if (error) {
+              console.error('Cloudinary upload error:', error);
+              reject(error);
+            } else {
+              console.log('Cloudinary upload successful:', {
+                url: result.secure_url,
+                public_id: result.public_id,
+                format: result.format,
+                bytes: result.bytes
+              });
+              resolve(result);
+            }
+          });
+
+          console.log('Sending file buffer to Cloudinary...');
+          uploadStream.end(req.files.designImage.data);
+        });
+
+        // Create new design document
+        const design = new Design({
+          tailorId: user._id,
+          imageUrl: result.secure_url,
+          title: req.body.title || 'Untitled Design',
+          description: req.body.description || '',
+          price: req.body.price || 0,
+          category: req.body.category || 'Other'
+        });
+
+        await design.save();
+        console.log('Design saved successfully');
+
+        return res.json({
+          success: true,
+          message: 'Design uploaded successfully',
+          design: {
+            id: design._id,
+            imageUrl: design.imageUrl,
+            title: design.title,
+            description: design.description,
+            price: design.price,
+            category: design.category
+          }
+        });
+      } catch (error) {
+        console.error('Error uploading to Cloudinary:', error);
+        return res.status(500).json({
+          success: false,
+          error: 'Failed to upload design',
+          details: error.message || 'Unknown error occurred during design upload'
+        });
+      }
+    } else {
+      return res.status(400).json({
+        success: false,
+        error: 'No design image provided',
+        details: 'Please upload a design image'
+      });
+    }
   } catch (error) {
-    console.error('Error updating profile picture:', error);
-    res.status(500).send('Failed to update profile picture');
+    console.error('Detailed error uploading design:', error);
+    return res.status(500).json({
+      success: false,
+      error: 'Failed to upload design',
+      details: error.message || 'Unknown error occurred'
+    });
   }
 });
 

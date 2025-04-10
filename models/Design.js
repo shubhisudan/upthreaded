@@ -8,14 +8,16 @@ const designSchema = new mongoose.Schema({
     },
     title: {
         type: String,
-        required: true
+        required: true,
+        default: 'Untitled Design'
     },
     imageUrl: {
         type: String,
         required: true
     },
     description: {
-        type: String
+        type: String,
+        default: ''
     },
     createdAt: {
         type: Date,
@@ -23,4 +25,6 @@ const designSchema = new mongoose.Schema({
     }
 });
 
-module.exports = mongoose.model('Design', designSchema); 
+const Design = mongoose.model('Design', designSchema);
+
+module.exports = Design; 

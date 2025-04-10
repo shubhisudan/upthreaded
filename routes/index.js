@@ -7,6 +7,8 @@ const { isUser } = require('../middleware/auth');
 const fs = require('fs');
 const axios = require('axios');
 const Design = require('../models/Design');
+const cloudinary = require('cloudinary').v2;
+const upload = require('../middleware/upload');
 require('dotenv').config();
 
 // Public routes
@@ -226,46 +228,106 @@ router.get('/api/tailor-profile', async (req, res) => {
 });
 
 // Update profile route
-router.post('/api/profile', isUser, async (req, res) => {
+router.post('/api/profile', isUser, upload.single('profilePicture'), async (req, res) => {
   try {
+    console.log('Profile update request received');
+    console.log('Request body:', req.body);
+    console.log('Uploaded file:', req.file ? {
+      originalname: req.file.originalname,
+      mimetype: req.file.mimetype,
+      size: req.file.size
+    } : 'No file uploaded');
+
+    // Validate session and user ID
+    if (!req.session || !req.session.userId) {
+      return res.status(401).json({
+        success: false,
+        error: 'Unauthorized',
+        details: 'User session not found'
+      });
+    }
+
     const userId = req.session.userId;
     const user = await User.findById(userId);
 
     if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+      console.log('User not found:', userId);
+      return res.status(404).json({
+        success: false,
+        error: 'User not found',
+        details: 'The requested user profile could not be found'
+      });
     }
 
     // Handle profile picture upload
-    if (req.files && req.files.profilePicture) {
-      const profilePicture = req.files.profilePicture;
-      const uploadPath = path.join(__dirname, '../public/uploads/profile-pictures');
+    if (req.file) {
+      console.log('Starting Cloudinary upload...');
+      try {
+        // Upload to Cloudinary
+        const result = await new Promise((resolve, reject) => {
+          console.log('Creating upload stream...');
+          const uploadStream = cloudinary.uploader.upload_stream({
+            resource_type: 'auto',
+            folder: 'upthreaded/user-profiles'
+          }, (error, result) => {
+            if (error) {
+              console.error('Cloudinary upload error:', error);
+              reject(error);
+            } else {
+              console.log('Cloudinary upload successful:', {
+                url: result.secure_url,
+                public_id: result.public_id,
+                format: result.format,
+                bytes: result.bytes
+              });
+              resolve(result);
+            }
+          });
 
-      // Create directory if it doesn't exist
-      if (!fs.existsSync(uploadPath)) {
-        fs.mkdirSync(uploadPath, { recursive: true });
+          console.log('Sending file buffer to Cloudinary...');
+          uploadStream.end(req.file.buffer);
+        });
+
+        user.profilePicture = result.secure_url;
+        console.log('Updated user profile picture URL:', result.secure_url);
+      } catch (error) {
+        console.error('Error uploading to Cloudinary:', error);
+        return res.status(500).json({
+          success: false,
+          error: 'Failed to upload image',
+          details: error.message || 'Unknown error occurred during image upload'
+        });
       }
-
-      // Generate unique filename
-      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-      const filename = `${user._id}-${uniqueSuffix}${path.extname(profilePicture.name)}`;
-      const filePath = path.join(uploadPath, filename);
-
-      // Move file to uploads directory
-      await profilePicture.mv(filePath);
-
-      // Update profile picture path
-      user.profilePicture = `/uploads/profile-pictures/${filename}`;
     }
 
     // Update other fields
-    if (req.body.location) user.location = req.body.location;
-    if (req.body.bio) user.bio = req.body.bio;
+    if (req.body.location) {
+      console.log('Updating location:', req.body.location);
+      user.location = req.body.location;
+    }
+    if (req.body.bio) {
+      console.log('Updating bio:', req.body.bio);
+      user.bio = req.body.bio;
+    }
 
+    console.log('Saving user profile...');
     await user.save();
-    res.json({ message: 'Profile updated successfully' });
+    console.log('Profile updated successfully');
+
+    return res.json({
+      success: true,
+      message: 'Profile updated successfully',
+      profilePicture: user.profilePicture,
+      location: user.location,
+      bio: user.bio
+    });
   } catch (error) {
-    console.error('Error updating profile:', error);
-    res.status(500).json({ error: 'Failed to update profile' });
+    console.error('Detailed error updating profile:', error);
+    return res.status(500).json({
+      success: false,
+      error: 'Failed to update profile',
+      details: error.message || 'Unknown error occurred'
+    });
   }
 });
 
@@ -284,24 +346,33 @@ router.post('/api/tailor-profile', async (req, res) => {
 
     // Handle profile picture upload
     if (req.files && req.files.profilePicture) {
-      const profilePicture = req.files.profilePicture;
-      const uploadPath = path.join(__dirname, '../public/uploads/profile-pictures');
+      console.log('Starting Cloudinary upload for profile picture...');
+      try {
+        // Upload to Cloudinary
+        const result = await cloudinary.uploader.upload(req.files.profilePicture.tempFilePath, {
+          folder: 'upthreaded/profile-pictures',
+          public_id: `${tailor._id}-${Date.now()}`,
+          resource_type: 'auto'
+        });
 
-      // Create directory if it doesn't exist
-      if (!fs.existsSync(uploadPath)) {
-        fs.mkdirSync(uploadPath, { recursive: true });
+        console.log('Cloudinary upload successful:', {
+          url: result.secure_url,
+          public_id: result.public_id,
+          folder: result.folder,
+          format: result.format,
+          bytes: result.bytes
+        });
+
+        // Update profile picture with Cloudinary URL
+        tailor.profilePicture = result.secure_url;
+      } catch (error) {
+        console.error('Error uploading to Cloudinary:', error);
+        return res.status(500).json({
+          success: false,
+          error: 'Failed to upload profile picture',
+          details: error.message || 'Unknown error occurred during upload'
+        });
       }
-
-      // Generate unique filename
-      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-      const filename = `${tailor._id}-${uniqueSuffix}${path.extname(profilePicture.name)}`;
-      const filePath = path.join(uploadPath, filename);
-
-      // Move file to uploads directory
-      await profilePicture.mv(filePath);
-
-      // Update profile picture path
-      tailor.profilePicture = `/uploads/profile-pictures/${filename}`;
     }
 
     // Update other fields
@@ -325,8 +396,16 @@ router.post('/api/tailor-profile', async (req, res) => {
 });
 
 // Add design to tailor profile
-router.post('/api/tailor-profile/designs', async (req, res) => {
+router.post('/api/tailor-profile/designs', upload.single('designImage'), async (req, res) => {
   try {
+    console.log('Design upload request received');
+    console.log('Request body:', req.body);
+    console.log('Uploaded file:', req.file ? {
+      originalname: req.file.originalname,
+      mimetype: req.file.mimetype,
+      size: req.file.size
+    } : 'No file uploaded');
+
     // Check if user is logged in and is a tailor
     if (!req.session.userId || req.session.role !== 'tailor') {
       return res.status(401).json({ error: 'Unauthorized' });
@@ -338,48 +417,69 @@ router.post('/api/tailor-profile/designs', async (req, res) => {
     }
 
     // Check if design image was uploaded
-    if (!req.files || !req.files.designImage) {
+    if (!req.file) {
       return res.status(400).json({ error: 'Design image is required' });
     }
 
-    const designImage = req.files.designImage;
-    const uploadPath = path.join(__dirname, '../public/uploads/design-images');
+    // Upload to Cloudinary
+    console.log('Starting Cloudinary upload for design...');
+    try {
+      const result = await new Promise((resolve, reject) => {
+        console.log('Creating upload stream...');
+        const uploadStream = cloudinary.uploader.upload_stream({
+          resource_type: 'auto',
+          folder: 'upthreaded/design-images',
+          public_id: `${tailor._id}-${Date.now()}`
+        }, (error, result) => {
+          if (error) {
+            console.error('Cloudinary upload error:', error);
+            reject(error);
+          } else {
+            console.log('Cloudinary upload successful:', {
+              url: result.secure_url,
+              public_id: result.public_id,
+              format: result.format,
+              bytes: result.bytes
+            });
+            resolve(result);
+          }
+        });
 
-    // Create directory if it doesn't exist
-    if (!fs.existsSync(uploadPath)) {
-      fs.mkdirSync(uploadPath, { recursive: true });
+        console.log('Sending file buffer to Cloudinary...');
+        uploadStream.end(req.file.buffer);
+      });
+
+      // Create new design using Design model
+      const newDesign = new Design({
+        userId: tailor._id,
+        title: req.body.title || 'Untitled Design',
+        imageUrl: result.secure_url,
+        description: req.body.description || ''
+      });
+
+      await newDesign.save();
+      console.log('Design saved successfully with Cloudinary URL:', result.secure_url);
+
+      // Get all designs for the tailor
+      const designs = await Design.find({ userId: tailor._id }).sort({ createdAt: -1 });
+
+      res.json({
+        message: 'Design added successfully',
+        designs: designs.map(design => ({
+          _id: design._id,
+          title: design.title,
+          imageUrl: design.imageUrl,
+          description: design.description
+        }))
+      });
+    } catch (error) {
+      console.error('Error uploading to Cloudinary:', error);
+      return res.status(500).json({
+        success: false,
+        error: 'Failed to upload design image',
+        details: error.message || 'Unknown error occurred during image upload'
+      });
     }
-
-    // Generate unique filename
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    const filename = `${tailor._id}-${uniqueSuffix}${path.extname(designImage.name)}`;
-    const filePath = path.join(uploadPath, filename);
-
-    // Move file to uploads directory
-    await designImage.mv(filePath);
-
-    // Create new design using Design model
-    const newDesign = new Design({
-      userId: tailor._id,
-      title: req.body.title || 'Untitled Design',
-      imageUrl: `/uploads/design-images/${filename}`,
-      description: req.body.description || ''
-    });
-
-    await newDesign.save();
-
-    // Get all designs for the tailor
-    const designs = await Design.find({ userId: tailor._id }).sort({ createdAt: -1 });
-
-    res.json({
-      message: 'Design added successfully',
-      designs: designs.map(design => ({
-        _id: design._id,
-        title: design.title,
-        imageUrl: design.imageUrl,
-        description: design.description
-      }))
-    });
   } catch (error) {
     console.error('Error adding design:', error);
     res.status(500).json({ error: 'Failed to add design' });
@@ -404,14 +504,15 @@ router.delete('/api/tailor-profile/designs/:designId', async (req, res) => {
       return res.status(403).json({ error: 'Unauthorized to delete this design' });
     }
 
-    // Try to delete the physical file
-    try {
-      const filePath = path.join(__dirname, '../public', design.imageUrl);
-      if (fs.existsSync(filePath)) {
-        fs.unlinkSync(filePath);
+    // Delete from Cloudinary if it's a Cloudinary URL
+    if (design.imageUrl.includes('cloudinary.com')) {
+      try {
+        const publicId = design.imageUrl.split('/').pop().split('.')[0];
+        await cloudinary.uploader.destroy(publicId);
+        console.log('Deleted image from Cloudinary:', publicId);
+      } catch (error) {
+        console.error('Error deleting from Cloudinary:', error);
       }
-    } catch (error) {
-      console.error('Error deleting design file:', error);
     }
 
     // Delete the design from database
