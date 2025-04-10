@@ -21,42 +21,56 @@ cloudinary.config({
   secure: true
 });
 
+// Verify Cloudinary connection
+cloudinary.api.ping()
+  .then(result => {
+    console.log('Cloudinary connection successful:', {
+      status: result.status,
+      rate_limit_allowed: result.rate_limit_allowed,
+      rate_limit_reset_at: result.rate_limit_reset_at,
+      rate_limit_remaining: result.rate_limit_remaining
+    });
+  })
+  .catch(error => {
+    console.error('Cloudinary connection failed:', error);
+  });
+
 // Load environment variables
 require('dotenv').config();
 
 // Connect to MongoDB Atlas
 const uri = process.env.ATLAS_URI;
 mongoose.connect(uri, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
+  useNewUrlParser: true,
+  useUnifiedTopology: true
 })
-.then(() => {
+  .then(() => {
     console.log('Connected to MongoDB Atlas successfully');
-})
-.catch(err => {
+  })
+  .catch(err => {
     console.error('MongoDB Atlas connection error:', err);
     process.exit(1);
-});
+  });
 
 // Add mongoose connection event listeners
 mongoose.connection.on('connected', () => {
-    console.log('Mongoose connected to MongoDB Atlas');
+  console.log('Mongoose connected to MongoDB Atlas');
 });
 
 mongoose.connection.on('error', (err) => {
-    console.error('Mongoose connection error:', err);
+  console.error('Mongoose connection error:', err);
 });
 
 mongoose.connection.on('disconnected', () => {
-    console.log('Mongoose disconnected from MongoDB Atlas');
+  console.log('Mongoose disconnected from MongoDB Atlas');
 });
 
 // Handle process termination
 process.on('SIGINT', () => {
-    mongoose.connection.close(() => {
-        console.log('Mongoose connection closed through app termination');
-        process.exit(0);
-    });
+  mongoose.connection.close(() => {
+    console.log('Mongoose connection closed through app termination');
+    process.exit(0);
+  });
 });
 
 // Create Express app
