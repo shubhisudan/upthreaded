@@ -3,7 +3,7 @@ const router = express.Router();
 const Request = require('../models/Request');
 const User = require('../models/User');
 const Design = require('../models/Design');
-const { isAuthenticated } = require('../middleware/auth');
+const { isAuthenticated, isUser } = require('../middleware/auth');
 const cloudinary = require('cloudinary').v2;
 
 // Create a new request
@@ -14,11 +14,11 @@ router.post('/create', isAuthenticated, async (req, res) => {
         console.log('User:', req.user);
 
         const { tailorId, message, location, priceRange, description } = req.body;
-        
+
         // Validate required fields
         if (!tailorId || !location || !priceRange || !description) {
             console.error('Missing required fields:', { tailorId, location, priceRange, description });
-            return res.status(400).json({ 
+            return res.status(400).json({
                 error: 'Missing required fields',
                 details: 'Please provide all required information'
             });
@@ -29,14 +29,14 @@ router.post('/create', isAuthenticated, async (req, res) => {
             const tailor = await User.findById(tailorId);
             if (!tailor) {
                 console.error('Tailor not found:', tailorId);
-                return res.status(404).json({ 
+                return res.status(404).json({
                     error: 'Tailor not found',
                     details: 'The specified tailor does not exist'
                 });
             }
         } catch (error) {
             console.error('Error validating tailor:', error);
-            return res.status(500).json({ 
+            return res.status(500).json({
                 error: 'Error validating tailor',
                 details: error.message
             });
@@ -49,7 +49,7 @@ router.post('/create', isAuthenticated, async (req, res) => {
             try {
                 const images = Array.isArray(req.files.images) ? req.files.images : [req.files.images];
                 console.log('Processing images:', images.length);
-                
+
                 for (const image of images) {
                     try {
                         console.log('Uploading image to Cloudinary:', image.name);
@@ -67,7 +67,7 @@ router.post('/create', isAuthenticated, async (req, res) => {
                 console.error('Error processing images:', error);
             }
         }
-        
+
         try {
             console.log('Creating request with data:', {
                 customer: req.user._id,
@@ -90,7 +90,7 @@ router.post('/create', isAuthenticated, async (req, res) => {
 
             const savedRequest = await request.save();
             console.log('Request saved successfully:', savedRequest._id);
-            
+
             // Populate the request with user details
             const populatedRequest = await Request.findById(savedRequest._id)
                 .populate('customer', 'fullname profilePicture')
@@ -101,7 +101,7 @@ router.post('/create', isAuthenticated, async (req, res) => {
         } catch (dbError) {
             console.error('Database error:', dbError);
             if (dbError.name === 'ValidationError') {
-                return res.status(400).json({ 
+                return res.status(400).json({
                     error: 'Validation error',
                     details: Object.values(dbError.errors).map(err => err.message)
                 });
@@ -110,9 +110,9 @@ router.post('/create', isAuthenticated, async (req, res) => {
         }
     } catch (error) {
         console.error('Error creating request:', error);
-        res.status(500).json({ 
-            error: 'Failed to create request', 
-            details: error.message 
+        res.status(500).json({
+            error: 'Failed to create request',
+            details: error.message
         });
     }
 });
@@ -132,7 +132,7 @@ router.get('/tailor/:tailorId', async (req, res) => {
 
         const { status } = req.query;
         const query = { tailor: req.params.tailorId };
-        
+
         if (status && status !== 'all') {
             query.status = status;
         }
@@ -175,6 +175,45 @@ router.put('/:requestId/status', async (req, res) => {
     } catch (error) {
         console.error('Error updating request status:', error);
         res.status(500).json({ error: 'Failed to update request status', details: error.message });
+    }
+});
+
+// Get requests for a user
+router.get('/user', isUser, async (req, res) => {
+    try {
+        const { page = 1, status = 'all' } = req.query;
+        const pageSize = 10; // Number of requests per page
+        const skip = (page - 1) * pageSize;
+
+        // Build query
+        const query = { customer: req.user._id };
+        if (status && status !== 'all') {
+            query.status = status;
+        }
+
+        // Get total count for pagination
+        const totalRequests = await Request.countDocuments(query);
+        const totalPages = Math.ceil(totalRequests / pageSize);
+
+        // Fetch requests with pagination
+        const requests = await Request.find(query)
+            .populate('tailor', 'fullname profilePicture')
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(pageSize);
+
+        res.json({
+            requests,
+            totalPages,
+            currentPage: parseInt(page),
+            totalRequests
+        });
+    } catch (error) {
+        console.error('Error fetching user requests:', error);
+        res.status(500).json({
+            error: 'Failed to fetch requests',
+            details: error.message
+        });
     }
 });
 

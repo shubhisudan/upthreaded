@@ -31,7 +31,7 @@ const requestSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ['pending', 'accepted', 'rejected'],
+        enum: ['pending', 'accepted', 'rejected', 'completed'],
         default: 'pending'
     },
     createdAt: {
@@ -45,7 +45,7 @@ const requestSchema = new mongoose.Schema({
 });
 
 // Update the updatedAt timestamp before saving
-requestSchema.pre('save', function(next) {
+requestSchema.pre('save', function (next) {
     this.updatedAt = Date.now();
     next();
 });
