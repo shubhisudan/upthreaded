@@ -305,6 +305,13 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="profile-section">
+                    <h2>Latest Requests</h2>
+                    <div id="latestRequests" class="requests-preview">
+                        <!-- Requests will be loaded dynamically here -->
+                    </div>
+                </div>
             </div>
         </main>
     </div>
@@ -527,6 +534,56 @@
             // Load profile data
             fetchTailorProfile();
         });
+
+        async function loadLatestRequests() {
+            try {
+                const response = await fetch(`/api/requests/tailor/${currentUserId}?status=all&limit=3`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch requests');
+                }
+                const requests = await response.json();
+                displayLatestRequests(requests);
+            } catch (error) {
+                console.error('Error loading latest requests:', error);
+            }
+        }
+
+        function displayLatestRequests(requests) {
+            const latestRequests = document.getElementById('latestRequests');
+            latestRequests.innerHTML = '';
+
+            if (requests.length === 0) {
+                latestRequests.innerHTML = `
+                    <div class="text-center p-4">
+                        <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">No requests yet</p>
+                    </div>
+                `;
+                return;
+            }
+
+            requests.forEach(request => {
+                const requestItem = document.createElement('div');
+                requestItem.className = 'request-preview-item';
+                requestItem.innerHTML = `
+                    <div class="request-preview-header">
+                        <img src="${request.customer.profilePicture || '/images/default-profile.png'}" 
+                             alt="User" class="user-avatar-small">
+                        <div>
+                            <h4>${request.customer.fullname}</h4>
+                            <p class="text-muted small">${new Date(request.createdAt).toLocaleDateString()}</p>
+                        </div>
+                        <span class="status-badge ${request.status}">${request.status.charAt(0).toUpperCase() + request.status.slice(1)}</span>
+                    </div>
+                    <p class="request-preview-message">${request.message.substring(0, 100)}${request.message.length > 100 ? '...' : ''}</p>
+                    <a href="requests.html" class="btn btn-sm btn-outline-primary">View Details</a>
+                `;
+                latestRequests.appendChild(requestItem);
+            });
+        }
+
+        // Load latest requests when page loads
+        document.addEventListener('DOMContentLoaded', loadLatestRequests);
     </script>
 </body>
 

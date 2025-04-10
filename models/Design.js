@@ -11,10 +11,10 @@ const designSchema = new mongoose.Schema({
         required: true,
         default: 'Untitled Design'
     },
-    imageUrl: {
+    images: [{
         type: String,
         required: true
-    },
+    }],
     description: {
         type: String,
         default: ''

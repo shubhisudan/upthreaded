@@ -181,8 +181,12 @@ router.get('/*.html', (req, res) => {
 });
 
 // Get user profile data
-router.get('/api/profile', isUser, async (req, res) => {
+router.get('/api/profile', async (req, res) => {
   try {
+    if (!req.session || !req.session.userId) {
+      return res.status(401).json({ error: 'Unauthorized', details: 'Please log in to continue' });
+    }
+
     const user = await User.findById(req.session.userId).select('-password');
     if (!user) {
       return res.status(404).json({ error: 'User not found' });

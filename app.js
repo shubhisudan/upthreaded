@@ -10,6 +10,8 @@ const mongoose = require('mongoose');
 const multer = require('multer');
 const cloudinary = require('cloudinary').v2;
 const fs = require('fs');
+var requestRouter = require('./routes/requests');
+var designsRouter = require('./routes/designs');
 
 // Configure Cloudinary
 cloudinary.config({
@@ -19,14 +21,43 @@ cloudinary.config({
   secure: true
 });
 
-// Test Cloudinary connection
-cloudinary.api.ping()
-  .then(result => {
-    console.log('Cloudinary connection successful:', result);
-  })
-  .catch(error => {
-    console.error('Cloudinary connection failed:', error);
-  });
+// Load environment variables
+require('dotenv').config();
+
+// Connect to MongoDB Atlas
+const uri = process.env.ATLAS_URI;
+mongoose.connect(uri, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+})
+.then(() => {
+    console.log('Connected to MongoDB Atlas successfully');
+})
+.catch(err => {
+    console.error('MongoDB Atlas connection error:', err);
+    process.exit(1);
+});
+
+// Add mongoose connection event listeners
+mongoose.connection.on('connected', () => {
+    console.log('Mongoose connected to MongoDB Atlas');
+});
+
+mongoose.connection.on('error', (err) => {
+    console.error('Mongoose connection error:', err);
+});
+
+mongoose.connection.on('disconnected', () => {
+    console.log('Mongoose disconnected from MongoDB Atlas');
+});
+
+// Handle process termination
+process.on('SIGINT', () => {
+    mongoose.connection.close(() => {
+        console.log('Mongoose connection closed through app termination');
+        process.exit(0);
+    });
+});
 
 // Create Express app
 const app = express();
@@ -35,27 +66,10 @@ const app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
-// // Connect to MongoDB
-// mongoose.connect("mongodb://127.0.0.1:27017/UpThreaded", {
-//   useNewUrlParser: true,
-//   useUnifiedTopology: true,
-// })
-//   .then(() => { console.log('Connected to MongoDB'); })
-//   .catch((err) => { console.error('Could not connect to MongoDB', err); });
-require('dotenv').config();
-const uri = process.env.ATLAS_URI;
-mongoose.connect(uri)
-  .then(() => {
-    console.log('Connected to MongoDB Atlas');
-  })
-  .catch(err => {
-    console.error('Connection error:', err);
-  });
-
 // Middleware setup
 app.use(logger('dev'));
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 // Session middleware configuration
@@ -72,11 +86,8 @@ app.use(session({
 // File upload middleware
 app.use(fileUpload({
   createParentPath: true,
-  limits: {
-    fileSize: 5 * 1024 * 1024 // 5MB limit
-  },
-  useTempFiles: true,
-  tempFileDir: '/tmp/'
+  tempFileDir: '/tmp/',
+  useTempFiles: true
 }));
 
 // Serve static files from public directory only
@@ -85,6 +96,8 @@ app.use('/html', express.static(path.join(__dirname, 'html')));
 
 // Mount the router before static file serving for html directory
 app.use('/', indexRouter);
+app.use('/api/requests', requestRouter);
+app.use('/api/designs', designsRouter);
 
 // Route to handle tailor profile updates
 app.post('/api/tailor-profile', async (req, res) => {
