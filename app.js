@@ -13,7 +13,6 @@ const fs = require('fs');
 var requestRouter = require('./routes/requests');
 var designsRouter = require('./routes/designs');
 const orderRoutes = require('./routes/orders');
-const tailorRoutes = require('./routes/tailor');
 
 // Configure Cloudinary
 cloudinary.config({
@@ -117,7 +116,6 @@ app.use('/', indexRouter);
 app.use('/api/requests', requestRouter);
 app.use('/api/designs', designsRouter);
 app.use('/api/orders', orderRoutes);
-app.use('/api/tailor', tailorRoutes);
 
 // Route to handle tailor profile updates
 app.post('/api/tailor-profile', async (req, res) => {
