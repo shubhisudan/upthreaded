@@ -14,12 +14,13 @@
     <script type="text/javascript">
         function googleTranslateElementInit() {
             new google.translate.TranslateElement(
-                {pageLanguage: 'en', includedLanguages: 'hi,ta,te,kn,ml,bn,gu,mr,pa,ur'},
+                { pageLanguage: 'en', includedLanguages: 'hi,ta,te,kn,ml,bn,gu,mr,pa,ur' },
                 'google_translate_element'
             );
         }
     </script>
-    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+    <script type="text/javascript"
+        src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
     <script src="/javascripts/navbar-loader.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&display=swap');
@@ -37,6 +38,7 @@
             font-family: 'Ubuntu', sans-serif !important;
             text-transform: none !important;
         }
+
         .goog-te-gadget-simple {
             background-color: transparent !important;
             border: 1px solid rgba(255, 255, 255, 0.5) !important;
@@ -44,25 +46,31 @@
             border-radius: 4px !important;
             cursor: pointer !important;
         }
+
         .goog-te-menu-value {
             color: white !important;
             text-decoration: none !important;
         }
+
         .goog-te-menu-value span {
             color: white !important;
         }
+
         .goog-te-menu-value:hover {
             text-decoration: none !important;
         }
+
         .goog-te-gadget .goog-te-combo {
             background-color: transparent !important;
             color: rgb(0, 0, 0) !important;
             border: none !important;
             padding: 5px !important;
         }
+
         .goog-te-banner-frame {
             display: none !important;
         }
+
         body {
             top: 0 !important;
         }
@@ -210,7 +218,7 @@
             }
 
             // Add event listener for the submit request button
-            document.getElementById('submitRequest').addEventListener('click', async function() {
+            document.getElementById('submitRequest').addEventListener('click', async function () {
                 const tailorId = document.getElementById('requestTailorId').value;
                 const message = document.getElementById('requestMessage').value;
                 const location = document.getElementById('location').value;
@@ -231,7 +239,7 @@
                     formData.append('location', location);
                     formData.append('priceRange', priceRange);
                     formData.append('description', description);
-                    
+
                     // Add images if any are uploaded
                     if (images && images.length > 0) {
                         for (let i = 0; i < images.length; i++) {
@@ -263,7 +271,7 @@
 
                     alert('Request sent successfully!');
                     bootstrap.Modal.getInstance(document.getElementById('requestModal')).hide();
-                    
+
                     // Clear the form
                     document.getElementById('requestMessage').value = '';
                 } catch (error) {
@@ -273,11 +281,11 @@
             });
 
             // Update request details when modal is shown
-            document.getElementById('requestModal').addEventListener('show.bs.modal', function() {
+            document.getElementById('requestModal').addEventListener('show.bs.modal', function () {
                 document.getElementById('requestLocation').textContent = document.getElementById('location').value;
                 document.getElementById('requestPriceRange').textContent = document.getElementById('priceRange').value;
                 document.getElementById('requestDescription').textContent = document.getElementById('description').value;
-                
+
                 // Display uploaded images if any
                 const imagesContainer = document.getElementById('requestImages');
                 imagesContainer.innerHTML = '';
@@ -383,7 +391,7 @@
 
                 // Add event listeners for view profile buttons
                 document.querySelectorAll('.view-profile-btn').forEach(button => {
-                    button.addEventListener('click', function() {
+                    button.addEventListener('click', function () {
                         const tailorId = this.getAttribute('data-tailor-id');
                         loadTailorProfile(tailorId);
                     });
@@ -398,17 +406,21 @@
                         document.getElementById('modalFullname').textContent = data.fullname;
                         document.getElementById('modalLocation').innerHTML = `<i class="fas fa-map-marker-alt"></i> ${data.location || 'Location not specified'}`;
                         document.getElementById('modalBio').textContent = data.bio || 'No bio available';
-                        
+
                         const designsContainer = document.getElementById('modalDesigns');
                         designsContainer.innerHTML = '';
-                        
+
                         if (data.designs && data.designs.length > 0) {
                             data.designs.forEach(design => {
                                 const designCol = document.createElement('div');
                                 designCol.className = 'col-md-4 mb-3';
                                 designCol.innerHTML = `
                                     <div class="card">
-                                        <img src="${design.imageUrl}" class="card-img-top" alt="${design.title}">
+                                        <img src="${design.imageUrl}" 
+                                             class="card-img-top" 
+                                             alt="${design.title}"
+                                             onerror="this.src='/images/logo.png'"
+                                             style="height: 200px; object-fit: cover;">
                                         <div class="card-body">
                                             <h6 class="card-title">${design.title}</h6>
                                             <p class="card-text small">${design.description || ''}</p>
@@ -433,7 +445,7 @@
 
             // Add event listener for send request buttons in both modals
             document.querySelectorAll('.send-request-btn').forEach(button => {
-                button.addEventListener('click', function() {
+                button.addEventListener('click', function () {
                     const tailorId = this.getAttribute('data-tailor-id');
                     document.getElementById('requestTailorId').value = tailorId;
                 });
@@ -461,7 +473,7 @@
                         <input type="hidden" id="requestTailorId">
                         <div class="mb-3">
                             <label for="requestMessage" class="form-label">Additional Message (Optional)</label>
-                            <textarea class="form-control" id="requestMessage" rows="3" 
+                            <textarea class="form-control" id="requestMessage" rows="3"
                                 placeholder="Add any additional details or specific requirements..."></textarea>
                         </div>
                         <div class="request-details">
@@ -492,11 +504,13 @@
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-md-4 text-center">
-                            <img id="modalProfilePicture" src="/images/default-profile.png" class="rounded-circle mb-3" width="150" height="150" alt="Profile Picture">
+                            <img id="modalProfilePicture" src="/images/default-profile.png" class="rounded-circle mb-3"
+                                width="150" height="150" alt="Profile Picture">
                         </div>
                         <div class="col-md-8">
                             <h4 id="modalFullname">Loading...</h4>
-                            <p id="modalLocation" class="text-muted"><i class="fas fa-map-marker-alt"></i> Loading...</p>
+                            <p id="modalLocation" class="text-muted"><i class="fas fa-map-marker-alt"></i> Loading...
+                            </p>
                             <p id="modalBio" class="mb-3">Loading...</p>
                             <div id="modalDesigns" class="row">
                                 <!-- Designs will be loaded here -->
@@ -506,7 +520,8 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-success send-request-btn" data-bs-toggle="modal" data-bs-target="#requestModal">Send Request</button>
+                    <button type="button" class="btn btn-success send-request-btn" data-bs-toggle="modal"
+                        data-bs-target="#requestModal">Send Request</button>
                 </div>
             </div>
         </div>
