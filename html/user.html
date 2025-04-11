@@ -95,11 +95,11 @@
                                 <label for="priceRange" class="form-label">Price Range</label>
                                 <select class="form-select" id="priceRange" name="priceRange" required>
                                     <option value="">Select a price range</option>
-                                    <option value="0-50">Rs 0 - Rs 250</option>
-                                    <option value="51-100">Rs 251 - Rs 500</option>
-                                    <option value="101-200">Rs 501 - Rs 1000</option>
-                                    <option value="201-500">Rs 1001 - Rs 2500</option>
-                                    <option value="500+">Rs 2500+</option>
+                                    <option value="0-250">Rs 0 - Rs 250</option>
+                                    <option value="251-500">Rs 251 - Rs 500</option>
+                                    <option value="501-1000">Rs 501 - Rs 1000</option>
+                                    <option value="1001-2500">Rs 1001 - Rs 2500</option>
+                                    <option value="2500+">Rs 2500+</option>
                                 </select>
                                 <div class="invalid-feedback">
                                     Please select a price range.
@@ -366,7 +366,10 @@
                                     <p class="mb-0 small">${tailor.bio || 'No bio available'}</p>
                                 </div>
                                 <div class="col-md-3 text-end">
-                                    <a href="/tailor-profile?id=${tailor._id}" class="btn btn-outline-primary w-100 mb-2">View Profile</a>
+                                    <button class="btn btn-outline-primary w-100 mb-2 view-profile-btn" 
+                                            data-tailor-id="${tailor._id}"
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#profileModal">View Profile</button>
                                     <button class="btn btn-outline-success w-100 send-request-btn" 
                                             data-tailor-id="${tailor._id}"
                                             data-bs-toggle="modal" 
@@ -378,14 +381,63 @@
                     matchesList.appendChild(card);
                 });
 
-                // Add event listeners to all send request buttons
-                document.querySelectorAll('.send-request-btn').forEach(button => {
+                // Add event listeners for view profile buttons
+                document.querySelectorAll('.view-profile-btn').forEach(button => {
                     button.addEventListener('click', function() {
                         const tailorId = this.getAttribute('data-tailor-id');
-                        document.getElementById('requestTailorId').value = tailorId;
+                        loadTailorProfile(tailorId);
                     });
                 });
             }
+
+            function loadTailorProfile(tailorId) {
+                fetch(`/api/tailor/${tailorId}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        document.getElementById('modalProfilePicture').src = data.profilePicture || '/images/default-profile.png';
+                        document.getElementById('modalFullname').textContent = data.fullname;
+                        document.getElementById('modalLocation').innerHTML = `<i class="fas fa-map-marker-alt"></i> ${data.location || 'Location not specified'}`;
+                        document.getElementById('modalBio').textContent = data.bio || 'No bio available';
+                        
+                        const designsContainer = document.getElementById('modalDesigns');
+                        designsContainer.innerHTML = '';
+                        
+                        if (data.designs && data.designs.length > 0) {
+                            data.designs.forEach(design => {
+                                const designCol = document.createElement('div');
+                                designCol.className = 'col-md-4 mb-3';
+                                designCol.innerHTML = `
+                                    <div class="card">
+                                        <img src="${design.imageUrl}" class="card-img-top" alt="${design.title}">
+                                        <div class="card-body">
+                                            <h6 class="card-title">${design.title}</h6>
+                                            <p class="card-text small">${design.description || ''}</p>
+                                        </div>
+                                    </div>
+                                `;
+                                designsContainer.appendChild(designCol);
+                            });
+                        } else {
+                            designsContainer.innerHTML = '<div class="col-12 text-center"><p class="text-muted">No designs available</p></div>';
+                        }
+
+                        // Update the send request button with the correct tailor ID
+                        const sendRequestBtn = document.querySelector('#profileModal .send-request-btn');
+                        sendRequestBtn.setAttribute('data-tailor-id', tailorId);
+                    })
+                    .catch(error => {
+                        console.error('Error loading tailor profile:', error);
+                        alert('Failed to load tailor profile');
+                    });
+            }
+
+            // Add event listener for send request buttons in both modals
+            document.querySelectorAll('.send-request-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const tailorId = this.getAttribute('data-tailor-id');
+                    document.getElementById('requestTailorId').value = tailorId;
+                });
+            });
 
             document.getElementById('imageUpload').addEventListener('change', function (e) {
                 if (this.files.length > 5) {
@@ -424,6 +476,37 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                     <button type="button" class="btn btn-primary" id="submitRequest">Send Request</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Modal -->
+    <div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="profileModalLabel">Tailor Profile</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-4 text-center">
+                            <img id="modalProfilePicture" src="/images/default-profile.png" class="rounded-circle mb-3" width="150" height="150" alt="Profile Picture">
+                        </div>
+                        <div class="col-md-8">
+                            <h4 id="modalFullname">Loading...</h4>
+                            <p id="modalLocation" class="text-muted"><i class="fas fa-map-marker-alt"></i> Loading...</p>
+                            <p id="modalBio" class="mb-3">Loading...</p>
+                            <div id="modalDesigns" class="row">
+                                <!-- Designs will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-success send-request-btn" data-bs-toggle="modal" data-bs-target="#requestModal">Send Request</button>
                 </div>
             </div>
         </div>
