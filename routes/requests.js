@@ -3,8 +3,9 @@ const router = express.Router();
 const Request = require('../models/Request');
 const User = require('../models/User');
 const Design = require('../models/Design');
-const { isAuthenticated, isUser } = require('../middleware/auth');
+const { isAuthenticated, isUser, isTailor } = require('../middleware/auth');
 const cloudinary = require('cloudinary').v2;
+const Order = require('../models/Order');
 
 // Create a new request
 router.post('/create', isAuthenticated, async (req, res) => {
@@ -149,13 +150,8 @@ router.get('/tailor/:tailorId', async (req, res) => {
 });
 
 // Update request status
-router.put('/:requestId/status', async (req, res) => {
+router.put('/:requestId/status', isAuthenticated, isTailor, async (req, res) => {
     try {
-        // Check if user is authenticated
-        if (!req.session || !req.session.userId) {
-            return res.status(401).json({ error: 'Unauthorized', details: 'Please log in to continue' });
-        }
-
         const { status } = req.body;
         const request = await Request.findById(req.params.requestId);
 
@@ -163,18 +159,41 @@ router.put('/:requestId/status', async (req, res) => {
             return res.status(404).json({ error: 'Request not found' });
         }
 
-        // Check if the request belongs to the logged-in tailor
-        if (request.tailor.toString() !== req.session.userId) {
-            return res.status(403).json({ error: 'Forbidden', details: 'You can only update your own requests' });
+        // Check if the tailor is authorized to update this request
+        if (request.tailor.toString() !== req.user._id.toString()) {
+            return res.status(403).json({ error: 'Not authorized to update this request' });
         }
 
+        // Validate status
+        const validStatuses = ['pending', 'accepted', 'rejected'];
+        if (!validStatuses.includes(status)) {
+            return res.status(400).json({ error: 'Invalid status' });
+        }
+
+        // Update request status
         request.status = status;
         await request.save();
+
+        // If request is accepted, create a new order
+        if (status === 'accepted') {
+            const order = new Order({
+                requestId: request._id,
+                userId: request.customer,
+                tailorId: request.tailor,
+                description: request.description,
+                priceRange: request.priceRange,
+                location: request.location,
+                images: request.images,
+                status: 'in-progress'
+            });
+
+            await order.save();
+        }
 
         res.json(request);
     } catch (error) {
         console.error('Error updating request status:', error);
-        res.status(500).json({ error: 'Failed to update request status', details: error.message });
+        res.status(500).json({ error: 'Failed to update request status' });
     }
 });
 
@@ -214,6 +233,84 @@ router.get('/user', isUser, async (req, res) => {
             error: 'Failed to fetch requests',
             details: error.message
         });
+    }
+});
+
+// Get orders for a tailor
+router.get('/tailor/:tailorId/orders', async (req, res) => {
+    try {
+        if (!req.session || !req.session.userId) {
+            return res.status(401).json({ error: 'Unauthorized' });
+        }
+
+        if (req.params.tailorId !== req.session.userId) {
+            return res.status(403).json({ error: 'Forbidden' });
+        }
+
+        const { status } = req.query;
+        const query = { tailor: req.params.tailorId };
+
+        if (status && status !== 'all') {
+            query.status = status;
+        }
+
+        const orders = await Order.find(query)
+            .populate('customer', 'fullname profilePicture')
+            .sort({ createdAt: -1 });
+
+        res.json(orders);
+    } catch (error) {
+        console.error('Error fetching orders:', error);
+        res.status(500).json({ error: 'Failed to fetch orders', details: error.message });
+    }
+});
+
+// Get orders for a user
+router.get('/user/:userId/orders', async (req, res) => {
+    try {
+        if (!req.session || !req.session.userId) {
+            return res.status(401).json({ error: 'Unauthorized' });
+        }
+
+        if (req.params.userId !== req.session.userId) {
+            return res.status(403).json({ error: 'Forbidden' });
+        }
+
+        const { status } = req.query;
+        const query = { customer: req.params.userId };
+
+        if (status && status !== 'all') {
+            query.status = status;
+        }
+
+        const orders = await Order.find(query)
+            .populate('tailor', 'fullname profilePicture')
+            .sort({ createdAt: -1 });
+
+        res.json(orders);
+    } catch (error) {
+        console.error('Error fetching orders:', error);
+        res.status(500).json({ error: 'Failed to fetch orders', details: error.message });
+    }
+});
+
+// Update order status
+router.put('/orders/:orderId/status', async (req, res) => {
+    try {
+        const { status } = req.body;
+        const order = await Order.findById(req.params.orderId);
+
+        if (!order) {
+            return res.status(404).json({ error: 'Order not found' });
+        }
+
+        order.status = status;
+        await order.save();
+
+        res.json({ message: 'Order status updated successfully' });
+    } catch (error) {
+        console.error('Error updating order status:', error);
+        res.status(500).json({ error: 'Failed to update order status', details: error.message });
     }
 });
 

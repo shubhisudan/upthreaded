@@ -163,6 +163,7 @@
             requests.forEach(request => {
                 const requestCard = document.createElement('div');
                 requestCard.className = 'request-card';
+                requestCard.setAttribute('data-request-id', request._id);
                 requestCard.innerHTML = `
                     <div class="request-header">
                         <div class="user-info">
@@ -223,7 +224,7 @@
 
                 // Reload requests with current filter
                 const currentStatus = document.getElementById('statusFilter').value;
-                loadRequests(currentStatus);
+                await loadRequests(currentStatus);
             } catch (error) {
                 console.error('Error handling request:', error);
                 alert('Failed to update request status. Please try again.');

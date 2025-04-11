@@ -184,16 +184,19 @@
                     throw new Error('User not authenticated');
                 }
 
-                const response = await fetch(`/api/requests/tailor/${userId}?status=accepted`, {
+                const response = await fetch(`/api/orders/tailor/${userId}?status=all`, {
                     credentials: 'include'
                 });
 
                 if (!response.ok) {
-                    throw new Error('Failed to fetch active orders');
+                    throw new Error('Failed to fetch orders');
                 }
 
-                const orders = await response.json();
-                const activeOrdersCount = orders.length;
+                const data = await response.json();
+                const activeOrders = data.orders ? data.orders.filter(order => 
+                    order.status === 'in-progress' || order.status === 'shipped'
+                ) : [];
+                const activeOrdersCount = activeOrders.length;
 
                 // Update the active orders count in the dashboard
                 const activeOrdersElement = document.querySelector('.stat-card:nth-child(2) .stat-number');
@@ -212,16 +215,16 @@
                     throw new Error('User not authenticated');
                 }
 
-                const response = await fetch(`/api/requests/tailor/${userId}?status=completed`, {
+                const response = await fetch(`/api/orders/tailor/${userId}?status=delivered`, {
                     credentials: 'include'
                 });
 
                 if (!response.ok) {
-                    throw new Error('Failed to fetch completed orders');
+                    throw new Error('Failed to fetch delivered orders');
                 }
 
-                const orders = await response.json();
-                const completedOrdersCount = orders.length;
+                const data = await response.json();
+                const completedOrdersCount = data.orders ? data.orders.length : 0;
 
                 // Update the completed orders count in the dashboard
                 const completedOrdersElement = document.querySelector('.stat-card:nth-child(3) .stat-number');

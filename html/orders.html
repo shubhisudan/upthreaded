@@ -85,6 +85,8 @@
             padding: 0.5em 1em;
             border-radius: 20px;
             font-weight: 500;
+            font-size: 0.9rem;
+            text-transform: capitalize;
         }
 
         .status-pending {
@@ -124,6 +126,8 @@
 
         #loadingSpinner {
             display: none;
+            padding: 2rem;
+            text-align: center;
         }
 
         .order-type-toggle {
@@ -131,6 +135,10 @@
             align-items: center;
             gap: 1rem;
             margin-bottom: 2rem;
+            background: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
         }
 
         .toggle-switch {
@@ -181,6 +189,7 @@
         .toggle-label {
             font-weight: 500;
             color: var(--text-color);
+            font-size: 1rem;
         }
 
         .status-filters {
@@ -188,14 +197,19 @@
             gap: 0.5rem;
             flex-wrap: wrap;
             margin-top: 1rem;
+            padding: 0.5rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
         }
 
         .status-btn {
-            padding: 0.5rem 1rem;
+            padding: 0.5rem 1.2rem;
             border-radius: 20px;
             font-weight: 500;
             transition: all 0.3s ease;
             border: 2px solid transparent;
+            font-size: 0.9rem;
         }
 
         .status-btn.active {
@@ -219,6 +233,9 @@
             overflow: hidden;
             transition: all 0.3s ease;
             margin-bottom: 1.5rem;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(0, 0, 0, 0.1);
         }
 
         .order-card:hover {
@@ -281,8 +298,94 @@
 
         .order-date {
             color: var(--text-color);
-            opacity: 0.6;
+            opacity: 0.7;
             font-size: 0.9rem;
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            background: var(--light-bg);
+        }
+
+        .order-info h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .tailor-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .tailor-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--primary-color);
+        }
+
+        .tailor-info h4 {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: var(--text-color);
+            margin: 0;
+        }
+
+        .order-details h4 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .order-details ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .order-details li {
+            margin-bottom: 0.8rem;
+            color: var(--text-color);
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .order-details li:before {
+            content: "•";
+            color: var(--primary-color);
+            font-weight: bold;
+            margin-right: 0.5rem;
+        }
+
+        .order-images {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+        .order-image {
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 8px;
+            transition: transform 0.3s ease;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .order-image:hover {
+            transform: scale(1.05);
         }
     </style>
 </head>
@@ -316,6 +419,7 @@
 
             <div id="orderStatusFilters" class="status-filters d-none">
                 <button class="status-btn active" data-status="all">All</button>
+                <button class="status-btn" data-status="in-progress">In Progress</button>
                 <button class="status-btn" data-status="shipped">Shipped</button>
                 <button class="status-btn" data-status="delivered">Delivered</button>
                 <button class="status-btn" data-status="cancelled">Cancelled</button>
@@ -357,7 +461,8 @@
         document.addEventListener('DOMContentLoaded', function () {
             let currentPage = 1;
             let currentStatus = 'all';
-            let isOrdersView = false;
+            let currentType = 'requests';
+            let currentUserId = null;
             const ordersList = document.getElementById('ordersList');
             const loadingSpinner = document.getElementById('loadingSpinner');
             const noOrdersMessage = document.getElementById('noOrdersMessage');
@@ -365,31 +470,86 @@
             const requestStatusFilters = document.getElementById('requestStatusFilters');
             const orderStatusFilters = document.getElementById('orderStatusFilters');
 
-            // Function to fetch requests from the API
-            async function fetchRequests(page = 1, status = 'all') {
+            // Function to get current user ID
+            async function getCurrentUserId() {
+                try {
+                    const response = await fetch('/api/profile', {
+                        credentials: 'include'
+                    });
+                    
+                    if (response.status === 401) {
+                        window.location.href = '/login';
+                        return null;
+                    }
+                    
+                    if (!response.ok) {
+                        throw new Error(`Failed to fetch user profile: ${response.statusText}`);
+                    }
+                    
+                    const user = await response.json();
+                    if (!user || !user._id) {
+                        throw new Error('Invalid user profile data');
+                    }
+                    
+                    currentUserId = user._id;
+                    return user._id;
+                } catch (error) {
+                    console.error('Error fetching user profile:', error);
+                    ordersList.innerHTML = `
+                        <div class="col-12">
+                            <div class="alert alert-danger" role="alert">
+                                Authentication error. Please <a href="/login">login</a> to continue.
+                            </div>
+                        </div>
+                    `;
+                    return null;
+                }
+            }
+
+            // Function to fetch data based on type
+            async function fetchData(page = 1, status = 'all', type = 'all') {
                 loadingSpinner.style.display = 'block';
                 ordersList.innerHTML = '';
                 noOrdersMessage.classList.add('d-none');
 
                 try {
-                    const response = await fetch(`/api/requests/user?page=${page}&status=${status}`);
-                    if (!response.ok) {
-                        throw new Error('Failed to fetch requests');
+                    let response;
+                    if (type === 'requests') {
+                        response = await fetch(`/api/requests/user?status=${status}&page=${page}`, {
+                            credentials: 'include',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        });
+                        if (!response.ok) throw new Error('Failed to fetch requests');
+                        const data = await response.json();
+                        displayRequests(data.requests || []);
+                        updatePagination(data.totalPages, data.currentPage);
+                    } else if (type === 'orders') {
+                        response = await fetch(`/api/orders/user?status=${status}&page=${page}`, {
+                            credentials: 'include',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        });
+                        if (!response.ok) {
+                            const errorData = await response.json();
+                            throw new Error(errorData.details || 'Failed to fetch orders');
+                        }
+                        const data = await response.json();
+                        displayOrders(data.orders || []);
+                        updatePagination(data.totalPages, data.currentPage);
                     }
 
-                    const data = await response.json();
-                    const requests = data.requests.map(request => ({
-                        ...request,
-                        type: 'request'
-                    }));
-                    displayOrders(requests);
-                    updatePagination(data.totalPages, page);
+                    if (ordersList.innerHTML === '') {
+                        noOrdersMessage.classList.remove('d-none');
+                    }
                 } catch (error) {
-                    console.error('Error fetching requests:', error);
+                    console.error('Error fetching data:', error);
                     ordersList.innerHTML = `
                         <div class="col-12">
                             <div class="alert alert-danger" role="alert">
-                                Failed to load requests. Please try again later.
+                                ${error.message || 'Failed to load data. Please try again later.'}
                             </div>
                         </div>
                     `;
@@ -398,72 +558,97 @@
                 }
             }
 
-            // Function to display orders
-            function displayOrders(orders) {
-                if (orders.length === 0) {
-                    noOrdersMessage.classList.remove('d-none');
-                    return;
-                }
+            // Function to display requests
+            function displayRequests(requests) {
+                if (!requests || requests.length === 0) return;
 
-                ordersList.innerHTML = orders.map(order => `
-                    <div class="col-12">
-                        <div class="card border-0 shadow-sm order-card ${order.type}">
-                            <div class="card-body p-0">
-                                <div class="row g-0">
-                                    <div class="col-md-3">
-                                        <div class="order-image-container">
-                                            ${order.images && order.images.length > 0
-                                                ? `<img src="${order.images[0]}" class="order-image" alt="Order Image">`
-                                                : `<div class="order-image bg-light d-flex align-items-center justify-content-center">
-                                                    <i class="fas fa-image fa-2x text-muted"></i>
-                                                   </div>`
-                                            }
-                                        </div>
-                                    </div>
-                                    <div class="col-md-9">
-                                        <div class="order-details">
-                                            <h5 class="order-title">${order.description.substring(0, 50)}${order.description.length > 50 ? '...' : ''}</h5>
-                                            <p class="text-muted mb-2">${order.type === 'request' ? 'Request' : 'Order'} #${order._id}</p>
-                                            <div class="order-meta">
-                                                <span class="status-badge status-${order.status.toLowerCase()}">${order.status}</span>
-                                                <span class="order-date">Created: ${new Date(order.createdAt).toLocaleDateString()}</span>
-                                            </div>
-                                            <div class="d-flex justify-content-between align-items-center">
-                                                <div>
-                                                    <span class="order-price">${order.priceRange}</span>
-                                                    <span class="order-location ms-2"><i class="fas fa-map-marker-alt"></i> ${order.location}</span>
-                                                </div>
-                                                <button class="btn btn-outline-primary btn-sm view-details-btn" 
-                                                    data-order-id="${order._id}" 
-                                                    data-order-type="${order.type}">
-                                                    View Details
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                const requestsHTML = requests.map(request => `
+                    <div class="order-card">
+                        <div class="order-header">
+                            <div class="order-info">
+                                <h3>Request #${request._id}</h3>
+                                <p class="order-date">Requested on: ${new Date(request.createdAt).toLocaleDateString()}</p>
                             </div>
+                            <span class="status-badge ${request.status.toLowerCase()}">${request.status}</span>
+                        </div>
+                        <div class="tailor-info">
+                            <img src="${request.tailor.profilePicture || '/images/default-profile.png'}" 
+                                 alt="Tailor" class="tailor-avatar">
+                            <div>
+                                <h4>${request.tailor.fullname}</h4>
+                            </div>
+                        </div>
+                        <div class="order-details">
+                            <h4>Request Details</h4>
+                            <ul>
+                                <li>Description: ${request.description}</li>
+                                <li>Price Range: ${request.priceRange}</li>
+                                <li>Location: ${request.location}</li>
+                                ${request.images && request.images.length > 0 ? `
+                                    <li class="order-images">
+                                        ${request.images.map(image => `
+                                            <img src="${image}" alt="Request Image" class="order-image">
+                                        `).join('')}
+                                    </li>
+                                ` : ''}
+                            </ul>
                         </div>
                     </div>
                 `).join('');
 
-                // Add event listeners to the view details buttons
-                document.querySelectorAll('.view-details-btn').forEach(button => {
-                    button.addEventListener('click', function() {
-                        const orderId = this.dataset.orderId;
-                        const orderType = this.dataset.orderType;
-                        viewOrderDetails(orderId, orderType);
-                    });
-                });
+                ordersList.innerHTML += requestsHTML;
+            }
+
+            // Function to display orders
+            function displayOrders(orders) {
+                if (!orders || orders.length === 0) return;
+
+                const ordersHTML = orders.map(order => `
+                    <div class="order-card">
+                        <div class="order-header">
+                            <div class="order-info">
+                                <h3>Order #${order._id}</h3>
+                                <p class="order-date">Ordered on: ${new Date(order.createdAt).toLocaleDateString()}</p>
+                            </div>
+                            <span class="status-badge ${order.status.toLowerCase()}">${order.status}</span>
+                        </div>
+                        <div class="tailor-info">
+                            <img src="${order.tailorId.profilePicture || '/images/default-profile.png'}" 
+                                 alt="Tailor" class="tailor-avatar">
+                            <div>
+                                <h4>${order.tailorId.fullname}</h4>
+                            </div>
+                        </div>
+                        <div class="order-details">
+                            <h4>Order Details</h4>
+                            <ul>
+                                <li>Description: ${order.description}</li>
+                                <li>Price Range: ${order.priceRange}</li>
+                                <li>Location: ${order.location}</li>
+                                ${order.images && order.images.length > 0 ? `
+                                    <li class="order-images">
+                                        ${order.images.map(image => `
+                                            <img src="${image}" alt="Order Image" class="order-image">
+                                        `).join('')}
+                                    </li>
+                                ` : ''}
+                            </ul>
+                        </div>
+                    </div>
+                `).join('');
+
+                ordersList.innerHTML += ordersHTML;
             }
 
             // Function to update pagination
             function updatePagination(totalPages, currentPage) {
                 const pagination = document.getElementById('pagination');
-                let paginationHTML = '';
+                pagination.innerHTML = '';
+
+                if (totalPages <= 1) return;
 
                 // Previous button
-                paginationHTML += `
+                pagination.innerHTML += `
                     <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
                         <a class="page-link" href="#" data-page="${currentPage - 1}">Previous</a>
                     </li>
@@ -471,7 +656,7 @@
 
                 // Page numbers
                 for (let i = 1; i <= totalPages; i++) {
-                    paginationHTML += `
+                    pagination.innerHTML += `
                         <li class="page-item ${i === currentPage ? 'active' : ''}">
                             <a class="page-link" href="#" data-page="${i}">${i}</a>
                         </li>
@@ -479,20 +664,18 @@
                 }
 
                 // Next button
-                paginationHTML += `
+                pagination.innerHTML += `
                     <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
                         <a class="page-link" href="#" data-page="${currentPage + 1}">Next</a>
                     </li>
                 `;
-
-                pagination.innerHTML = paginationHTML;
             }
 
             // Event listener for order type toggle
             orderTypeToggle.addEventListener('change', function() {
-                isOrdersView = this.checked;
-                requestStatusFilters.classList.toggle('d-none', isOrdersView);
-                orderStatusFilters.classList.toggle('d-none', !isOrdersView);
+                currentType = this.checked ? 'orders' : 'requests';
+                requestStatusFilters.classList.toggle('d-none', currentType === 'orders');
+                orderStatusFilters.classList.toggle('d-none', currentType === 'requests');
                 currentPage = 1;
                 currentStatus = 'all';
                 document.querySelectorAll('.status-btn').forEach(btn => {
@@ -501,7 +684,7 @@
                         btn.classList.add('active');
                     }
                 });
-                fetchRequests(currentPage, currentStatus);
+                fetchData(currentPage, currentStatus, currentType);
             });
 
             // Event listeners for status filter buttons
@@ -512,10 +695,10 @@
                     parent.querySelectorAll('.status-btn').forEach(btn => btn.classList.remove('active'));
                     // Add active class to clicked button
                     this.classList.add('active');
-                    // Update current status and fetch requests
+                    // Update current status and fetch requests/orders
                     currentStatus = this.dataset.status;
                     currentPage = 1;
-                    fetchRequests(currentPage, currentStatus);
+                    fetchData(currentPage, currentStatus, currentType);
                 });
             });
 
@@ -526,22 +709,13 @@
                     const page = parseInt(e.target.dataset.page);
                     if (!isNaN(page)) {
                         currentPage = page;
-                        fetchRequests(currentPage, currentStatus);
+                        fetchData(currentPage, currentStatus, currentType);
                     }
                 }
             });
 
-            // Function to view order details
-            function viewOrderDetails(orderId, type) {
-                if (type === 'request') {
-                    window.location.href = `/request-details.html?id=${orderId}`;
-                } else {
-                    window.location.href = `/order-details.html?id=${orderId}`;
-                }
-            }
-
-            // Initial fetch
-            fetchRequests(currentPage, currentStatus);
+            // Initial fetch when page loads
+            fetchData(currentPage, currentStatus, currentType);
         });
     </script>
 </body>
