@@ -107,8 +107,182 @@
             color: #721c24;
         }
 
+        .status-shipped {
+            background-color: #cce5ff;
+            color: #004085;
+        }
+
+        .status-delivered {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .status-cancelled {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
         #loadingSpinner {
             display: none;
+        }
+
+        .order-type-toggle {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 30px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--accent-color);
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .toggle-slider {
+            background-color: var(--primary-color);
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(30px);
+        }
+
+        .toggle-label {
+            font-weight: 500;
+            color: var(--text-color);
+        }
+
+        .status-filters {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+        .status-btn {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .status-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .status-btn:not(.active) {
+            background-color: white;
+            color: var(--text-color);
+            border-color: var(--primary-color);
+        }
+
+        .status-btn:not(.active):hover {
+            background-color: var(--light-bg);
+        }
+
+        .order-card {
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            margin-bottom: 1.5rem;
+        }
+
+        .order-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .order-card.request {
+            border-left: 4px solid var(--accent-color);
+        }
+
+        .order-card.order {
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .order-image-container {
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+        }
+
+        .order-image {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .order-image:hover {
+            transform: scale(1.05);
+        }
+
+        .order-details {
+            padding: 1.5rem;
+        }
+
+        .order-title {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+        }
+
+        .order-meta {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .order-price {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .order-location {
+            color: var(--text-color);
+            opacity: 0.8;
+        }
+
+        .order-date {
+            color: var(--text-color);
+            opacity: 0.6;
+            font-size: 0.9rem;
         }
     </style>
 </head>
@@ -119,13 +293,32 @@
     <!-- Main Content -->
     <div class="container py-4">
         <!-- Orders Header -->
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h4 class="mb-0">My Requests</h4>
-            <div class="btn-group" id="statusFilter">
-                <button type="button" class="btn btn-outline-primary active" data-status="all">All</button>
-                <button type="button" class="btn btn-outline-primary" data-status="pending">Pending</button>
-                <button type="button" class="btn btn-outline-primary" data-status="accepted">Accepted</button>
-                <button type="button" class="btn btn-outline-primary" data-status="completed">Completed</button>
+        <div class="d-flex flex-column mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4 class="mb-0">My Orders</h4>
+                <div class="order-type-toggle">
+                    <span class="toggle-label">Requests</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="orderTypeToggle">
+                        <span class="toggle-slider"></span>
+                    </label>
+                    <span class="toggle-label">Orders</span>
+                </div>
+            </div>
+
+            <!-- Status Filters -->
+            <div id="requestStatusFilters" class="status-filters">
+                <button class="status-btn active" data-status="all">All</button>
+                <button class="status-btn" data-status="pending">Pending</button>
+                <button class="status-btn" data-status="accepted">Accepted</button>
+                <button class="status-btn" data-status="rejected">Rejected</button>
+            </div>
+
+            <div id="orderStatusFilters" class="status-filters d-none">
+                <button class="status-btn active" data-status="all">All</button>
+                <button class="status-btn" data-status="shipped">Shipped</button>
+                <button class="status-btn" data-status="delivered">Delivered</button>
+                <button class="status-btn" data-status="cancelled">Cancelled</button>
             </div>
         </div>
 
@@ -134,24 +327,24 @@
             <div class="spinner-border text-primary" role="status">
                 <span class="visually-hidden">Loading...</span>
             </div>
-            <p class="mt-2">Loading your requests...</p>
+            <p class="mt-2">Loading your orders...</p>
         </div>
 
-        <!-- No Requests Message -->
-        <div id="noRequestsMessage" class="text-center py-5 d-none">
+        <!-- No Orders Message -->
+        <div id="noOrdersMessage" class="text-center py-5 d-none">
             <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
-            <h5 class="text-muted">No requests found</h5>
-            <p class="text-muted">You haven't made any requests yet.</p>
+            <h5 class="text-muted">No orders found</h5>
+            <p class="text-muted">You haven't made any orders yet.</p>
         </div>
 
-        <!-- Requests List -->
-        <div id="requestsList" class="row g-4">
-            <!-- Requests will be dynamically inserted here -->
+        <!-- Orders List -->
+        <div id="ordersList" class="row g-4">
+            <!-- Orders will be dynamically inserted here -->
         </div>
 
         <!-- Pagination -->
         <div class="col-12 mt-4">
-            <nav aria-label="Requests pagination">
+            <nav aria-label="Orders pagination">
                 <ul class="pagination justify-content-center" id="pagination">
                     <!-- Pagination will be dynamically inserted here -->
                 </ul>
@@ -164,16 +357,19 @@
         document.addEventListener('DOMContentLoaded', function () {
             let currentPage = 1;
             let currentStatus = 'all';
-            const requestsList = document.getElementById('requestsList');
+            let isOrdersView = false;
+            const ordersList = document.getElementById('ordersList');
             const loadingSpinner = document.getElementById('loadingSpinner');
-            const noRequestsMessage = document.getElementById('noRequestsMessage');
-            const statusFilter = document.getElementById('statusFilter');
+            const noOrdersMessage = document.getElementById('noOrdersMessage');
+            const orderTypeToggle = document.getElementById('orderTypeToggle');
+            const requestStatusFilters = document.getElementById('requestStatusFilters');
+            const orderStatusFilters = document.getElementById('orderStatusFilters');
 
             // Function to fetch requests from the API
             async function fetchRequests(page = 1, status = 'all') {
                 loadingSpinner.style.display = 'block';
-                requestsList.innerHTML = '';
-                noRequestsMessage.classList.add('d-none');
+                ordersList.innerHTML = '';
+                noOrdersMessage.classList.add('d-none');
 
                 try {
                     const response = await fetch(`/api/requests/user?page=${page}&status=${status}`);
@@ -182,11 +378,15 @@
                     }
 
                     const data = await response.json();
-                    displayRequests(data.requests);
+                    const requests = data.requests.map(request => ({
+                        ...request,
+                        type: 'request'
+                    }));
+                    displayOrders(requests);
                     updatePagination(data.totalPages, page);
                 } catch (error) {
                     console.error('Error fetching requests:', error);
-                    requestsList.innerHTML = `
+                    ordersList.innerHTML = `
                         <div class="col-12">
                             <div class="alert alert-danger" role="alert">
                                 Failed to load requests. Please try again later.
@@ -198,46 +398,63 @@
                 }
             }
 
-            // Function to display requests
-            function displayRequests(requests) {
-                if (requests.length === 0) {
-                    noRequestsMessage.classList.remove('d-none');
+            // Function to display orders
+            function displayOrders(orders) {
+                if (orders.length === 0) {
+                    noOrdersMessage.classList.remove('d-none');
                     return;
                 }
 
-                requestsList.innerHTML = requests.map(request => `
+                ordersList.innerHTML = orders.map(order => `
                     <div class="col-12">
-                        <div class="card border-0 shadow-sm">
-                            <div class="card-body">
-                                <div class="row align-items-center">
-                                    <div class="col-md-2 text-center">
-                                        ${request.images && request.images.length > 0
-                        ? `<img src="${request.images[0]}" class="request-image" alt="Request Image">`
-                        : `<div class="request-image bg-light d-flex align-items-center justify-content-center">
-                                                <i class="fas fa-image text-muted"></i>
-                                               </div>`
-                    }
-                                    </div>
-                                    <div class="col-md-6">
-                                        <h5 class="card-title mb-2">${request.description.substring(0, 50)}${request.description.length > 50 ? '...' : ''}</h5>
-                                        <p class="text-muted mb-2">Request #${request._id}</p>
-                                        <div class="d-flex gap-3">
-                                            <span class="status-badge status-${request.status.toLowerCase()}">${request.status}</span>
-                                            <span class="text-muted">Created: ${new Date(request.createdAt).toLocaleDateString()}</span>
+                        <div class="card border-0 shadow-sm order-card ${order.type}">
+                            <div class="card-body p-0">
+                                <div class="row g-0">
+                                    <div class="col-md-3">
+                                        <div class="order-image-container">
+                                            ${order.images && order.images.length > 0
+                                                ? `<img src="${order.images[0]}" class="order-image" alt="Order Image">`
+                                                : `<div class="order-image bg-light d-flex align-items-center justify-content-center">
+                                                    <i class="fas fa-image fa-2x text-muted"></i>
+                                                   </div>`
+                                            }
                                         </div>
                                     </div>
-                                    <div class="col-md-2 text-md-end">
-                                        <h5 class="text-primary mb-1">${request.priceRange}</h5>
-                                        <p class="text-muted mb-0">${request.location}</p>
-                                    </div>
-                                    <div class="col-md-2 text-md-end">
-                                        <button class="btn btn-outline-primary btn-sm" onclick="viewRequestDetails('${request._id}')">View Details</button>
+                                    <div class="col-md-9">
+                                        <div class="order-details">
+                                            <h5 class="order-title">${order.description.substring(0, 50)}${order.description.length > 50 ? '...' : ''}</h5>
+                                            <p class="text-muted mb-2">${order.type === 'request' ? 'Request' : 'Order'} #${order._id}</p>
+                                            <div class="order-meta">
+                                                <span class="status-badge status-${order.status.toLowerCase()}">${order.status}</span>
+                                                <span class="order-date">Created: ${new Date(order.createdAt).toLocaleDateString()}</span>
+                                            </div>
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    <span class="order-price">${order.priceRange}</span>
+                                                    <span class="order-location ms-2"><i class="fas fa-map-marker-alt"></i> ${order.location}</span>
+                                                </div>
+                                                <button class="btn btn-outline-primary btn-sm view-details-btn" 
+                                                    data-order-id="${order._id}" 
+                                                    data-order-type="${order.type}">
+                                                    View Details
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 `).join('');
+
+                // Add event listeners to the view details buttons
+                document.querySelectorAll('.view-details-btn').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const orderId = this.dataset.orderId;
+                        const orderType = this.dataset.orderType;
+                        viewOrderDetails(orderId, orderType);
+                    });
+                });
             }
 
             // Function to update pagination
@@ -271,18 +488,35 @@
                 pagination.innerHTML = paginationHTML;
             }
 
-            // Event listener for status filter buttons
-            statusFilter.addEventListener('click', function (e) {
-                if (e.target.tagName === 'BUTTON') {
-                    // Remove active class from all buttons
-                    statusFilter.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
+            // Event listener for order type toggle
+            orderTypeToggle.addEventListener('change', function() {
+                isOrdersView = this.checked;
+                requestStatusFilters.classList.toggle('d-none', isOrdersView);
+                orderStatusFilters.classList.toggle('d-none', !isOrdersView);
+                currentPage = 1;
+                currentStatus = 'all';
+                document.querySelectorAll('.status-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                    if (btn.dataset.status === 'all') {
+                        btn.classList.add('active');
+                    }
+                });
+                fetchRequests(currentPage, currentStatus);
+            });
+
+            // Event listeners for status filter buttons
+            document.querySelectorAll('.status-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    // Remove active class from all buttons in the current filter group
+                    const parent = this.parentElement;
+                    parent.querySelectorAll('.status-btn').forEach(btn => btn.classList.remove('active'));
                     // Add active class to clicked button
-                    e.target.classList.add('active');
+                    this.classList.add('active');
                     // Update current status and fetch requests
-                    currentStatus = e.target.dataset.status;
+                    currentStatus = this.dataset.status;
                     currentPage = 1;
                     fetchRequests(currentPage, currentStatus);
-                }
+                });
             });
 
             // Event listener for pagination
@@ -297,10 +531,14 @@
                 }
             });
 
-            // Function to view request details
-            window.viewRequestDetails = function (requestId) {
-                window.location.href = `/request-details.html?id=${requestId}`;
-            };
+            // Function to view order details
+            function viewOrderDetails(orderId, type) {
+                if (type === 'request') {
+                    window.location.href = `/request-details.html?id=${orderId}`;
+                } else {
+                    window.location.href = `/order-details.html?id=${orderId}`;
+                }
+            }
 
             // Initial fetch
             fetchRequests(currentPage, currentStatus);
