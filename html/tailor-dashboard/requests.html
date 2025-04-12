@@ -12,98 +12,378 @@
     <script type="text/javascript">
         function googleTranslateElementInit() {
             new google.translate.TranslateElement(
-                {pageLanguage: 'en', includedLanguages: 'hi,ta,te,kn,ml,bn,gu,mr,pa,ur'},
+                { pageLanguage: 'en', includedLanguages: 'hi,ta,te,kn,ml,bn,gu,mr,pa,ur' },
                 'google_translate_element'
             );
         }
     </script>
-    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+    <script type="text/javascript"
+        src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap');
 
         :root {
-            --primary-color: #285A84;
-            --secondary-color: #1d4361;
-            --accent-color: #4CAF50;
-            --text-color: #333;
-            --light-bg: #f8f9fa;
+            --primary-color: #2C3E50;
+            --secondary-color: #34495E;
+            --accent-color: #27AE60;
+            --text-color: #2C3E50;
+            --light-bg: #F5F7FA;
+            --gradient-primary: linear-gradient(135deg, #2C3E50 0%, #34495E 100%);
+            --gradient-accent: linear-gradient(135deg, #27AE60 0%, #2ECC71 100%);
+            --gradient-dark: linear-gradient(135deg, #1a1c20 0%, #2C3E50 100%);
+            --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.15);
+            --border-radius: 16px;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--light-bg);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .dashboard-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .dashboard-nav {
+            background: white;
+            padding: 1rem 0;
+            box-shadow: var(--shadow-sm);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            margin-top: 20px;
+        }
+
+        .nav-logo {
+            font-size: 1.8rem;
+            font-weight: 900;
+            letter-spacing: -1px;
+            background: var(--gradient-primary);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-logo img {
+            width: 35px;
+            height: 35px;
+            object-fit: contain;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .nav-links a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--gradient-accent);
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            transform: scaleX(1);
+            transform-origin: left;
+        }
+
+        .logout-link {
+            color: var(--accent-color) !important;
+        }
+
+        .dashboard-content {
+            margin-top: 80px;
+            padding: 2rem;
+        }
+
+        .requests-header {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            box-shadow: var(--shadow-md);
+            margin-bottom: 2rem;
+        }
+
+        .requests-header h1 {
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+            background: var(--gradient-primary);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .request-filters select {
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            border: 1px solid rgba(44, 62, 80, 0.2);
+            background: white;
+            color: var(--text-color);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .request-filters select:hover {
+            border-color: var(--accent-color);
+        }
+
+        .request-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow-md);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid rgba(44, 62, 80, 0.1);
+        }
+
+        .request-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .request-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1.5rem;
+        }
+
+        .request-id {
+            color: var(--secondary-color);
+            font-size: 1.1rem;
+            font-weight: 600;
+            opacity: 0.8;
+        }
+
+        .request-date {
+            color: var(--secondary-color);
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+
+        .request-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin: 1rem 0;
+        }
+
+        .request-description {
+            color: var(--secondary-color);
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .request-meta {
+            display: flex;
+            justify-content: space-between;
+            margin: 1.5rem 0;
+            font-size: 1rem;
+            color: var(--secondary-color);
+        }
+
+        .request-budget,
+        .request-timeline {
+            opacity: 0.8;
+        }
+
+        .request-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .accept-btn,
+        .reject-btn {
+            padding: 0.75rem 2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            min-width: 120px;
+            text-align: center;
+        }
+
+        .accept-btn {
+            background: var(--accent-color);
+            color: white;
+        }
+
+        .reject-btn {
+            background: transparent;
+            color: var(--secondary-color);
+            border: 2px solid var(--secondary-color);
+        }
+
+        .accept-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            background: #2ECC71;
+        }
+
+        .reject-btn:hover {
+            background: var(--light-bg);
+        }
+
+        .requests-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            gap: 2rem;
+            padding: 1rem 0;
+        }
+
+        @media (max-width: 768px) {
+            .requests-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
         /* Google Translate Styles */
         .goog-te-gadget {
-            font-family: 'Ubuntu', sans-serif !important;
+            font-family: 'Inter', sans-serif !important;
             text-transform: none !important;
         }
+
         .goog-te-gadget-simple {
             background-color: transparent !important;
-            border: 1px solid rgba(255, 255, 255, 0.5) !important;
+            border: 1px solid rgba(44, 62, 80, 0.2) !important;
             padding: 8px !important;
             border-radius: 4px !important;
             cursor: pointer !important;
         }
+
         .goog-te-menu-value {
-            color: white !important;
+            color: var(--text-color) !important;
             text-decoration: none !important;
         }
+
         .goog-te-menu-value span {
-            color: white !important;
+            color: var(--text-color) !important;
         }
+
         .goog-te-menu-value:hover {
             text-decoration: none !important;
         }
+
         .goog-te-gadget .goog-te-combo {
             background-color: transparent !important;
-            color: rgb(0, 0, 0) !important;
+            color: var(--text-color) !important;
             border: none !important;
             padding: 5px !important;
         }
+
         .goog-te-banner-frame {
             display: none !important;
         }
+
         body {
             top: 0 !important;
         }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .request-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .request-actions {
+                flex-direction: column;
+            }
+
+            .accept-btn,
+            .reject-btn {
+                width: 100%;
+            }
+        }
     </style>
-    <link rel="stylesheet" href="/stylesheets/style.css">
-    <link rel="stylesheet" href="/stylesheets/tailor-dashboard.css">
 </head>
 
 <body>
     <div class="dashboard-container">
         <nav class="dashboard-nav">
-            <div class="nav-logo">Upthreaded</div>
-            <ul class="nav-links">
-                <li><a href="profile.html">Profile</a></li>
-                <li><a href="requests.html" class="active">Requests</a></li>
-                <li><a href="orders.html">Orders</a></li>
-                <li><a href="/tailor">Back to Main</a></li>
-                <li><a href="/logout" class="logout-link">Logout</a></li>
-                <li>
-                    <div id="google_translate_element"></div>
-                </li>
-            </ul>
+            <div class="container">
+                <div class="d-flex justify-content-between align-items-center">
+                    <a class="nav-logo" href="/">
+                        <img src="/images/logo.png" alt="UpThreaded Logo">
+                        UpThreaded
+                    </a>
+                    <ul class="nav-links">
+                        <li><a href="/tailor">Home</a></li>
+                        <li><a href="/tailor-dashboard/profile.html">Profile</a></li>
+                        <li><a href="/tailor-dashboard/requests.html" class="active">Requests</a></li>
+                        <li><a href="/tailor-dashboard/orders.html">Orders</a></li>
+                        <li><a href="/logout" class="logout-link">Logout</a></li>
+                        <li>
+                            <div id="google_translate_element"></div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
         </nav>
 
         <main class="dashboard-content">
-            <div class="requests-header">
-                <h1>Tailor Requests</h1>
-                <div class="request-filters">
-                    <select id="statusFilter">
-                        <option value="all">All Requests</option>
-                        <option value="pending">Pending</option>
-                        <option value="accepted">Accepted</option>
-                        <option value="rejected">Rejected</option>
-                    </select>
+            <div class="container">
+                <div class="requests-header">
+                    <h1>Tailor Requests</h1>
+                    <div class="request-filters">
+                        <select id="statusFilter">
+                            <option value="all">All Requests</option>
+                            <option value="pending">Pending</option>
+                            <option value="accepted">Accepted</option>
+                            <option value="rejected">Rejected</option>
+                        </select>
+                    </div>
                 </div>
-            </div>
 
-            <div class="requests-list" id="requestsList">
-                <!-- Requests will be loaded dynamically here -->
+                <div class="requests-list" id="requestsList">
+                    <!-- Requests will be loaded dynamically here -->
+                </div>
             </div>
         </main>
     </div>
 
-    <script src="/javascripts/tailor-dashboard.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         let currentUserId = null;
 
@@ -133,11 +413,11 @@
                 const response = await fetch(`/api/requests/tailor/${userId}?status=${status}`, {
                     credentials: 'include'
                 });
-                
+
                 if (!response.ok) {
                     throw new Error('Failed to fetch requests');
                 }
-                
+
                 const requests = await response.json();
                 displayRequests(requests);
             } catch (error) {
@@ -160,33 +440,35 @@
                 return;
             }
 
+            const requestsGrid = document.createElement('div');
+            requestsGrid.className = 'requests-grid';
+
             requests.forEach(request => {
                 const requestCard = document.createElement('div');
                 requestCard.className = 'request-card';
                 requestCard.setAttribute('data-request-id', request._id);
+
+                // Format the time ago
+                const timeAgo = new Date(request.createdAt).toLocaleDateString();
+
                 requestCard.innerHTML = `
                     <div class="request-header">
-                        <div class="user-info">
-                            <img src="${request.customer.profilePicture || '/images/default-profile.png'}" 
-                                 alt="User" class="user-avatar">
-                            <div>
-                                <h3>${request.customer.fullname}</h3>
-                                <p class="request-date">Requested on: ${new Date(request.createdAt).toLocaleDateString()}</p>
-                            </div>
-                        </div>
-                        <span class="status-badge ${request.status}">${request.status.charAt(0).toUpperCase() + request.status.slice(1)}</span>
+                        <div class="request-id">#REQ-${request._id ? request._id.slice(-4) : 'XXXX'}</div>
+                        <div class="request-date">${timeAgo}</div>
                     </div>
-                    <div class="request-details">
-                        <h4>Request Details</h4>
-                        <p><strong>Location:</strong> ${request.location}</p>
-                        <p><strong>Price Range:</strong> ${request.priceRange}</p>
-                        <p><strong>Description:</strong> ${request.description}</p>
+                    <h2 class="request-title">${request.description ? request.description.split('.')[0] : 'Alteration Request'}</h2>
+                    <p class="request-description">${request.description || 'No description provided'}</p>
+                    <div class="request-meta">
+                        <span class="request-budget">Budget: ${request.priceRange || 'Not specified'}</span>
+                        <span class="request-timeline">Timeline: ${request.timeline || 'Not specified'}</span>
+                    </div>
+                    <div class="request-details mt-3">
+                        ${request.location ? `<p><strong>Location:</strong> ${request.location}</p>` : ''}
                         ${request.message ? `<p><strong>Additional Message:</strong> ${request.message}</p>` : ''}
-                        
                         ${request.images && request.images.length > 0 ? `
                             <div class="request-images mt-3">
-                                <h5>Images</h5>
-                                <div class="d-flex gap-2">
+                                <h5>Reference Images</h5>
+                                <div class="d-flex gap-2 flex-wrap">
                                     ${request.images.map(image => `
                                         <img src="${image}" alt="Request Image" class="img-thumbnail" style="width: 100px; height: 100px; object-fit: cover;">
                                     `).join('')}
@@ -194,15 +476,21 @@
                             </div>
                         ` : ''}
                     </div>
-                    <div class="request-actions">
-                        ${request.status === 'pending' ? `
-                            <button class="accept-btn" onclick="handleRequest('accept', '${request._id}')">Accept Request</button>
-                            <button class="reject-btn" onclick="handleRequest('reject', '${request._id}')">Reject Request</button>
-                        ` : ''}
-                    </div>
+                    ${request.status === 'pending' ? `
+                        <div class="request-actions">
+                            <button class="accept-btn" onclick="handleRequest('accept', '${request._id}')">Accept</button>
+                            <button class="reject-btn" onclick="handleRequest('reject', '${request._id}')">Decline</button>
+                        </div>
+                    ` : `
+                        <div class="status-badge ${request.status}">
+                            ${request.status.charAt(0).toUpperCase() + request.status.slice(1)}
+                        </div>
+                    `}
                 `;
-                requestsList.appendChild(requestCard);
+                requestsGrid.appendChild(requestCard);
             });
+
+            requestsList.appendChild(requestsGrid);
         }
 
         async function handleRequest(action, requestId) {
@@ -232,7 +520,7 @@
         }
 
         // Add event listener for status filter
-        document.getElementById('statusFilter').addEventListener('change', function() {
+        document.getElementById('statusFilter').addEventListener('change', function () {
             loadRequests(this.value);
         });
 

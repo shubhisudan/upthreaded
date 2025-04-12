@@ -227,8 +227,20 @@
                 const images = document.getElementById('imageUpload').files;
 
                 // Validate required fields
-                if (!tailorId || !location || !priceRange || !description) {
-                    alert('Please fill in all required fields');
+                if (!tailorId) {
+                    alert('Please select a tailor first');
+                    return;
+                }
+                if (!location) {
+                    alert('Please provide your location');
+                    return;
+                }
+                if (!priceRange) {
+                    alert('Please select a price range');
+                    return;
+                }
+                if (!description) {
+                    alert('Please provide a description');
                     return;
                 }
 
