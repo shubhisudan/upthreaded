@@ -1,5 +1,7 @@
 # UpThreaded
 
+[![Watch the video](https://img.shields.io/badge/YouTube-Watch%20Video-red)](https://youtu.be/qzZn118cYqc)
+
 A modern web application built with Node.js, Express, and MongoDB for managing designs, requests, and orders.
 
 ## Project Idea

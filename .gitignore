@@ -1,3 +1,4 @@
 /node_modules
 .env
 upthreaded/upthreaded.env
+/tmp

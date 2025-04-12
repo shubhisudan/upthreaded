@@ -6,10 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Dashboard - UpThreaded</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="/stylesheets/style.css">
-    <link rel="stylesheet" href="/stylesheets/user-navbar.css">
-    <link rel="stylesheet" href="/stylesheets/user.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="/stylesheets/style.css">
     <link rel="icon" type="image/png" href="/images/logo.png">
     <script type="text/javascript">
         function googleTranslateElementInit() {
@@ -23,37 +21,241 @@
         src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
     <script src="/javascripts/navbar-loader.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
         :root {
-            --primary-color: #285A84;
-            --secondary-color: #1d4361;
-            --accent-color: #4CAF50;
-            --text-color: #333;
-            --light-bg: #f8f9fa;
+            --primary-color: #2563eb;
+            --secondary-color: #1e40af;
+            --accent-color: #10b981;
+            --text-color: #1f2937;
+            --light-bg: #f3f4f6;
+            --card-bg: #ffffff;
+            --border-color: #e5e7eb;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+            --border-radius: 12px;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--light-bg);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .dashboard-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .dashboard-content {
+            margin-top: 80px;
+            padding: 2rem;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        .card-header {
+            background: transparent;
+            border-bottom: 1px solid var(--border-color);
+            padding: 1.5rem;
+        }
+
+        .card-header h5 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin: 0;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: var(--text-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-control,
+        .form-select {
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            padding: 0.75rem 1rem;
+            transition: all 0.2s ease;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .btn-success {
+            background-color: var(--accent-color);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            font-weight: 500;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-success:hover {
+            background-color: #059669;
+            transform: translateY(-1px);
+        }
+
+        .matches-list {
+            margin-top: 2rem;
+        }
+
+        .match-card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .match-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .match-card img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--accent-color);
+        }
+
+        .match-card h5 {
+            color: var(--text-color);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .match-card .text-muted {
+            color: #6b7280 !important;
+        }
+
+        .btn-outline-primary,
+        .btn-outline-success {
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .btn-outline-primary {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .btn-outline-primary:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-outline-success {
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+        }
+
+        .btn-outline-success:hover {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        .modal-content {
+            border-radius: var(--border-radius);
+            border: none;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .modal-header {
+            border-bottom: 1px solid var(--border-color);
+            padding: 1.5rem;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .modal-footer {
+            border-top: 1px solid var(--border-color);
+            padding: 1.5rem;
+        }
+
+        .modal-title {
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .request-details {
+            background: var(--light-bg);
+            padding: 1.25rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+
+        .request-details h6 {
+            color: var(--text-color);
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .request-details p {
+            margin-bottom: 0.5rem;
+        }
+
+        .request-details strong {
+            color: var(--primary-color);
+        }
+
+        #requestImages img {
+            border-radius: 8px;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+            box-shadow: var(--shadow-sm);
         }
 
         /* Google Translate Styles */
         .goog-te-gadget {
-            font-family: 'Ubuntu', sans-serif !important;
+            font-family: 'Poppins', sans-serif !important;
             text-transform: none !important;
         }
 
         .goog-te-gadget-simple {
             background-color: transparent !important;
-            border: 1px solid rgba(255, 255, 255, 0.5) !important;
+            border: 1px solid var(--border-color) !important;
             padding: 8px !important;
-            border-radius: 4px !important;
+            border-radius: 8px !important;
             cursor: pointer !important;
         }
 
         .goog-te-menu-value {
-            color: white !important;
+            color: var(--text-color) !important;
             text-decoration: none !important;
         }
 
         .goog-te-menu-value span {
-            color: white !important;
+            color: var(--text-color) !important;
         }
 
         .goog-te-menu-value:hover {
@@ -62,7 +264,7 @@
 
         .goog-te-gadget .goog-te-combo {
             background-color: transparent !important;
-            color: rgb(0, 0, 0) !important;
+            color: var(--text-color) !important;
             border: none !important;
             padding: 5px !important;
         }
@@ -73,6 +275,39 @@
 
         body {
             top: 0 !important;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-content {
+                padding: 1rem;
+            }
+
+            .card {
+                padding: 1rem;
+            }
+
+            .match-card {
+                text-align: center;
+            }
+
+            .match-card .row {
+                flex-direction: column;
+            }
+
+            .match-card .col-md-2,
+            .match-card .col-md-7,
+            .match-card .col-md-3 {
+                width: 100%;
+                margin-bottom: 1rem;
+            }
+
+            .match-card .text-end {
+                text-align: center !important;
+            }
+
+            .match-card img {
+                margin: 0 auto 1rem;
+            }
         }
     </style>
 </head>
