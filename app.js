@@ -104,7 +104,11 @@ app.use(fileUpload({
   limits: {
     fileSize: 5 * 1024 * 1024 // 5MB max file size
   },
-  abortOnLimit: true
+  abortOnLimit: true,
+  useTempFiles: true,
+  tempFileDir: path.join(__dirname, 'tmp'),
+  safeFileNames: true,
+  preserveExtension: true
 }));
 
 // Serve static files from public directory only

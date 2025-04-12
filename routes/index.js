@@ -327,20 +327,31 @@ router.post('/api/tailor-profile', async (req, res) => {
   try {
     // Check if user is logged in and is a tailor
     if (!req.session.userId || req.session.role !== 'tailor') {
-      return res.status(401).json({ error: 'Unauthorized' });
+      return res.status(401).json({
+        success: false,
+        error: 'Unauthorized',
+        details: 'Please log in as a tailor to update your profile'
+      });
     }
 
     const tailor = await User.findById(req.session.userId);
     if (!tailor) {
-      return res.status(404).json({ error: 'Tailor not found' });
+      return res.status(404).json({
+        success: false,
+        error: 'Tailor not found',
+        details: 'The requested tailor profile could not be found'
+      });
     }
 
     // Handle profile picture upload
     if (req.files && req.files.profilePicture) {
       console.log('Starting Cloudinary upload for profile picture...');
       try {
-        // Upload to Cloudinary
-        const result = await cloudinary.uploader.upload(req.files.profilePicture.tempFilePath, {
+        // Get the file data
+        const file = req.files.profilePicture;
+
+        // Upload to Cloudinary using the file data
+        const result = await cloudinary.uploader.upload(file.tempFilePath, {
           folder: 'upthreaded/profile-pictures',
           public_id: `${tailor._id}-${Date.now()}`,
           resource_type: 'auto'
@@ -356,8 +367,27 @@ router.post('/api/tailor-profile', async (req, res) => {
 
         // Update profile picture with Cloudinary URL
         tailor.profilePicture = result.secure_url;
+
+        // Clean up the temporary file
+        if (file.tempFilePath) {
+          fs.unlink(file.tempFilePath, (err) => {
+            if (err) {
+              console.error('Error deleting temporary file:', err);
+            } else {
+              console.log('Temporary file deleted successfully');
+            }
+          });
+        }
       } catch (error) {
         console.error('Error uploading to Cloudinary:', error);
+        // Clean up the temporary file even if upload fails
+        if (req.files.profilePicture.tempFilePath) {
+          fs.unlink(req.files.profilePicture.tempFilePath, (err) => {
+            if (err) {
+              console.error('Error deleting temporary file:', err);
+            }
+          });
+        }
         return res.status(500).json({
           success: false,
           error: 'Failed to upload profile picture',
@@ -373,16 +403,31 @@ router.post('/api/tailor-profile', async (req, res) => {
       try {
         tailor.specialties = JSON.parse(req.body.specialties);
       } catch (e) {
-        return res.status(400).json({ error: 'Invalid specialties format' });
+        return res.status(400).json({
+          success: false,
+          error: 'Invalid specialties format',
+          details: 'Please provide specialties in a valid JSON format'
+        });
       }
     }
     if (req.body.priceRange) tailor.priceRange = req.body.priceRange;
 
     await tailor.save();
-    res.json({ message: 'Profile updated successfully' });
+    res.json({
+      success: true,
+      message: 'Profile updated successfully',
+      profilePicture: tailor.profilePicture,
+      location: tailor.location,
+      bio: tailor.bio,
+      priceRange: tailor.priceRange
+    });
   } catch (error) {
     console.error('Error updating tailor profile:', error);
-    res.status(500).json({ error: 'Failed to update profile' });
+    res.status(500).json({
+      success: false,
+      error: 'Failed to update profile',
+      details: error.message || 'Unknown error occurred'
+    });
   }
 });
 
@@ -399,32 +444,50 @@ router.post('/api/tailor-profile/designs', async (req, res) => {
 
     // Check if user is logged in and is a tailor
     if (!req.session.userId || req.session.role !== 'tailor') {
-      return res.status(401).json({ error: 'Unauthorized' });
+      return res.status(401).json({
+        success: false,
+        error: 'Unauthorized',
+        details: 'Please log in as a tailor to upload designs'
+      });
     }
 
     const tailor = await User.findById(req.session.userId);
     if (!tailor) {
-      return res.status(404).json({ error: 'Tailor not found' });
+      return res.status(404).json({
+        success: false,
+        error: 'Tailor not found',
+        details: 'The requested tailor profile could not be found'
+      });
     }
 
     // Check if design image was uploaded
     if (!req.files || !req.files.designImage) {
-      return res.status(400).json({ error: 'Design image is required' });
+      return res.status(400).json({
+        success: false,
+        error: 'No design image provided',
+        details: 'Please upload a design image'
+      });
     }
 
     // Upload to Cloudinary
     console.log('Starting Cloudinary upload for design...');
     try {
-      // Convert the file to base64
-      const fileBuffer = req.files.designImage.data;
-      const base64String = fileBuffer.toString('base64');
-      const dataUri = `data:${req.files.designImage.mimetype};base64,${base64String}`;
+      // Get the file data
+      const file = req.files.designImage;
 
-      // Upload to Cloudinary using base64
-      const result = await cloudinary.uploader.upload(dataUri, {
+      // Upload to Cloudinary using the file data
+      const result = await cloudinary.uploader.upload(file.tempFilePath, {
         folder: 'upthreaded/design-images',
         public_id: `${tailor._id}-${Date.now()}`,
         resource_type: 'auto'
+      });
+
+      console.log('Cloudinary upload successful:', {
+        url: result.secure_url,
+        public_id: result.public_id,
+        folder: result.folder,
+        format: result.format,
+        bytes: result.bytes
       });
 
       // Create new design using Design model
@@ -441,7 +504,19 @@ router.post('/api/tailor-profile/designs', async (req, res) => {
       // Get all designs for the tailor
       const designs = await Design.find({ userId: tailor._id }).sort({ createdAt: -1 });
 
+      // Clean up the temporary file
+      if (file.tempFilePath) {
+        fs.unlink(file.tempFilePath, (err) => {
+          if (err) {
+            console.error('Error deleting temporary file:', err);
+          } else {
+            console.log('Temporary file deleted successfully');
+          }
+        });
+      }
+
       res.json({
+        success: true,
         message: 'Design added successfully',
         designs: designs.map(design => ({
           _id: design._id,
@@ -452,6 +527,14 @@ router.post('/api/tailor-profile/designs', async (req, res) => {
       });
     } catch (error) {
       console.error('Error uploading to Cloudinary:', error);
+      // Clean up the temporary file even if upload fails
+      if (req.files.designImage.tempFilePath) {
+        fs.unlink(req.files.designImage.tempFilePath, (err) => {
+          if (err) {
+            console.error('Error deleting temporary file:', err);
+          }
+        });
+      }
       return res.status(500).json({
         success: false,
         error: 'Failed to upload design image',
@@ -460,7 +543,11 @@ router.post('/api/tailor-profile/designs', async (req, res) => {
     }
   } catch (error) {
     console.error('Error adding design:', error);
-    res.status(500).json({ error: 'Failed to add design' });
+    res.status(500).json({
+      success: false,
+      error: 'Failed to add design',
+      details: error.message || 'Unknown error occurred'
+    });
   }
 });
 

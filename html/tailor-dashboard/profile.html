@@ -327,6 +327,11 @@
             const noDesignsMessage = document.getElementById('noDesignsMessage');
             const designUploadForm = document.getElementById('designUploadForm');
 
+            // Set default profile image if the current one fails to load
+            profileImage.onerror = function () {
+                this.src = '/images/logo.png'; // Fallback to logo if default profile image is missing
+            };
+
             // Fetch tailor profile data
             async function fetchTailorProfile() {
                 try {
@@ -347,6 +352,8 @@
 
                     if (data.profilePicture) {
                         profileImage.src = data.profilePicture;
+                    } else {
+                        profileImage.src = '/images/logo.png';
                     }
 
                     // Display designs
@@ -428,11 +435,19 @@
                     });
 
                     if (!response.ok) {
-                        throw new Error('Failed to upload profile picture');
+                        const errorData = await response.json();
+                        throw new Error(errorData.details || 'Failed to upload profile picture');
+                    }
+
+                    const result = await response.json();
+                    if (result.profilePicture) {
+                        profileImage.src = result.profilePicture;
                     }
                 } catch (error) {
                     console.error('Error uploading profile picture:', error);
-                    alert('Failed to upload profile picture');
+                    alert(error.message || 'Failed to upload profile picture');
+                    // Revert to previous image on error
+                    fetchTailorProfile();
                 }
             });
 
@@ -495,19 +510,24 @@
                     });
 
                     if (!response.ok) {
-                        throw new Error('Failed to upload design');
+                        const errorData = await response.json();
+                        throw new Error(errorData.details || 'Failed to upload design');
                     }
 
-                    // Clear form
-                    document.getElementById('designTitle').value = '';
-                    document.getElementById('designImage').value = '';
+                    const result = await response.json();
+                    if (result.success) {
+                        // Clear form
+                        document.getElementById('designTitle').value = '';
+                        document.getElementById('designImage').value = '';
 
-                    // Refresh profile data
-                    fetchTailorProfile();
-
+                        // Refresh profile data
+                        fetchTailorProfile();
+                    } else {
+                        throw new Error(result.details || 'Failed to upload design');
+                    }
                 } catch (error) {
                     console.error('Error uploading design:', error);
-                    alert('Failed to upload design');
+                    alert(error.message || 'Failed to upload design');
                 }
             });
 
@@ -541,56 +561,6 @@
             // Load profile data
             fetchTailorProfile();
         });
-
-        async function loadLatestRequests() {
-            try {
-                const response = await fetch(`/api/requests/tailor/${currentUserId}?status=all&limit=3`);
-                if (!response.ok) {
-                    throw new Error('Failed to fetch requests');
-                }
-                const requests = await response.json();
-                displayLatestRequests(requests);
-            } catch (error) {
-                console.error('Error loading latest requests:', error);
-            }
-        }
-
-        function displayLatestRequests(requests) {
-            const latestRequests = document.getElementById('latestRequests');
-            latestRequests.innerHTML = '';
-
-            if (requests.length === 0) {
-                latestRequests.innerHTML = `
-                    <div class="text-center p-4">
-                        <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
-                        <p class="text-muted">No requests yet</p>
-                    </div>
-                `;
-                return;
-            }
-
-            requests.forEach(request => {
-                const requestItem = document.createElement('div');
-                requestItem.className = 'request-preview-item';
-                requestItem.innerHTML = `
-                    <div class="request-preview-header">
-                        <img src="${request.customer.profilePicture || '/images/default-profile.png'}" 
-                             alt="User" class="user-avatar-small">
-                        <div>
-                            <h4>${request.customer.fullname}</h4>
-                            <p class="text-muted small">${new Date(request.createdAt).toLocaleDateString()}</p>
-                        </div>
-                        <span class="status-badge ${request.status}">${request.status.charAt(0).toUpperCase() + request.status.slice(1)}</span>
-                    </div>
-                    <p class="request-preview-message">${request.message.substring(0, 100)}${request.message.length > 100 ? '...' : ''}</p>
-                    <a href="requests.html" class="btn btn-sm btn-outline-primary">View Details</a>
-                `;
-                latestRequests.appendChild(requestItem);
-            });
-        }
-
-        // Load latest requests when page loads
-        document.addEventListener('DOMContentLoaded', loadLatestRequests);
     </script>
 </body>
 
