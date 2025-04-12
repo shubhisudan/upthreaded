@@ -514,7 +514,7 @@
         <nav class="dashboard-nav">
             <div class="container">
                 <div class="d-flex justify-content-between align-items-center">
-                    <a class="nav-logo" href="/">
+                    <a class="nav-logo" href="/tailor">
                         <img src="/images/logo.png" alt="UpThreaded Logo">
                         UpThreaded
                     </a>
@@ -541,32 +541,17 @@
                     <div class="quick-stats">
                         <div class="stat-card">
                             <h3>Pending Requests</h3>
-                            <p class="stat-number">5</p>
+                            <p class="stat-number" id="pendingRequestsCount">-</p>
                         </div>
                         <div class="stat-card">
                             <h3>Active Orders</h3>
-                            <p class="stat-number">3</p>
+                            <p class="stat-number" id="activeOrdersCount">-</p>
                         </div>
                         <div class="stat-card">
                             <h3>Completed Orders</h3>
-                            <p class="stat-number">12</p>
+                            <p class="stat-number" id="completedOrdersCount">-</p>
                         </div>
                     </div>
-
-                    <!-- <div class="quick-actions">
-                    <a href="/tailor-dashboard/profile.html" class="action-button">
-                        <span class="icon">👤</span>
-                        Edit Profile
-                    </a>
-                    <a href="/tailor-dashboard/requests.html" class="action-button">
-                        <span class="icon">📝</span>
-                        View Requests
-                    </a>
-                    <a href="/tailor-dashboard/orders.html" class="action-button">
-                        <span class="icon">📦</span>
-                        Manage Orders
-                    </a>
-                    </div> -->
                 </div>
 
                 <!-- Recent Requests Section -->
@@ -575,39 +560,8 @@
                         <h2>Recent Requests</h2>
                         <a href="/tailor-dashboard/requests.html" class="view-all">View All</a>
                     </div>
-                    <div class="requests-grid">
-                        <div class="request-card">
-                            <div class="request-header">
-                                <span class="request-id">#REQ-1234</span>
-                                <span class="request-date">2 hours ago</span>
-                            </div>
-                            <h3>Denim Jacket Upcycle</h3>
-                            <p>Transform old denim jacket into a modern crop jacket with embroidery details</p>
-                            <div class="request-meta">
-                                <span class="budget">Budget: $50-70</span>
-                                <span class="timeline">Timeline: 5 days</span>
-                            </div>
-                            <div class="request-actions">
-                                <a href="/tailor-dashboard/requests.html?id=REQ-1234" class="btn-view-request">View
-                                    Request</a>
-                            </div>
-                        </div>
-                        <div class="request-card">
-                            <div class="request-header">
-                                <span class="request-id">#REQ-1235</span>
-                                <span class="request-date">5 hours ago</span>
-                            </div>
-                            <h3>Dress Alteration</h3>
-                            <p>Resize and modernize vintage dress with added lace details</p>
-                            <div class="request-meta">
-                                <span class="budget">Budget: $30-50</span>
-                                <span class="timeline">Timeline: 3 days</span>
-                            </div>
-                            <div class="request-actions">
-                                <a href="/tailor-dashboard/requests.html?id=REQ-1235" class="btn-view-request">View
-                                    Request</a>
-                            </div>
-                        </div>
+                    <div class="requests-grid" id="recentRequestsGrid">
+                        <p class="no-data-message">Loading recent requests...</p>
                     </div>
                 </div>
 
@@ -617,78 +571,11 @@
                         <h2>Active Orders</h2>
                         <a href="/tailor-dashboard/orders.html" class="view-all">View All</a>
                     </div>
-                    <div class="orders-grid">
-                        <div class="order-card">
-                            <div class="order-header">
-                                <span class="order-id">#ORD-5678</span>
-                                <span class="order-status in-progress">In Progress</span>
-                            </div>
-                            <h3>Custom T-Shirt Design</h3>
-                            <p>Transform plain t-shirt with custom embroidery and patchwork</p>
-                            <div class="order-progress">
-                                <div class="progress-bar">
-                                    <div class="progress" style="width: 60%"></div>
-                                </div>
-                                <span class="progress-text">60% Complete</span>
-                            </div>
-                            <div class="order-meta">
-                                <span class="due-date">Due: May 15, 2024</span>
-                                <span class="client">Client: Sarah Johnson</span>
-                            </div>
-                        </div>
-                        <div class="order-card">
-                            <div class="order-header">
-                                <span class="order-id">#ORD-5679</span>
-                                <span class="order-status in-progress">In Progress</span>
-                            </div>
-                            <h3>Jeans Repair & Customization</h3>
-                            <p>Repair torn areas and add custom embroidery patterns</p>
-                            <div class="order-progress">
-                                <div class="progress-bar">
-                                    <div class="progress" style="width: 30%"></div>
-                                </div>
-                                <span class="progress-text">30% Complete</span>
-                            </div>
-                            <div class="order-meta">
-                                <span class="due-date">Due: May 20, 2024</span>
-                                <span class="client">Client: Michael Chen</span>
-                            </div>
-                        </div>
+                    <div class="orders-grid" id="activeOrdersGrid">
+                        <p class="no-data-message">Loading active orders...</p>
                     </div>
                 </div>
 
-                <!-- Resources Section
-                <div class="section-card">
-                    <div class="section-header">
-                        <h2>Helpful Resources</h2>
-                    </div>
-                    <div class="resources-grid">
-                        <div class="resource-card">
-                            <div class="resource-icon">
-                                <i class="fas fa-book"></i>
-                            </div>
-                            <h3>Upcycling Guide</h3>
-                            <p>Learn best practices for sustainable fashion transformation</p>
-                            <a href="#" class="resource-link">Read More</a>
-                        </div>
-                        <div class="resource-card">
-                            <div class="resource-icon">
-                                <i class="fas fa-video"></i>
-                            </div>
-                            <h3>Video Tutorials</h3>
-                            <p>Watch step-by-step guides for common upcycling techniques</p>
-                            <a href="#" class="resource-link">Watch Now</a>
-                        </div>
-                        <div class="resource-card">
-                            <div class="resource-icon">
-                                <i class="fas fa-comments"></i>
-                            </div>
-                            <h3>Community Forum</h3>
-                            <p>Connect with other tailors and share your experiences</p>
-                            <a href="#" class="resource-link">Join Discussion</a>
-                        </div>
-                    </div>
-                </div> -->
             </div>
         </main>
     </div>
@@ -713,6 +600,26 @@
             }
         }
 
+        // Format date to relative time
+        function formatRelativeTime(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diffInSeconds = Math.floor((now - date) / 1000);
+            const diffInMinutes = Math.floor(diffInSeconds / 60);
+            const diffInHours = Math.floor(diffInMinutes / 60);
+            const diffInDays = Math.floor(diffInHours / 24);
+
+            if (diffInDays > 0) {
+                return `${diffInDays} day${diffInDays > 1 ? 's' : ''} ago`;
+            } else if (diffInHours > 0) {
+                return `${diffInHours} hour${diffInHours > 1 ? 's' : ''} ago`;
+            } else if (diffInMinutes > 0) {
+                return `${diffInMinutes} minute${diffInMinutes > 1 ? 's' : ''} ago`;
+            } else {
+                return 'Just now';
+            }
+        }
+
         async function updatePendingRequestsCount() {
             try {
                 const userId = await getCurrentUserId();
@@ -732,13 +639,55 @@
                 const pendingRequestsCount = requests.length;
 
                 // Update the pending requests count in the dashboard
-                const pendingRequestsElement = document.querySelector('.stat-card:nth-child(1) .stat-number');
+                const pendingRequestsElement = document.querySelector('#pendingRequestsCount');
                 if (pendingRequestsElement) {
                     pendingRequestsElement.textContent = pendingRequestsCount;
                 }
+
+                // Update recent requests grid
+                updateRecentRequestsGrid(requests);
             } catch (error) {
                 console.error('Error updating pending requests count:', error);
+                document.querySelector('#pendingRequestsCount').textContent = '-';
+                document.querySelector('#recentRequestsGrid').innerHTML =
+                    '<p class="no-data-message">Failed to load recent requests</p>';
             }
+        }
+
+        function updateRecentRequestsGrid(requests) {
+            const requestsGrid = document.querySelector('#recentRequestsGrid');
+            requestsGrid.innerHTML = '';
+
+            if (!requests || requests.length === 0) {
+                requestsGrid.innerHTML = '<p class="no-data-message">No pending requests at the moment</p>';
+                return;
+            }
+
+            // Show only the two most recent requests
+            const recentRequests = requests
+                .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+                .slice(0, 2);
+
+            recentRequests.forEach(request => {
+                const requestCard = document.createElement('div');
+                requestCard.className = 'request-card';
+                requestCard.innerHTML = `
+                    <div class="request-header">
+                        <span class="request-id">#${request._id}</span>
+                        <span class="request-date">${formatRelativeTime(request.createdAt)}</span>
+                    </div>
+                    <h3>${request.title || 'Untitled Request'}</h3>
+                    <p>${request.description || 'No description provided'}</p>
+                    <div class="request-meta">
+                        <span class="budget">Budget: $${request.budgetRange?.min || 0}-${request.budgetRange?.max || 0}</span>
+                        <span class="timeline">Timeline: ${request.timeline || 0} days</span>
+                    </div>
+                    <div class="request-actions">
+                        <a href="/tailor-dashboard/requests.html?id=${request._id}" class="btn-view-request">View Request</a>
+                    </div>
+                `;
+                requestsGrid.appendChild(requestCard);
+            });
         }
 
         async function updateActiveOrdersCount() {
@@ -763,13 +712,58 @@
                 const activeOrdersCount = activeOrders.length;
 
                 // Update the active orders count in the dashboard
-                const activeOrdersElement = document.querySelector('.stat-card:nth-child(2) .stat-number');
+                const activeOrdersElement = document.querySelector('#activeOrdersCount');
                 if (activeOrdersElement) {
                     activeOrdersElement.textContent = activeOrdersCount;
                 }
+
+                // Update active orders grid
+                updateActiveOrdersGrid(activeOrders);
             } catch (error) {
                 console.error('Error updating active orders count:', error);
+                document.querySelector('#activeOrdersCount').textContent = '-';
+                document.querySelector('#activeOrdersGrid').innerHTML =
+                    '<p class="no-data-message">Failed to load active orders</p>';
             }
+        }
+
+        function updateActiveOrdersGrid(orders) {
+            const ordersGrid = document.querySelector('#activeOrdersGrid');
+            ordersGrid.innerHTML = '';
+
+            if (!orders || orders.length === 0) {
+                ordersGrid.innerHTML = '<p class="no-data-message">No active orders at the moment</p>';
+                return;
+            }
+
+            // Show only the two most recent active orders
+            const recentOrders = orders
+                .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+                .slice(0, 2);
+
+            recentOrders.forEach(order => {
+                const orderCard = document.createElement('div');
+                orderCard.className = 'order-card';
+                orderCard.innerHTML = `
+                    <div class="order-header">
+                        <span class="order-id">#${order._id}</span>
+                        <span class="order-status ${order.status}">${order.status}</span>
+                    </div>
+                    <h3>${order.title || 'Untitled Order'}</h3>
+                    <p>${order.description || 'No description provided'}</p>
+                    <div class="order-progress">
+                        <div class="progress-bar">
+                            <div class="progress" style="width: ${order.progress || 0}%"></div>
+                        </div>
+                        <span class="progress-text">${order.progress || 0}% Complete</span>
+                    </div>
+                    <div class="order-meta">
+                        <span class="due-date">Due: ${order.dueDate ? new Date(order.dueDate).toLocaleDateString() : 'Not set'}</span>
+                        <span class="client">${order.clientName || 'Anonymous Client'}</span>
+                    </div>
+                `;
+                ordersGrid.appendChild(orderCard);
+            });
         }
 
         async function updateCompletedOrdersCount() {
@@ -791,190 +785,21 @@
                 const completedOrdersCount = data.orders ? data.orders.length : 0;
 
                 // Update the completed orders count in the dashboard
-                const completedOrdersElement = document.querySelector('.stat-card:nth-child(3) .stat-number');
+                const completedOrdersElement = document.querySelector('#completedOrdersCount');
                 if (completedOrdersElement) {
                     completedOrdersElement.textContent = completedOrdersCount;
                 }
             } catch (error) {
                 console.error('Error updating completed orders count:', error);
+                document.querySelector('#completedOrdersCount').textContent = '-';
             }
         }
 
-        async function loadActiveRequests() {
-            try {
-                const userId = await getCurrentUserId();
-                if (!userId) {
-                    throw new Error('User not authenticated');
-                }
-
-                const response = await fetch(`/api/requests/tailor/${userId}?status=pending`, {
-                    credentials: 'include'
-                });
-
-                if (!response.ok) {
-                    throw new Error('Failed to fetch requests');
-                }
-
-                const requests = await response.json();
-                console.log('Requests data:', requests); // Debug log
-
-                // Sort requests by creation date (newest first) and take only the 2 most recent
-                const recentRequests = requests
-                    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-                    .slice(0, 2);
-
-                console.log('Recent requests:', recentRequests); // Debug log
-
-                const requestsGrid = document.querySelector('.requests-grid');
-
-                if (!requestsGrid) {
-                    console.error('Requests grid element not found');
-                    return;
-                }
-
-                // Clear existing requests
-                requestsGrid.innerHTML = '';
-
-                if (recentRequests.length === 0) {
-                    requestsGrid.innerHTML = `
-                        <div class="col-12 text-center">
-                            <p class="text-muted">No pending requests at the moment.</p>
-                        </div>
-                    `;
-                    return;
-                }
-
-                recentRequests.forEach(request => {
-                    const requestCard = document.createElement('div');
-                    requestCard.className = 'request-card';
-                    requestCard.innerHTML = `
-                        <div class="request-header">
-                            <span class="request-id">#${request._id}</span>
-                            <span class="request-date">${new Date(request.createdAt).toLocaleString()}</span>
-                        </div>
-                        <h3>${request.title || 'Untitled Request'}</h3>
-                        <p>${request.description || 'No description provided'}</p>
-                        <div class="request-meta">
-                            <span class="budget">Budget: $${request.budgetRange?.min || 0}-${request.budgetRange?.max || 0}</span>
-                            <span class="timeline">Timeline: ${request.timeline || 0} days</span>
-                        </div>
-                        <div class="request-actions">
-                            <a href="/tailor-dashboard/requests.html?id=${request._id}" class="btn-view-request">View Request</a>
-                        </div>
-                    `;
-                    requestsGrid.appendChild(requestCard);
-                });
-
-                // Update the pending requests count in the stats (show total count, not just recent)
-                const pendingRequestsCount = requests.length;
-                const pendingRequestsElement = document.querySelector('.stat-card:nth-child(1) .stat-number');
-                if (pendingRequestsElement) {
-                    pendingRequestsElement.textContent = pendingRequestsCount;
-                }
-            } catch (error) {
-                console.error('Error loading requests:', error);
-                const requestsGrid = document.querySelector('.requests-grid');
-                if (requestsGrid) {
-                    requestsGrid.innerHTML = `
-                        <div class="col-12 text-center">
-                            <p class="text-danger">Failed to load requests. Please try again later.</p>
-                        </div>
-                    `;
-                }
-            }
-        }
-
-        async function loadActiveOrders() {
-            try {
-                const userId = await getCurrentUserId();
-                if (!userId) {
-                    throw new Error('User not authenticated');
-                }
-
-                const response = await fetch(`/api/orders/tailor/${userId}?status=all`, {
-                    credentials: 'include'
-                });
-
-                if (!response.ok) {
-                    throw new Error('Failed to fetch orders');
-                }
-
-                const data = await response.json();
-                console.log('Full API Response:', data);
-
-                // Filter for active orders (in-progress or shipped)
-                const activeOrders = data.orders ? data.orders.filter(order =>
-                    order.status === 'in-progress' || order.status === 'shipped'
-                ) : [];
-
-                const ordersGrid = document.querySelector('.orders-grid');
-
-                if (!ordersGrid) {
-                    console.error('Orders grid element not found');
-                    return;
-                }
-
-                // Clear existing orders
-                ordersGrid.innerHTML = '';
-
-                if (activeOrders.length === 0) {
-                    ordersGrid.innerHTML = `
-                        <div class="col-12 text-center">
-                            <p class="text-muted">No active orders at the moment.</p>
-                        </div>
-                    `;
-                    return;
-                }
-
-                activeOrders.forEach(order => {
-                    const orderCard = document.createElement('div');
-                    orderCard.className = 'order-card';
-                    orderCard.innerHTML = `
-                        <div class="order-header">
-                            <span class="order-id">#${order._id}</span>
-                            <span class="order-status ${order.status}">${order.status}</span>
-                        </div>
-                        <h3>${order.title || 'Untitled Order'}</h3>
-                        <p>${order.description || 'No description provided'}</p>
-                        <div class="order-progress">
-                            <div class="progress-bar">
-                                <div class="progress" style="width: ${order.progress || 0}%"></div>
-                            </div>
-                            <span class="progress-text">${order.progress || 0}% Complete</span>
-                        </div>
-                        <div class="order-meta">
-                            <span class="due-date">Due: ${order.dueDate ? new Date(order.dueDate).toLocaleDateString() : 'Not set'}</span>
-                        </div>
-                    `;
-                    ordersGrid.appendChild(orderCard);
-                });
-
-                // Update the active orders count in the stats
-                const activeOrdersCount = activeOrders.length;
-                const activeOrdersElement = document.querySelector('.stat-card:nth-child(2) .stat-number');
-                if (activeOrdersElement) {
-                    activeOrdersElement.textContent = activeOrdersCount;
-                }
-            } catch (error) {
-                console.error('Error loading orders:', error);
-                const ordersGrid = document.querySelector('.orders-grid');
-                if (ordersGrid) {
-                    ordersGrid.innerHTML = `
-                        <div class="col-12 text-center">
-                            <p class="text-danger">Failed to load orders. Please try again later.</p>
-                        </div>
-                    `;
-                }
-            }
-        }
-
-        // Load counts and data when page loads
+        // Initialize dashboard data
         document.addEventListener('DOMContentLoaded', () => {
             updatePendingRequestsCount();
             updateActiveOrdersCount();
             updateCompletedOrdersCount();
-            loadActiveRequests();
-            loadActiveOrders();
         });
     </script>
 </body>

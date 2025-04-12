@@ -255,7 +255,6 @@ router.post('/api/profile', isUser, async (req, res) => {
     const user = await User.findById(userId);
 
     if (!user) {
-      console.log('User not found:', userId);
       return res.status(404).json({
         success: false,
         error: 'User not found',
@@ -263,55 +262,46 @@ router.post('/api/profile', isUser, async (req, res) => {
       });
     }
 
+    // Update basic profile information
+    if (req.body.location) user.location = req.body.location;
+    if (req.body.bio) user.bio = req.body.bio;
+
     // Handle profile picture upload
     if (req.files && req.files.profilePicture) {
-      console.log('Starting Cloudinary upload...');
       try {
-        // Convert the file to base64
-        const fileBuffer = req.files.profilePicture.data;
-        const base64String = fileBuffer.toString('base64');
-        const dataUri = `data:${req.files.profilePicture.mimetype};base64,${base64String}`;
-
-        // Upload to Cloudinary using base64
-        const result = await cloudinary.uploader.upload(dataUri, {
-          folder: 'upthreaded/user-profiles',
+        // Upload to Cloudinary
+        const result = await cloudinary.uploader.upload(req.files.profilePicture.tempFilePath, {
+          folder: 'upthreaded/profile-pictures',
           public_id: `${user._id}-${Date.now()}`,
           resource_type: 'auto'
         });
 
+        // Update user profile with Cloudinary URL
         user.profilePicture = result.secure_url;
-        console.log('Updated user profile picture URL:', result.secure_url);
+
+        // Clean up temporary file
+        if (req.files.profilePicture.tempFilePath) {
+          fs.unlinkSync(req.files.profilePicture.tempFilePath);
+        }
       } catch (error) {
         console.error('Error uploading to Cloudinary:', error);
         return res.status(500).json({
           success: false,
-          error: 'Failed to upload image',
-          details: error.message || 'Unknown error occurred during image upload'
+          error: 'Failed to upload profile picture',
+          details: error.message || 'Unknown error occurred during upload'
         });
       }
     }
 
-    // Update other fields
-    if (req.body.location) {
-      console.log('Updating location:', req.body.location);
-      user.location = req.body.location;
-    }
-    if (req.body.bio) {
-      console.log('Updating bio:', req.body.bio);
-      user.bio = req.body.bio;
-    }
-
-    console.log('Saving user profile...');
+    // Save the updated user profile
     await user.save();
-    console.log('Profile updated successfully');
 
     return res.json({
       success: true,
       message: 'Profile updated successfully',
-      profilePicture: user.profilePicture,
-      location: user.location,
-      bio: user.bio
+      profilePicture: user.profilePicture
     });
+
   } catch (error) {
     console.error('Detailed error updating profile:', error);
     return res.status(500).json({
