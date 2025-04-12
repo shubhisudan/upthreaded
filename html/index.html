@@ -12,149 +12,261 @@
   <script type="text/javascript">
     function googleTranslateElementInit() {
       new google.translate.TranslateElement(
-        {pageLanguage: 'en', includedLanguages: 'hi,ta,te,kn,ml,bn,gu,mr,pa,ur'},
+        { pageLanguage: 'en', includedLanguages: 'hi,ta,te,kn,ml,bn,gu,mr,pa,ur' },
         'google_translate_element'
       );
     }
   </script>
-  <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+  <script type="text/javascript"
+    src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap');
 
     :root {
-      --primary-color: #285A84;
-      --secondary-color: #1d4361;
-      --accent-color: #4CAF50;
-      --text-color: #333;
-      --light-bg: #f8f9fa;
+      --primary-color: #2C3E50;
+      --secondary-color: #34495E;
+      --accent-color: #27AE60;
+      --text-color: #2C3E50;
+      --light-bg: #F5F7FA;
+      --gradient-primary: linear-gradient(135deg, #2C3E50 0%, #34495E 100%);
+      --gradient-accent: linear-gradient(135deg, #27AE60 0%, #2ECC71 100%);
+      --gradient-dark: linear-gradient(135deg, #1a1c20 0%, #2C3E50 100%);
+      --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+      --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+      --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.15);
+      --border-radius: 16px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
 
     body {
-      font-family: 'Ubuntu', sans-serif;
-      background-color: var(--light-bg);
+      font-family: 'Inter', sans-serif;
+      background-color: white;
       color: var(--text-color);
+      line-height: 1.2;
       overflow-x: hidden;
     }
 
-    /* Hero Section Animations */
-    .hero-section {
-      position: relative;
-      overflow: hidden;
-      animation: fadeIn 1s ease-out;
+    .navbar {
+      padding: 0.8rem 0;
+      background: #ffffff !important;
+      backdrop-filter: blur(10px);
+      position: fixed;
+      width: 100%;
+      top: 0;
+      z-index: 1000;
+      transition: all 0.3s ease;
+      border-bottom: 1px solid rgba(44, 62, 80, 0.1);
+      margin-top: 20px;
     }
 
-    .hero-section::before {
+    .navbar.hidden {
+      transform: translateY(-100%);
+    }
+
+    .navbar-brand {
+      font-size: 1.8rem;
+      font-weight: 900;
+      letter-spacing: -1px;
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .navbar-brand img {
+      width: 35px;
+      height: 35px;
+      object-fit: contain;
+    }
+
+    .nav-link {
+      font-size: 0.9rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      position: relative;
+      padding: 0.2rem 0.6rem;
+      transition: color 0.3s ease;
+    }
+
+    .nav-link::after {
       content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: var(--gradient-accent);
+      transform: scaleX(0);
+      transform-origin: right;
+      transition: transform 0.3s ease;
+    }
+
+    .nav-link:hover::after {
+      transform: scaleX(1);
+      transform-origin: left;
+    }
+
+    .nav-buttons {
+      display: flex;
+      gap: 0.8rem;
+      align-items: center;
+    }
+
+    .nav-btn {
+      padding: 0.3rem 1rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      border-radius: 50px;
+      transition: all 0.3s ease;
+      text-decoration: none;
+    }
+
+    .nav-btn-primary {
+      background: var(--gradient-accent);
+      color: white;
+      border: none;
+    }
+
+    .nav-btn-secondary {
+      background: transparent;
+      color: var(--primary-color);
+      border: 2px solid var(--accent-color);
+    }
+
+    .nav-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .nav-btn-primary:hover {
+      background: var(--gradient-accent);
+      background-size: 200% 200%;
+      animation: gradientShift 3s ease infinite;
+    }
+
+    .nav-btn-secondary:hover {
+      background: rgba(39, 174, 96, 0.1);
+    }
+
+    .parallax-banner {
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      background: var(--gradient-dark);
+      padding-top: 0;
+    }
+
+    .parallax-bg {
       position: absolute;
       top: 0;
       left: 0;
-      right: 0;
-      bottom: 0;
-      background: linear-gradient(45deg, rgba(40, 90, 132, 0.8), rgba(29, 67, 97, 0.8));
-      animation: gradientShift 10s ease infinite;
+      width: 100%;
+      height: 100%;
+      background: url('/images/star.jpeg') center/cover;
+      opacity: 0.15;
+      transform: translateZ(0);
+      will-change: transform;
     }
 
-    .hero-content {
+    .banner-content {
       position: relative;
-      z-index: 1;
-      animation: slideUp 1s ease-out;
+      z-index: 2;
+      text-align: center;
+      color: white;
+      padding: 0 1rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      margin-top: 0;
     }
 
-    /* Feature Cards Animations */
-    .feature-card {
-      transition: all 0.3s ease;
-      transform: translateY(0);
+    .banner-title {
+      font-size: clamp(2.5rem, 12vw, 8rem);
+      font-weight: 900;
+      letter-spacing: -0.05em;
+      line-height: 1;
       opacity: 0;
-      animation: fadeInUp 0.5s ease forwards;
+      transform: translateY(50px);
+      animation: fadeInUp 1s ease forwards;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+      margin-bottom: 1rem;
+      background: linear-gradient(135deg, #ffffff 0%, #e0e0e0 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
 
-    .feature-card:hover {
-      transform: translateY(-10px);
-      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    .banner-subtitle {
+      font-size: clamp(1rem, 3.5vw, 1.8rem);
+      font-weight: 500;
+      margin-bottom: 1.5rem;
+      opacity: 0;
+      transform: translateY(30px);
+      animation: fadeInUp 1s ease 0.3s forwards;
+      text-transform: uppercase;
+      letter-spacing: 4px;
+      color: rgba(255, 255, 255, 0.9);
     }
 
-    .feature-card:nth-child(1) {
-      animation-delay: 0.2s;
+    .banner-cta {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      opacity: 0;
+      transform: translateY(30px);
+      animation: fadeInUp 1s ease 0.6s forwards;
     }
 
-    .feature-card:nth-child(2) {
-      animation-delay: 0.4s;
-    }
-
-    .feature-card:nth-child(3) {
-      animation-delay: 0.6s;
-    }
-
-    /* Button Animations */
-    .btn-primary {
+    .banner-btn {
+      padding: 1rem 2.5rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      border-radius: 50px;
+      transition: all 0.3s ease;
       position: relative;
       overflow: hidden;
-      transition: all 0.3s ease;
+      text-decoration: none;
     }
 
-    .btn-primary::after {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 0;
-      height: 0;
-      background: rgba(255, 255, 255, 0.2);
-      border-radius: 50%;
-      transform: translate(-50%, -50%);
-      transition: width 0.3s ease, height 0.3s ease;
+    .banner-btn-primary {
+      background: var(--gradient-accent);
+      color: white;
+      border: none;
     }
 
-    .btn-primary:hover::after {
-      width: 300px;
-      height: 300px;
+    .banner-btn-secondary {
+      background: transparent;
+      color: white;
+      border: 2px solid white;
     }
 
-    /* Stats Section Animations */
-    .stat-card {
-      transition: all 0.3s ease;
-      opacity: 0;
-      transform: translateY(20px);
+    .banner-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
     }
 
-    .stat-card.visible {
-      opacity: 1;
-      transform: translateY(0);
+    .banner-btn-primary:hover {
+      background: var(--gradient-accent);
+      background-size: 200% 200%;
+      animation: gradientShift 3s ease infinite;
     }
 
-    /* Keyframe Animations */
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-      }
-
-      to {
-        opacity: 1;
-      }
-    }
-
-    @keyframes slideUp {
-      from {
-        opacity: 0;
-        transform: translateY(50px);
-      }
-
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    @keyframes fadeInUp {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+    .banner-btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.1);
     }
 
     @keyframes gradientShift {
@@ -171,89 +283,821 @@
       }
     }
 
-    /* Scroll Animations */
-    .animate-on-scroll {
+    .banner-scroll-indicator {
+      position: absolute;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
       opacity: 0;
-      transform: translateY(20px);
-      transition: all 0.6s ease;
+      animation: fadeInUp 1s ease 1s forwards;
     }
 
-    .animate-on-scroll.visible {
-      opacity: 1;
+    .scroll-arrow {
+      width: 30px;
+      height: 30px;
+      border: 2px solid white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .scroll-arrow:hover {
+      transform: translateY(5px);
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .scroll-arrow i {
+      color: white;
+      animation: bounce 2s infinite;
+    }
+
+    @keyframes bounce {
+
+      0%,
+      20%,
+      50%,
+      80%,
+      100% {
+        transform: translateY(0);
+      }
+
+      40% {
+        transform: translateY(-5px);
+      }
+
+      60% {
+        transform: translateY(-3px);
+      }
+    }
+
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      margin-bottom: 4rem;
+      opacity: 0;
+      transform: translateY(30px);
+    }
+
+    .product-grid.visible {
+      animation: fadeInUp 1s ease forwards;
+    }
+
+    .product-card {
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .product-card img {
+      width: 100%;
+      height: 500px;
+      object-fit: cover;
+      transition: transform 0.6s ease;
+    }
+
+    .product-card:hover img {
+      transform: scale(1.05);
+    }
+
+    .product-info {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 2rem;
+      background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+      color: white;
+      transform: translateY(100%);
+      transition: transform 0.4s ease;
+    }
+
+    .product-card:hover .product-info {
       transform: translateY(0);
     }
 
-    /* Loading Animation */
-    .loading-spinner {
+    .section-title {
+      font-size: clamp(1.6rem, 5vw, 3rem);
+      font-weight: 900;
+      letter-spacing: -2px;
+      margin-bottom: 1.5rem;
+      text-align: center;
+      position: relative;
+      padding-bottom: 0.8rem;
+    }
+
+    .section-title::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100px;
+      height: 4px;
+      background: var(--gradient-accent);
+      border-radius: 2px;
+    }
+
+    .text-gradient {
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .collection-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 1.5rem;
+      margin-bottom: 4rem;
+      opacity: 0;
+      transform: translateY(30px);
+    }
+
+    .collection-grid.visible {
+      animation: fadeInUp 1s ease forwards;
+    }
+
+    .collection-main {
+      grid-row: span 2;
+      overflow: hidden;
+    }
+
+    .collection-main img,
+    .collection-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.6s ease;
+    }
+
+    .collection-main:hover img,
+    .collection-item:hover img {
+      transform: scale(1.05);
+    }
+
+    .collection-item {
+      overflow: hidden;
+      position: relative;
+    }
+
+    .footer-banner {
+      background: var(--gradient-dark);
+      color: white;
+      padding: 2rem 0;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .footer-banner::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('/images/star.jpeg') center/cover;
+      opacity: 0.1;
+      mix-blend-mode: overlay;
+    }
+
+    .footer-title {
+      font-size: clamp(2.5rem, 6vw, 6rem);
+      font-weight: 900;
+      letter-spacing: -3px;
+      margin-bottom: 2rem;
+      opacity: 0;
+      transform: translateY(30px);
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .footer-title.visible {
+      animation: fadeInUp 1s ease forwards;
+    }
+
+    .btn-outline-light {
+      border-width: 2px;
+      padding: 1rem 3rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      transition: all 0.3s ease;
+      text-decoration: none;
+    }
+
+    .btn-outline-light:hover {
+      background: white;
+      color: var(--primary-color);
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    @keyframes fadeInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes float {
+
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+
+      50% {
+        transform: translateY(-20px);
+      }
+    }
+
+    .floating {
+      animation: float 6s ease-in-out infinite;
+    }
+
+    @media (max-width: 768px) {
+      .banner-title {
+        font-size: 3rem;
+      }
+
+      .product-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .collection-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .footer-title {
+        font-size: 3rem;
+      }
+
+      .feature-grid,
+      .impact-grid,
+      .testimonial-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .process-step {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+
+      .process-step:nth-child(even) {
+        direction: ltr;
+      }
+
+      .feature-card,
+      .testimonial-card {
+        padding: 2rem;
+      }
+
+      .impact-section {
+        padding: 4rem 0;
+      }
+
+      .process-image {
+        height: 300px;
+      }
+
+      .process-image img {
+        height: 100%;
+      }
+    }
+
+    .feature-section {
+      padding: 1.5rem 0;
+      background: var(--light-bg);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .feature-section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(45deg, var(--accent-color) 0%, transparent 70%);
+      opacity: 0.05;
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+    }
+
+    .feature-card {
+      background: white;
+      padding: 1.5rem;
+      border-radius: var(--border-radius);
+      text-align: center;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      opacity: 0;
+      transform: translateY(30px);
+      box-shadow: var(--shadow-md);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--gradient-accent);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: 1;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-10px);
+      box-shadow: var(--shadow-xl);
+    }
+
+    .feature-card:hover::before {
+      opacity: 0.05;
+    }
+
+    .feature-card.visible {
+      animation: fadeInUp 1s ease forwards;
+    }
+
+    .feature-icon {
+      width: 70px;
+      height: 70px;
+      background: var(--gradient-accent);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.5rem;
+      color: white;
+      font-size: 1.8rem;
+      position: relative;
+      z-index: 2;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .feature-card h3 {
+      margin-bottom: 1rem;
+      font-weight: 700;
+      position: relative;
+      z-index: 2;
+    }
+
+    .feature-card p {
+      color: var(--secondary-color);
+      line-height: 1.6;
+      position: relative;
+      z-index: 2;
+    }
+
+    .process-section {
+      padding: 1.5rem 0;
+      background: white;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .process-section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(45deg, var(--accent-color) 0%, transparent 70%);
+      opacity: 0.05;
+      z-index: 0;
+    }
+
+    .process-step {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      align-items: center;
+      margin-bottom: 2rem;
+      opacity: 0;
+      transform: translateY(30px);
+      position: relative;
+      z-index: 1;
+    }
+
+    .process-step.visible {
+      animation: fadeInUp 1s ease forwards;
+    }
+
+    .process-step:nth-child(even) {
+      direction: rtl;
+    }
+
+    .process-step:nth-child(even) .process-content {
+      direction: ltr;
+    }
+
+    .process-image {
+      position: relative;
+      border-radius: var(--border-radius);
+      overflow: hidden;
+      box-shadow: var(--shadow-xl);
+      transition: all 0.4s ease;
+      aspect-ratio: 4/3;
+    }
+
+    .process-image::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--gradient-primary);
+      opacity: 0.2;
+      transition: opacity 0.3s ease;
+    }
+
+    .process-image:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    .process-image:hover::before {
+      opacity: 0.3;
+    }
+
+    .process-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.6s ease;
+    }
+
+    .process-image:hover img {
+      transform: scale(1.05);
+    }
+
+    .process-content {
+      padding: 1.5rem;
+    }
+
+    .step-number {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--accent-color);
+      margin-bottom: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      display: inline-block;
+      padding: 0.5rem 1rem;
+      background: rgba(39, 174, 96, 0.1);
+      border-radius: 50px;
+    }
+
+    .process-content h3 {
+      font-size: 2rem;
+      font-weight: 800;
+      margin-bottom: 1rem;
+      line-height: 1.2;
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .process-content p {
+      font-size: 1.1rem;
+      line-height: 1.6;
+      color: var(--secondary-color);
+      margin-bottom: 2rem;
+    }
+
+    .process-content ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .process-content li {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      font-size: 1.1rem;
+      color: var(--secondary-color);
+    }
+
+    .process-content li::before {
+      content: '✓';
+      color: var(--accent-color);
+      font-weight: bold;
+      background: rgba(39, 174, 96, 0.1);
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    @media (max-width: 768px) {
+      .process-step {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+        margin-bottom: 4rem;
+      }
+
+      .process-step:nth-child(even) {
+        direction: ltr;
+      }
+
+      .process-content h3 {
+        font-size: 2rem;
+      }
+
+      .process-image {
+        aspect-ratio: 16/9;
+      }
+    }
+
+    .impact-section {
+      padding: 1.5rem 0;
+      background: var(--gradient-primary);
+      color: white;
+      text-align: center;
+    }
+
+    .impact-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+
+    .impact-card {
+      padding: 2rem;
+      opacity: 0;
+      transform: translateY(30px);
+      transition: transform 0.3s ease;
+    }
+
+    .impact-card.visible {
+      animation: fadeInUp 1s ease forwards;
+    }
+
+    .impact-number {
+      font-size: 3.5rem;
+      font-weight: 900;
+      margin-bottom: 1rem;
+      background: var(--gradient-accent);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      transition: transform 0.3s ease;
+    }
+
+    .testimonial-section {
+      padding: 1.5rem 0;
+      background: var(--light-bg);
+      overflow: hidden;
+    }
+
+    .testimonial-container {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .testimonial-track {
+      display: flex;
+      gap: 1rem;
+      animation: scrollTestimonials 30s linear infinite;
+      width: fit-content;
+    }
+
+    .testimonial-track:hover {
+      animation-play-state: paused;
+    }
+
+    .testimonial-grid {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1.5rem;
+      min-width: 100%;
+    }
+
+    .testimonial-card {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 10px;
+      min-width: 350px;
+      opacity: 0;
+      transform: translateY(30px);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    @keyframes scrollTestimonials {
+      0% {
+        transform: translateX(0);
+      }
+
+      100% {
+        transform: translateX(calc(-350px * 6 - 1rem * 6));
+      }
+    }
+
+    .testimonial-card.visible {
+      animation: fadeInUp 1s ease forwards;
+    }
+
+    .testimonial-content {
+      font-size: 1.1rem;
+      line-height: 1.6;
+      margin-bottom: 2rem;
+    }
+
+    .testimonial-author {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .author-image {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      overflow: hidden;
+    }
+
+    .author-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .author-info h4 {
+      margin: 0;
+      font-size: 1.1rem;
+    }
+
+    .author-info p {
+      margin: 0;
+      color: var(--secondary-color);
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 768px) {
+
+      .feature-grid,
+      .impact-grid,
+      .testimonial-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .process-step {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+
+      .process-step:nth-child(even) {
+        direction: ltr;
+      }
+    }
+
+    /* New Footer Styles */
+    .main-footer {
+      background: var(--primary-color);
+      color: white;
+      padding: 4rem 0 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .main-footer::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('/images/star.jpeg') center/cover;
+      opacity: 0.05;
+      mix-blend-mode: overlay;
+    }
+
+    .footer-content {
+      position: relative;
+      z-index: 1;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2rem;
+      margin-bottom: 3rem;
+    }
+
+    .footer-column h4 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      color: white;
+      position: relative;
+      padding-bottom: 0.8rem;
+    }
+
+    .footer-column h4::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 40px;
+      height: 3px;
+      background: var(--gradient-accent);
+      border-radius: 2px;
+    }
+
+    .footer-links {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .footer-links li {
+      margin-bottom: 0.8rem;
+    }
+
+    .footer-links a {
+      color: rgba(255, 255, 255, 0.8);
+      text-decoration: none;
+      transition: all 0.3s ease;
+      display: inline-block;
+    }
+
+    .footer-links a:hover {
+      color: white;
+      transform: translateX(5px);
+    }
+
+    .social-links {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+
+    .social-links a {
       width: 40px;
       height: 40px;
-      border: 4px solid rgba(255, 255, 255, 0.3);
       border-radius: 50%;
-      border-top-color: white;
-      animation: spin 1s ease-in-out infinite;
+      background: rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      transition: all 0.3s ease;
+      text-decoration: none;
     }
 
-    @keyframes spin {
-      to {
-        transform: rotate(360deg);
-      }
+    .social-links a:hover {
+      background: var(--gradient-accent);
+      transform: translateY(-3px);
     }
 
-    /* Responsive Adjustments */
+    .footer-bottom {
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding-top: 2rem;
+      text-align: center;
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 0.9rem;
+    }
+
     @media (max-width: 768px) {
-      .hero-content {
-        text-align: center;
-      }
-
-      .feature-card {
-        margin-bottom: 20px;
+      .footer-grid {
+        grid-template-columns: repeat(2, 1fr);
       }
     }
 
-    /* Google Translate Styles */
-    .goog-te-gadget {
-      font-family: 'Ubuntu', sans-serif !important;
-      text-transform: none !important;
-    }
-    .goog-te-gadget-simple {
-      background-color: transparent !important;
-      border: 1px solid rgba(255, 255, 255, 0.5) !important;
-      padding: 8px !important;
-      border-radius: 4px !important;
-      cursor: pointer !important;
-    }
-    .goog-te-menu-value {
-      color: white !important;
-      text-decoration: none !important;
-    }
-    .goog-te-menu-value span {
-      color: white !important;
-    }
-    .goog-te-menu-value:hover {
-      text-decoration: none !important;
-    }
-    .goog-te-gadget .goog-te-combo {
-      background-color: transparent !important;
-      color: rgb(0, 0, 0) !important;
-      border: none !important;
-      padding: 5px !important;
-    }
-    .goog-te-banner-frame {
-      display: none !important;
-    }
-    body {
-      top: 0 !important;
+    @media (max-width: 576px) {
+      .footer-grid {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
 
 <body>
   <!-- Navigation -->
-  <nav class="navbar navbar-expand-lg navbar-dark fixed-top" style="background-color: var(--primary-color);">
+  <nav class="navbar navbar-expand-lg">
     <div class="container">
-      <a class="navbar-brand d-flex align-items-center" href="/">
-        <img src="/images/logo.png" alt="Logo" class="me-2" style="width: 40px;">
-        <span>UpThreaded</span>
+      <a class="navbar-brand" href="/">
+        <img src="/images/logo.png" alt="UpThreaded Logo">
+        UpThreaded
       </a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
         <span class="navbar-toggler-icon"></span>
@@ -264,71 +1108,281 @@
           <li class="nav-item"><a class="nav-link" href="/about">About</a></li>
           <li class="nav-item"><a class="nav-link" href="/contact">Contact</a></li>
         </ul>
-        <div class="d-flex align-items-center">
+        <div class="nav-buttons">
           <div id="google_translate_element" class="me-3"></div>
-          <div class="dropdown">
-            <button class="btn btn-outline-light dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-              <i class="fas fa-user"></i>
-            </button>
-            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
-              <li><a class="dropdown-item" href="/login"><i class="fas fa-sign-in-alt"></i> Login</a></li>
-              <li><a class="dropdown-item" href="/signup"><i class="fas fa-user-plus"></i> Sign Up</a></li>
-            </ul>
-          </div>
+          <a href="/login" class="nav-btn nav-btn-secondary">Login</a>
+          <a href="/signup" class="nav-btn nav-btn-primary">Sign Up</a>
         </div>
       </div>
     </div>
   </nav>
 
-  <!-- Hero Section -->
-  <section class="hero-section text-white py-5">
+  <!-- Parallax Banner -->
+  <section class="parallax-banner">
+    <div class="parallax-bg"></div>
+    <div class="banner-content">
+      <h1 class="banner-title">UPTHREADED</h1>
+      <p class="banner-subtitle">Revolutionizing Sustainable Fashion</p>
+      <div class="banner-cta">
+        <a href="/signup" class="banner-btn banner-btn-primary">Get Started</a>
+        <a href="/about" class="banner-btn banner-btn-secondary">Learn More</a>
+      </div>
+    </div>
+    <div class="banner-scroll-indicator">
+      <div class="scroll-arrow">
+        <i class="fas fa-chevron-down"></i>
+      </div>
+    </div>
+  </section>
+
+  <!-- Feature Section -->
+  <section class="feature-section">
     <div class="container">
-      <div class="row align-items-center min-vh-100">
-        <div class="col-lg-6 hero-content">
-          <h1 class="display-4 fw-bold mb-4">Transform Your Wardrobe Sustainably</h1>
-          <p class="lead mb-4">Connect with skilled tailors to upcycle your clothes and create unique, eco-friendly
-            fashion pieces.</p>
-          <div class="d-flex gap-3">
-            <a href="/signup" class="btn btn-primary btn-lg">Get Started</a>
-            <a href="#features" class="btn btn-outline-light btn-lg">Learn More</a>
+      <h2 class="section-title text-center">Why Choose UpThreaded?</h2>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-leaf"></i>
           </div>
+          <h3>Sustainable Fashion</h3>
+          <p>Transform your existing clothes into unique pieces, reducing fashion waste and environmental impact.</p>
         </div>
-        <div class="col-lg-6">
-          <img src="/images/star.jpeg" alt="Sustainable Fashion" class="img-fluid rounded shadow-lg animate-on-scroll">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-users"></i>
+          </div>
+          <h3>Expert Tailors</h3>
+          <p>Connect with skilled local tailors who specialize in upcycling and sustainable fashion design.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-lightbulb"></i>
+          </div>
+          <h3>AI-Powered Design</h3>
+          <p>Get personalized design suggestions using our innovative AI technology for creative transformations.</p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Features Section -->
-  <section id="features" class="py-5">
+  <!-- Process Section -->
+  <section class="process-section">
     <div class="container">
-      <h2 class="text-center mb-5">Why Choose UpThreaded?</h2>
-      <div class="row">
-        <div class="col-md-4">
-          <div class="feature-card card h-100 border-0 shadow-sm p-4">
-            <div class="card-body text-center">
-              <i class="fas fa-leaf fa-3x mb-3 text-primary"></i>
-              <h3 class="h4">Sustainable Fashion</h3>
-              <p>Reduce waste by transforming your existing clothes into new, trendy pieces.</p>
+      <h2 class="section-title text-center">How It Works</h2>
+      <div class="process-step">
+        <div class="process-image">
+          <img src="/images/star.jpeg" alt="Upload your clothes">
+        </div>
+        <div class="process-content">
+          <div class="step-number">Step 01</div>
+          <h3>Upload Your Clothes</h3>
+          <p>Take photos of the clothes you want to transform. Our AI system will analyze the fabric, style, and
+            potential for upcycling.</p>
+          <ul>
+            <li>Multiple angle photos for better analysis</li>
+            <li>Fabric type identification</li>
+            <li>Style potential assessment</li>
+          </ul>
+        </div>
+      </div>
+      <div class="process-step">
+        <div class="process-image">
+          <img src="/images/star.jpeg" alt="Get design suggestions">
+        </div>
+        <div class="process-content">
+          <div class="step-number">Step 02</div>
+          <h3>Explore Design Ideas</h3>
+          <p>Receive AI-generated design suggestions based on current trends and your style preferences.</p>
+          <ul>
+            <li>Personalized style recommendations</li>
+            <li>Trend-based suggestions</li>
+            <li>Sustainable transformation options</li>
+          </ul>
+        </div>
+      </div>
+      <div class="process-step">
+        <div class="process-image">
+          <img src="/images/star.jpeg" alt="Connect with tailors">
+        </div>
+        <div class="process-content">
+          <div class="step-number">Step 03</div>
+          <h3>Connect with Tailors</h3>
+          <p>Browse profiles of skilled local tailors and choose the perfect match for your project.</p>
+          <ul>
+            <li>View tailor portfolios and ratings</li>
+            <li>Compare pricing and timelines</li>
+            <li>Direct communication channel</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Impact Section -->
+  <section class="impact-section">
+    <div class="container">
+      <h2 class="section-title text-center text-white">Our Impact</h2>
+      <div class="impact-grid">
+        <div class="impact-card">
+          <div class="impact-number">500+</div>
+          <p>Happy Customers</p>
+        </div>
+        <div class="impact-card">
+          <div class="impact-number">1000+</div>
+          <p>Clothes Upcycled</p>
+        </div>
+        <div class="impact-card">
+          <div class="impact-number">50+</div>
+          <p>Expert Tailors</p>
+        </div>
+        <div class="impact-card">
+          <div class="impact-number">2T</div>
+          <p>CO2 Saved</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonial Section -->
+  <section class="testimonial-section">
+    <div class="container">
+      <h2 class="section-title text-center">What Our Users Say</h2>
+      <div class="testimonial-container">
+        <div class="testimonial-track">
+          <div class="testimonial-card">
+            <div class="testimonial-content">
+              "UpThreaded transformed my old dress into a stunning modern piece. The AI suggestions were incredibly
+              creative, and the tailor executed the design perfectly."
+            </div>
+            <div class="testimonial-author">
+              <div class="author-image">
+                <img src="/images/star.jpeg" alt="Sarah">
+              </div>
+              <div class="author-info">
+                <h4>Sarah Johnson</h4>
+                <p>Fashion Enthusiast</p>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="col-md-4">
-          <div class="feature-card card h-100 border-0 shadow-sm p-4">
-            <div class="card-body text-center">
-              <i class="fas fa-users fa-3x mb-3 text-primary"></i>
-              <h3 class="h4">Skilled Tailors</h3>
-              <p>Connect with experienced tailors who specialize in upcycling and custom designs.</p>
+          <div class="testimonial-card">
+            <div class="testimonial-content">
+              "As a tailor, this platform has connected me with clients who truly value sustainable fashion. The AI
+              suggestions help bridge the gap between vision and execution."
+            </div>
+            <div class="testimonial-author">
+              <div class="author-image">
+                <img src="/images/star.jpeg" alt="Michael">
+              </div>
+              <div class="author-info">
+                <h4>Michael Chen</h4>
+                <p>Professional Tailor</p>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="col-md-4">
-          <div class="feature-card card h-100 border-0 shadow-sm p-4">
-            <div class="card-body text-center">
-              <i class="fas fa-lightbulb fa-3x mb-3 text-primary"></i>
-              <h3 class="h4">Creative Ideas</h3>
-              <p>Get inspired with our AI-powered design suggestions for your clothing transformations.</p>
+          <div class="testimonial-card">
+            <div class="testimonial-content">
+              "I love how UpThreaded helps me give new life to my old clothes. It's not just about fashion; it's about
+              making a positive impact on the environment."
+            </div>
+            <div class="testimonial-author">
+              <div class="author-image">
+                <img src="/images/star.jpeg" alt="Emma">
+              </div>
+              <div class="author-info">
+                <h4>Emma Rodriguez</h4>
+                <p>Sustainability Advocate</p>
+              </div>
+            </div>
+          </div>
+          <div class="testimonial-card">
+            <div class="testimonial-content">
+              "The AI suggestions were spot-on! My old jeans were transformed into a trendy jacket that I get
+              compliments on every time I wear it."
+            </div>
+            <div class="testimonial-author">
+              <div class="author-image">
+                <img src="/images/star.jpeg" alt="Alex">
+              </div>
+              <div class="author-info">
+                <h4>Alex Thompson</h4>
+                <p>Fashion Blogger</p>
+              </div>
+            </div>
+          </div>
+          <div class="testimonial-card">
+            <div class="testimonial-content">
+              "As a sustainable fashion designer, I'm impressed by the platform's ability to match clients with the
+              perfect tailor for their vision."
+            </div>
+            <div class="testimonial-author">
+              <div class="author-image">
+                <img src="/images/star.jpeg" alt="Priya">
+              </div>
+              <div class="author-info">
+                <h4>Priya Sharma</h4>
+                <p>Fashion Designer</p>
+              </div>
+            </div>
+          </div>
+          <div class="testimonial-card">
+            <div class="testimonial-content">
+              "The upcycling process was seamless, and the final product exceeded my expectations. Will definitely use
+              UpThreaded again!"
+            </div>
+            <div class="testimonial-author">
+              <div class="author-image">
+                <img src="/images/star.jpeg" alt="David">
+              </div>
+              <div class="author-info">
+                <h4>David Wilson</h4>
+                <p>Eco-conscious Shopper</p>
+              </div>
+            </div>
+          </div>
+          <!-- Duplicate cards for seamless loop -->
+          <div class="testimonial-card">
+            <div class="testimonial-content">
+              "UpThreaded transformed my old dress into a stunning modern piece. The AI suggestions were incredibly
+              creative, and the tailor executed the design perfectly."
+            </div>
+            <div class="testimonial-author">
+              <div class="author-image">
+                <img src="/images/star.jpeg" alt="Sarah">
+              </div>
+              <div class="author-info">
+                <h4>Sarah Johnson</h4>
+                <p>Fashion Enthusiast</p>
+              </div>
+            </div>
+          </div>
+          <div class="testimonial-card">
+            <div class="testimonial-content">
+              "As a tailor, this platform has connected me with clients who truly value sustainable fashion. The AI
+              suggestions help bridge the gap between vision and execution."
+            </div>
+            <div class="testimonial-author">
+              <div class="author-image">
+                <img src="/images/star.jpeg" alt="Michael">
+              </div>
+              <div class="author-info">
+                <h4>Michael Chen</h4>
+                <p>Professional Tailor</p>
+              </div>
+            </div>
+          </div>
+          <div class="testimonial-card">
+            <div class="testimonial-content">
+              "I love how UpThreaded helps me give new life to my old clothes. It's not just about fashion; it's about
+              making a positive impact on the environment."
+            </div>
+            <div class="testimonial-author">
+              <div class="author-image">
+                <img src="/images/star.jpeg" alt="Emma">
+              </div>
+              <div class="author-info">
+                <h4>Emma Rodriguez</h4>
+                <p>Sustainability Advocate</p>
+              </div>
             </div>
           </div>
         </div>
@@ -336,139 +1390,115 @@
     </div>
   </section>
 
-  <!-- How It Works Section -->
-  <section id="how-it-works" class="py-5 bg-light">
+  <!-- Footer Banner -->
+  <!-- <section class="footer-banner">
     <div class="container">
-      <h2 class="text-center mb-5">How It Works</h2>
-      <div class="row">
-        <div class="col-md-4">
-          <div class="card border-0 shadow-sm mb-4 animate-on-scroll">
-            <div class="card-body text-center p-4">
-              <div class="step-number mb-3">1</div>
-              <h3 class="h4">Upload Your Clothes</h3>
-              <p>Share photos of the clothes you want to transform.</p>
-            </div>
+      <h2 class="footer-title">Join the Revolution</h2>
+      <p class="lead mb-4">Transform your wardrobe sustainably with UpThreaded</p>
+      <a href="/signup" class="btn btn-outline-light btn-lg">Get Started</a>
+        </div>
+  </section> -->
+
+  <!-- Main Footer -->
+  <footer class="main-footer">
+    <div class="container footer-content">
+      <div class="footer-grid">
+        <div class="footer-column">
+          <h4>About Us</h4>
+          <p style="color: rgba(255, 255, 255, 0.8); line-height: 1.6;">UpThreaded is revolutionizing sustainable
+            fashion by connecting users with expert tailors and AI-powered design suggestions to transform existing
+            clothes into unique pieces.</p>
+          <div class="social-links">
+            <a href="#"><i class="fab fa-facebook-f"></i></a>
+            <a href="#"><i class="fab fa-twitter"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="#"><i class="fab fa-linkedin-in"></i></a>
           </div>
         </div>
-        <div class="col-md-4">
-          <div class="card border-0 shadow-sm mb-4 animate-on-scroll">
-            <div class="card-body text-center p-4">
-              <div class="step-number mb-3">2</div>
-              <h3 class="h4">Get Design Ideas</h3>
-              <p>Receive creative suggestions for upcycling your clothes.</p>
-            </div>
-          </div>
+        <div class="footer-column">
+          <h4>Quick Links</h4>
+          <ul class="footer-links">
+            <li><a href="/">Home</a></li>
+            <li><a href="/about">About Us</a></li>
+            <li><a href="/contact">Contact</a></li>
+            <li><a href="/signup">Sign Up</a></li>
+            <li><a href="/login">Login</a></li>
+          </ul>
         </div>
-        <div class="col-md-4">
-          <div class="card border-0 shadow-sm mb-4 animate-on-scroll">
-            <div class="card-body text-center p-4">
-              <div class="step-number mb-3">3</div>
-              <h3 class="h4">Connect with Tailors</h3>
-              <p>Find and collaborate with skilled tailors in your area.</p>
-            </div>
-          </div>
+        <div class="footer-column">
+          <h4>Services</h4>
+          <ul class="footer-links">
+            <li><a href="#">AI Design Suggestions</a></li>
+            <li><a href="#">Tailor Matching</a></li>
+            <li><a href="#">Sustainable Fashion</a></li>
+            <li><a href="#">Upcycling Guide</a></li>
+            <li><a href="#">Fashion Blog</a></li>
+          </ul>
+        </div>
+        <div class="footer-column">
+          <h4>Contact Us</h4>
+          <ul class="footer-links">
+            <li><i class="fas fa-map-marker-alt me-2"></i> 123 Fashion Street, New York</li>
+            <li><i class="fas fa-phone me-2"></i> +1 (555) 123-4567</li>
+            <li><i class="fas fa-envelope me-2"></i> info@upthreaded.com</li>
+          </ul>
         </div>
       </div>
-    </div>
-  </section>
-
-  <!-- Stats Section -->
-  <section class="py-5">
-    <div class="container">
-      <div class="row text-center">
-        <div class="col-md-4">
-          <div class="stat-card">
-            <h3 class="display-4 fw-bold text-primary">500+</h3>
-            <p class="text-muted">Happy Customers</p>
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="stat-card">
-            <h3 class="display-4 fw-bold text-primary">1000+</h3>
-            <p class="text-muted">Clothes Upcycled</p>
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="stat-card">
-            <h3 class="display-4 fw-bold text-primary">50+</h3>
-            <p class="text-muted">Skilled Tailors</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- CTA Section -->
-  <section class="py-5 bg-primary text-white">
-    <div class="container text-center">
-      <h2 class="mb-4">Ready to Transform Your Wardrobe?</h2>
-      <p class="lead mb-4">Join our community of sustainable fashion enthusiasts today.</p>
-      <a href="/signup" class="btn btn-light btn-lg">Get Started Now</a>
-    </div>
-  </section>
-
-  <!-- Footer -->
-  <footer class="bg-dark text-white py-4">
-    <div class="container">
-      <div class="row">
-        <div class="col-md-6">
-          <h5>UpThreaded</h5>
-          <p>Making sustainable fashion accessible to everyone.</p>
-        </div>
-        <div class="col-md-6 text-md-end">
-          <a href="#" class="text-white me-3"><i class="fab fa-facebook"></i></a>
-          <a href="#" class="text-white me-3"><i class="fab fa-twitter"></i></a>
-          <a href="#" class="text-white me-3"><i class="fab fa-instagram"></i></a>
-        </div>
+      <div class="footer-bottom">
+        <p>&copy; 2024 UpThreaded. All rights reserved.</p>
       </div>
     </div>
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    // Intersection Observer for scroll animations
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('visible');
-          if (entry.target.classList.contains('stat-card')) {
-            startCounting(entry.target);
-          }
+    document.addEventListener('DOMContentLoaded', function () {
+      // Parallax effect
+      const parallaxBg = document.querySelector('.parallax-bg');
+      let lastScrollY = window.scrollY;
+
+      // Navbar hide/show on scroll
+      const navbar = document.querySelector('.navbar');
+
+      window.addEventListener('scroll', function () {
+        // Parallax effect
+        const scrolled = window.scrollY;
+        if (parallaxBg) {
+          parallaxBg.style.transform = `translateY(${scrolled * 0.5}px)`;
         }
-      });
-    }, {
-      threshold: 0.1
-    });
 
-    // Observe all elements with animate-on-scroll class
-    document.querySelectorAll('.animate-on-scroll, .stat-card').forEach((el) => observer.observe(el));
-
-    // Counter animation for stats
-    function startCounting(element) {
-      const target = parseInt(element.querySelector('h3').textContent);
-      let count = 0;
-      const duration = 2000; // 2 seconds
-      const increment = target / (duration / 16); // 60fps
-
-      const updateCount = () => {
-        count += increment;
-        if (count < target) {
-          element.querySelector('h3').textContent = Math.floor(count) + '+';
-          requestAnimationFrame(updateCount);
+        // Navbar hide/show
+        if (scrolled > lastScrollY && scrolled > 100) {
+          navbar.classList.add('hidden');
         } else {
-          element.querySelector('h3').textContent = target + '+';
+          navbar.classList.remove('hidden');
         }
-      };
+        lastScrollY = scrolled;
+      });
 
-      updateCount();
-    }
+      // Intersection Observer for animations
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+          }
+        });
+      }, {
+        threshold: 0.1
+      });
 
-    // Smooth scroll for navigation links
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-      anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        document.querySelector(this.getAttribute('href')).scrollIntoView({
-          behavior: 'smooth'
+      // Observe elements
+      document.querySelectorAll('.feature-card, .process-step, .impact-card, .testimonial-card').forEach((el) => {
+        observer.observe(el);
+      });
+
+      // Smooth scroll for navigation links
+      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+          e.preventDefault();
+          document.querySelector(this.getAttribute('href')).scrollIntoView({
+            behavior: 'smooth'
+          });
         });
       });
     });

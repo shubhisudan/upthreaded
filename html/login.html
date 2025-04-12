@@ -20,34 +20,156 @@
     <script type="text/javascript"
         src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap');
 
         :root {
-            --primary-color: #285A84;
-            --secondary-color: #1d4361;
-            --accent-color: #4CAF50;
-            --text-color: #333;
-            --light-bg: #f8f9fa;
+            --primary-color: #2C3E50;
+            --secondary-color: #34495E;
+            --accent-color: #27AE60;
+            --text-color: #2C3E50;
+            --light-bg: #F5F7FA;
+            --gradient-primary: linear-gradient(135deg, #2C3E50 0%, #34495E 100%);
+            --gradient-accent: linear-gradient(135deg, #27AE60 0%, #2ECC71 100%);
+            --gradient-dark: linear-gradient(135deg, #1a1c20 0%, #2C3E50 100%);
+            --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.15);
+            --border-radius: 16px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
         body {
-            font-family: 'Ubuntu', sans-serif;
-            background-color: var(--light-bg);
+            font-family: 'Inter', sans-serif;
+            background-color: white;
             color: var(--text-color);
-            min-height: 100vh;
-            margin: 0;
-            padding: 0;
+            line-height: 1.2;
+            overflow-x: hidden;
+        }
+
+        .navbar {
+            padding: 0.8rem 0;
+            background: #ffffff !important;
+            backdrop-filter: blur(10px);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+            border-bottom: 1px solid rgba(44, 62, 80, 0.1);
+            margin-top: 20px;
+        }
+
+        .navbar.hidden {
+            transform: translateY(-100%);
+        }
+
+        .navbar-brand {
+            font-size: 1.8rem;
+            font-weight: 900;
+            letter-spacing: -1px;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .navbar-brand img {
+            width: 35px;
+            height: 35px;
+            object-fit: contain;
+        }
+
+        .nav-link {
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            padding: 0.2rem 0.6rem;
+            transition: color 0.3s ease;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--gradient-accent);
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform 0.3s ease;
+        }
+
+        .nav-link:hover::after {
+            transform: scaleX(1);
+            transform-origin: left;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 0.8rem;
+            align-items: center;
+        }
+
+        .nav-btn {
+            padding: 0.3rem 1rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .nav-btn-primary {
+            background: var(--gradient-accent);
+            color: white;
+            border: none;
+        }
+
+        .nav-btn-secondary {
+            background: transparent;
+            color: var(--primary-color);
+            border: 2px solid var(--accent-color);
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .nav-btn-primary:hover {
+            background: var(--gradient-accent);
+            background-size: 200% 200%;
+            animation: gradientShift 3s ease infinite;
+        }
+
+        .nav-btn-secondary:hover {
+            background: rgba(39, 174, 96, 0.1);
         }
 
         .login-container {
             display: flex;
             min-height: 100vh;
+            padding-top: 0;
         }
 
         .login-left {
             flex: 1;
             position: relative;
             overflow: hidden;
+            background: url('https://images.pexels.com/photos/8453424/pexels-photo-8453424.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2') center/cover;
         }
 
         .login-left::before {
@@ -57,18 +179,13 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: linear-gradient(45deg, rgba(40, 90, 132, 0.8), rgba(29, 67, 97, 0.8));
+            background: var(--gradient-dark);
             z-index: 1;
+            opacity: 0.85;
         }
 
         .login-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            position: absolute;
-            top: 0;
-            left: 0;
-            z-index: 0;
+            display: none;
         }
 
         .welcome-text {
@@ -83,15 +200,21 @@
         }
 
         .welcome-text h2 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            font-weight: 900;
+            letter-spacing: -2px;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, #ffffff 0%, #e0e0e0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
         }
 
         .welcome-text p {
             font-size: 1.2rem;
-            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+            color: rgba(255, 255, 255, 0.9);
         }
 
         .login-right {
@@ -100,101 +223,147 @@
             align-items: center;
             justify-content: center;
             padding: 2rem;
-            background: white;
+            background: #f8f9fa;
         }
 
         .login-form-container {
             width: 100%;
             max-width: 400px;
-            padding: 2rem;
+            padding: 2.5rem;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
         }
 
         .logo {
-            width: 50px;
-            height: 50px;
+            width: 35px;
+            height: 35px;
             margin-right: 10px;
+            object-fit: contain;
         }
 
         .title {
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--primary-color);
+            font-size: 2.2rem;
+            font-weight: 900;
+            letter-spacing: -1px;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
             text-decoration: none;
             display: flex;
             align-items: center;
-            margin-bottom: 2rem;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+
+        .login-heading {
+            text-align: center;
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--primary-color);
+            margin-bottom: 2.5rem;
+            letter-spacing: -0.5px;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            position: relative;
+            padding-bottom: 1rem;
+            display: inline-block;
+            margin-left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .login-heading::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--gradient-accent);
+            border-radius: 2px;
         }
 
         .form-group {
-            margin-bottom: 1.5rem;
+            position: relative;
+            margin-bottom: 1.8rem;
         }
 
         .form-group label {
             display: block;
-            margin-bottom: 0.5rem;
-            color: var(--text-color);
-            font-weight: 500;
+            margin-bottom: 0.8rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            font-size: 0.95rem;
         }
 
         .form-group input {
             width: 100%;
-            padding: 0.75rem 1rem;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 1rem;
+            padding: 1rem;
+            border-radius: 12px;
+            border: 1.5px solid rgba(44, 62, 80, 0.15);
             transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.9);
+            font-size: 1rem;
         }
 
         .form-group input:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 0.2rem rgba(40, 90, 132, 0.25);
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(39, 174, 96, 0.1);
             outline: none;
+        }
+
+        .form-group input::placeholder {
+            color: rgba(44, 62, 80, 0.5);
         }
 
         .btn {
             width: 100%;
-            padding: 0.75rem;
-            background-color: var(--primary-color);
+            padding: 1rem;
+            background: var(--gradient-accent);
             color: white;
             border: none;
-            border-radius: 8px;
+            border-radius: 12px;
             font-size: 1rem;
-            font-weight: 500;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
             cursor: pointer;
             transition: all 0.3s ease;
-            margin-top: 1rem;
+            margin-top: 1.5rem;
         }
 
         .btn:hover {
-            background-color: var(--secondary-color);
             transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(39, 174, 96, 0.2);
         }
 
         .signup-link {
             text-align: center;
-            margin: 1.5rem 0;
+            margin: 1.2rem 0;
+            font-size: 0.9rem;
         }
 
         .signup-link a {
-            color: var(--primary-color);
+            color: var(--accent-color);
             text-decoration: none;
-            font-weight: 500;
+            font-weight: 600;
             transition: all 0.3s ease;
         }
 
         .signup-link a:hover {
-            color: var(--secondary-color);
+            color: var(--primary-color);
         }
 
         .message {
             position: fixed;
             top: 20px;
             right: 20px;
-            padding: 1rem;
-            background-color: #f8d7da;
-            color: #721c24;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 1rem 2rem;
+            background: var(--gradient-accent);
+            color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
             z-index: 1000;
             display: none;
             animation: slideIn 0.3s ease-out;
@@ -212,9 +381,24 @@
             }
         }
 
+        @keyframes gradientShift {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
         @media (max-width: 768px) {
             .login-container {
                 flex-direction: column;
+                padding-top: 0;
             }
 
             .login-left {
@@ -236,7 +420,7 @@
 
         /* Google Translate Styles */
         .goog-te-gadget {
-            font-family: 'Ubuntu', sans-serif !important;
+            font-family: 'Inter', sans-serif !important;
             text-transform: none !important;
         }
 
@@ -279,11 +463,33 @@
 </head>
 
 <body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <img src="/images/logo.png" alt="UpThreaded Logo">
+                UpThreaded
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/about">About</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/contact">Contact</a></li>
+                </ul>
+                <div class="nav-buttons">
+                    <div id="google_translate_element" class="me-3"></div>
+                    <a href="/login" class="nav-btn nav-btn-secondary">Login</a>
+                    <a href="/signup" class="nav-btn nav-btn-primary">Sign Up</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
     <div class="login-container">
         <div class="login-left">
-            <div style="position: absolute; top: 20px; right: 20px; z-index: 3;">
-                <div id="google_translate_element"></div>
-            </div>
             <img src="https://images.pexels.com/photos/8453424/pexels-photo-8453424.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
                 alt="Login Image" class="login-image">
             <div class="welcome-text">
@@ -294,11 +500,7 @@
 
         <div class="login-right">
             <div class="login-form-container">
-                <a href="/" class="title">
-                    <img src="/images/logo.png" class="logo" alt="Logo">
-                    UpThreaded
-                </a>
-
+                <h2 class="login-heading">Login</h2>
                 <form class="login-form" action="/login" method="post">
                     <div class="form-group">
                         <label for="email">Email</label>
@@ -344,11 +546,25 @@
         // Add focus effects to form inputs
         document.querySelectorAll('.form-group input').forEach(input => {
             input.addEventListener('focus', function () {
-                this.parentElement.querySelector('label').style.color = 'var(--primary-color)';
+                this.parentElement.querySelector('label').style.color = 'var(--accent-color)';
             });
             input.addEventListener('blur', function () {
-                this.parentElement.querySelector('label').style.color = 'var(--text-color)';
+                this.parentElement.querySelector('label').style.color = 'var(--secondary-color)';
             });
+        });
+
+        // Navbar hide/show on scroll
+        const navbar = document.querySelector('.navbar');
+        let lastScrollY = window.scrollY;
+
+        window.addEventListener('scroll', function () {
+            const scrolled = window.scrollY;
+            if (scrolled > lastScrollY && scrolled > 100) {
+                navbar.classList.add('hidden');
+            } else {
+                navbar.classList.remove('hidden');
+            }
+            lastScrollY = scrolled;
         });
     </script>
 </body>
