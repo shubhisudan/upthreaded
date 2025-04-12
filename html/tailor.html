@@ -485,6 +485,27 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        .btn-view-request {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background: var(--gradient-accent);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            text-align: center;
+        }
+
+        .btn-view-request:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            color: white;
+        }
     </style>
 </head>
 
@@ -567,8 +588,8 @@
                                 <span class="timeline">Timeline: 5 days</span>
                             </div>
                             <div class="request-actions">
-                                <button class="btn-accept">Accept</button>
-                                <button class="btn-decline">Decline</button>
+                                <a href="/tailor-dashboard/requests.html?id=REQ-1234" class="btn-view-request">View
+                                    Request</a>
                             </div>
                         </div>
                         <div class="request-card">
@@ -583,8 +604,8 @@
                                 <span class="timeline">Timeline: 3 days</span>
                             </div>
                             <div class="request-actions">
-                                <button class="btn-accept">Accept</button>
-                                <button class="btn-decline">Decline</button>
+                                <a href="/tailor-dashboard/requests.html?id=REQ-1235" class="btn-view-request">View
+                                    Request</a>
                             </div>
                         </div>
                     </div>
@@ -779,11 +800,181 @@
             }
         }
 
-        // Load counts when page loads
+        async function loadActiveRequests() {
+            try {
+                const userId = await getCurrentUserId();
+                if (!userId) {
+                    throw new Error('User not authenticated');
+                }
+
+                const response = await fetch(`/api/requests/tailor/${userId}?status=pending`, {
+                    credentials: 'include'
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch requests');
+                }
+
+                const requests = await response.json();
+                console.log('Requests data:', requests); // Debug log
+
+                // Sort requests by creation date (newest first) and take only the 2 most recent
+                const recentRequests = requests
+                    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+                    .slice(0, 2);
+
+                console.log('Recent requests:', recentRequests); // Debug log
+
+                const requestsGrid = document.querySelector('.requests-grid');
+
+                if (!requestsGrid) {
+                    console.error('Requests grid element not found');
+                    return;
+                }
+
+                // Clear existing requests
+                requestsGrid.innerHTML = '';
+
+                if (recentRequests.length === 0) {
+                    requestsGrid.innerHTML = `
+                        <div class="col-12 text-center">
+                            <p class="text-muted">No pending requests at the moment.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                recentRequests.forEach(request => {
+                    const requestCard = document.createElement('div');
+                    requestCard.className = 'request-card';
+                    requestCard.innerHTML = `
+                        <div class="request-header">
+                            <span class="request-id">#${request._id}</span>
+                            <span class="request-date">${new Date(request.createdAt).toLocaleString()}</span>
+                        </div>
+                        <h3>${request.title || 'Untitled Request'}</h3>
+                        <p>${request.description || 'No description provided'}</p>
+                        <div class="request-meta">
+                            <span class="budget">Budget: $${request.budgetRange?.min || 0}-${request.budgetRange?.max || 0}</span>
+                            <span class="timeline">Timeline: ${request.timeline || 0} days</span>
+                        </div>
+                        <div class="request-actions">
+                            <a href="/tailor-dashboard/requests.html?id=${request._id}" class="btn-view-request">View Request</a>
+                        </div>
+                    `;
+                    requestsGrid.appendChild(requestCard);
+                });
+
+                // Update the pending requests count in the stats (show total count, not just recent)
+                const pendingRequestsCount = requests.length;
+                const pendingRequestsElement = document.querySelector('.stat-card:nth-child(1) .stat-number');
+                if (pendingRequestsElement) {
+                    pendingRequestsElement.textContent = pendingRequestsCount;
+                }
+            } catch (error) {
+                console.error('Error loading requests:', error);
+                const requestsGrid = document.querySelector('.requests-grid');
+                if (requestsGrid) {
+                    requestsGrid.innerHTML = `
+                        <div class="col-12 text-center">
+                            <p class="text-danger">Failed to load requests. Please try again later.</p>
+                        </div>
+                    `;
+                }
+            }
+        }
+
+        async function loadActiveOrders() {
+            try {
+                const userId = await getCurrentUserId();
+                if (!userId) {
+                    throw new Error('User not authenticated');
+                }
+
+                const response = await fetch(`/api/orders/tailor/${userId}?status=all`, {
+                    credentials: 'include'
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch orders');
+                }
+
+                const data = await response.json();
+                console.log('Full API Response:', data);
+
+                // Filter for active orders (in-progress or shipped)
+                const activeOrders = data.orders ? data.orders.filter(order =>
+                    order.status === 'in-progress' || order.status === 'shipped'
+                ) : [];
+
+                const ordersGrid = document.querySelector('.orders-grid');
+
+                if (!ordersGrid) {
+                    console.error('Orders grid element not found');
+                    return;
+                }
+
+                // Clear existing orders
+                ordersGrid.innerHTML = '';
+
+                if (activeOrders.length === 0) {
+                    ordersGrid.innerHTML = `
+                        <div class="col-12 text-center">
+                            <p class="text-muted">No active orders at the moment.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                activeOrders.forEach(order => {
+                    const orderCard = document.createElement('div');
+                    orderCard.className = 'order-card';
+                    orderCard.innerHTML = `
+                        <div class="order-header">
+                            <span class="order-id">#${order._id}</span>
+                            <span class="order-status ${order.status}">${order.status}</span>
+                        </div>
+                        <h3>${order.title || 'Untitled Order'}</h3>
+                        <p>${order.description || 'No description provided'}</p>
+                        <div class="order-progress">
+                            <div class="progress-bar">
+                                <div class="progress" style="width: ${order.progress || 0}%"></div>
+                            </div>
+                            <span class="progress-text">${order.progress || 0}% Complete</span>
+                        </div>
+                        <div class="order-meta">
+                            <span class="due-date">Due: ${order.dueDate ? new Date(order.dueDate).toLocaleDateString() : 'Not set'}</span>
+                        </div>
+                    `;
+                    ordersGrid.appendChild(orderCard);
+                });
+
+                // Update the active orders count in the stats
+                const activeOrdersCount = activeOrders.length;
+                const activeOrdersElement = document.querySelector('.stat-card:nth-child(2) .stat-number');
+                if (activeOrdersElement) {
+                    activeOrdersElement.textContent = activeOrdersCount;
+                }
+            } catch (error) {
+                console.error('Error loading orders:', error);
+                const ordersGrid = document.querySelector('.orders-grid');
+                if (ordersGrid) {
+                    ordersGrid.innerHTML = `
+                        <div class="col-12 text-center">
+                            <p class="text-danger">Failed to load orders. Please try again later.</p>
+                        </div>
+                    `;
+                }
+            }
+        }
+
+        // Load counts and data when page loads
         document.addEventListener('DOMContentLoaded', () => {
             updatePendingRequestsCount();
             updateActiveOrdersCount();
             updateCompletedOrdersCount();
+            loadActiveRequests();
+            loadActiveOrders();
         });
     </script>
 </body>

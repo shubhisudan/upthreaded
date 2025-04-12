@@ -455,7 +455,7 @@
                     <div class="request-header">
                         <div class="request-id">#REQ-${request._id ? request._id.slice(-4) : 'XXXX'}</div>
                         <div class="request-date">${timeAgo}</div>
-                    </div>
+                            </div>
                     <h2 class="request-title">${request.description ? request.description.split('.')[0] : 'Alteration Request'}</h2>
                     <p class="request-description">${request.description || 'No description provided'}</p>
                     <div class="request-meta">
@@ -477,14 +477,14 @@
                         ` : ''}
                     </div>
                     ${request.status === 'pending' ? `
-                        <div class="request-actions">
+                    <div class="request-actions">
                             <button class="accept-btn" onclick="handleRequest('accept', '${request._id}')">Accept</button>
                             <button class="reject-btn" onclick="handleRequest('reject', '${request._id}')">Decline</button>
                         </div>
                     ` : `
                         <div class="status-badge ${request.status}">
                             ${request.status.charAt(0).toUpperCase() + request.status.slice(1)}
-                        </div>
+                    </div>
                     `}
                 `;
                 requestsGrid.appendChild(requestCard);

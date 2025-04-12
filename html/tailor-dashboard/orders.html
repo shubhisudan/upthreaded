@@ -528,13 +528,13 @@
                 console.error('Error loading orders:', error);
                 const ordersList = document.getElementById('ordersList');
                 ordersList.innerHTML = `
-                    <div class="alert alert-danger" role="alert">
+                            <div class="alert alert-danger" role="alert">
                         <h4 class="alert-heading">Error Loading Orders</h4>
                         <p>${error.message}</p>
                         <hr>
                         <p class="mb-0">Please try again later or contact support if the problem persists.</p>
-                    </div>
-                `;
+                        </div>
+                    `;
             } finally {
                 loadingSpinner.classList.add('d-none');
             }
@@ -556,24 +556,24 @@
                 let actionButtons = '';
                 if (order.status === 'in-progress') {
                     actionButtons = `
-                        <div class="order-actions">
+                            <div class="order-actions">
                             <button class="action-btn shipped" onclick="updateOrderStatus('${order._id}', 'shipped')">
-                                Mark as Shipped
-                            </button>
-                        </div>
-                    `;
+                                    Mark as Shipped
+                                </button>
+                            </div>
+                        `;
                 } else if (order.status === 'shipped') {
                     actionButtons = `
-                        <div class="order-actions">
+                            <div class="order-actions">
                             <button class="action-btn delivered" onclick="updateOrderStatus('${order._id}', 'delivered')">
-                                Mark as Delivered
-                            </button>
-                        </div>
-                    `;
+                                    Mark as Delivered
+                                </button>
+                            </div>
+                        `;
                 }
 
                 orderCard.innerHTML = `
-                    <div class="order-header">
+                        <div class="order-header">
                         <div>
                             <div class="order-id">Order #${order._id.slice(-8)}</div>
                             <div class="order-date">Created on ${new Date(order.createdAt).toLocaleDateString()}</div>
@@ -589,7 +589,7 @@
                             <div class="meta-item">
                                 <span class="meta-label">Price Range</span>
                                 <span class="meta-value">${order.priceRange || 'Not specified'}</span>
-                            </div>
+                        </div>
                             <div class="meta-item">
                                 <span class="meta-label">Location</span>
                                 <span class="meta-value">${order.location || 'Not specified'}</span>
@@ -600,10 +600,10 @@
                         ${order.images && order.images.length > 0 ? `
                             <div class="order-images">
                                 ${order.images.map(image => `
-                                    <img src="${image}" alt="Order Image" class="order-image">
-                                `).join('')}
+                                            <img src="${image}" alt="Order Image" class="order-image">
+                                        `).join('')}
                             </div>
-                        ` : ''}
+                                ` : ''}
                         ${actionButtons}
                     </div>
                 `;
