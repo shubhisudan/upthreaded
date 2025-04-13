@@ -19,26 +19,27 @@
     </script>
     <script type="text/javascript"
         src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
-    <script src="/javascripts/navbar-loader.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap');
 
         :root {
-            --primary-color: #2563eb;
-            --secondary-color: #1e40af;
-            --accent-color: #10b981;
-            --text-color: #1f2937;
-            --light-bg: #f3f4f6;
-            --card-bg: #ffffff;
-            --border-color: #e5e7eb;
-            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
-            --border-radius: 12px;
+            --primary-color: #2C3E50;
+            --secondary-color: #34495E;
+            --accent-color: #27AE60;
+            --text-color: #2C3E50;
+            --light-bg: #F5F7FA;
+            --gradient-primary: linear-gradient(135deg, #2C3E50 0%, #34495E 100%);
+            --gradient-accent: linear-gradient(135deg, #27AE60 0%, #2ECC71 100%);
+            --gradient-dark: linear-gradient(135deg, #1a1c20 0%, #2C3E50 100%);
+            --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.15);
+            --border-radius: 16px;
         }
 
         body {
-            font-family: 'Poppins', sans-serif;
+            font-family: 'Inter', sans-serif;
             background-color: var(--light-bg);
             color: var(--text-color);
             line-height: 1.6;
@@ -50,72 +51,138 @@
             flex-direction: column;
         }
 
+        .dashboard-nav {
+            background: white;
+            padding: 1rem 0;
+            box-shadow: var(--shadow-sm);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            margin-top: 20px;
+        }
+
+        .nav-logo {
+            font-size: 1.8rem;
+            font-weight: 900;
+            letter-spacing: -1px;
+            background: var(--gradient-primary);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+
+        .nav-logo img {
+            width: 35px;
+            height: 35px;
+            object-fit: contain;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .nav-links a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--gradient-accent);
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            transform: scaleX(1);
+            transform-origin: left;
+        }
+
+        .logout-link {
+            color: var(--accent-color) !important;
+        }
+
         .dashboard-content {
             margin-top: 80px;
             padding: 2rem;
         }
 
         .card {
-            background: var(--card-bg);
+            background: white;
             border-radius: var(--border-radius);
-            border: 1px solid var(--border-color);
-            box-shadow: var(--shadow-sm);
-            transition: all 0.3s ease;
-        }
-
-        .card:hover {
+            padding: 2rem;
+            margin-bottom: 2rem;
             box-shadow: var(--shadow-md);
+            border: none;
         }
 
         .card-header {
             background: transparent;
-            border-bottom: 1px solid var(--border-color);
-            padding: 1.5rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            padding: 1.5rem 2rem;
         }
 
         .card-header h5 {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: var(--primary-color);
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: var(--gradient-primary);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
             margin: 0;
         }
 
-        .card-body {
-            padding: 1.5rem;
-        }
-
         .form-label {
-            font-weight: 500;
-            color: var(--text-color);
+            font-weight: 600;
+            color: var(--secondary-color);
             margin-bottom: 0.5rem;
         }
 
         .form-control,
         .form-select {
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            border: 1px solid rgba(0, 0, 0, 0.1);
             padding: 0.75rem 1rem;
-            transition: all 0.2s ease;
+            transition: all 0.3s ease;
         }
 
         .form-control:focus,
         .form-select:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 0.2rem rgba(39, 174, 96, 0.25);
         }
 
         .btn-success {
-            background-color: var(--accent-color);
+            background: var(--gradient-accent);
             border: none;
             padding: 0.75rem 1.5rem;
-            font-weight: 500;
-            border-radius: 8px;
-            transition: all 0.2s ease;
+            font-weight: 600;
+            border-radius: 50px;
+            transition: all 0.3s ease;
         }
 
         .btn-success:hover {
-            background-color: #059669;
-            transform: translateY(-1px);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
         }
 
         .matches-list {
@@ -123,129 +190,87 @@
         }
 
         .match-card {
-            background: var(--card-bg);
+            background: var(--light-bg);
             border-radius: var(--border-radius);
-            border: 1px solid var(--border-color);
             padding: 1.5rem;
-            margin-bottom: 1rem;
-            transition: all 0.3s ease;
+            margin-bottom: 1.5rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
         .match-card:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
         }
 
         .match-card img {
             width: 80px;
             height: 80px;
-            border-radius: 50%;
             object-fit: cover;
-            border: 3px solid var(--accent-color);
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: var(--shadow-sm);
         }
 
         .match-card h5 {
-            color: var(--text-color);
-            font-weight: 600;
+            color: var(--primary-color);
+            font-weight: 700;
             margin-bottom: 0.5rem;
         }
 
         .match-card .text-muted {
-            color: #6b7280 !important;
+            color: var(--secondary-color) !important;
         }
 
         .btn-outline-primary,
         .btn-outline-success {
-            border-radius: 8px;
+            border-radius: 50px;
             padding: 0.5rem 1rem;
-            font-weight: 500;
-            transition: all 0.2s ease;
+            font-weight: 600;
+            transition: all 0.3s ease;
         }
 
-        .btn-outline-primary {
-            border-color: var(--primary-color);
-            color: var(--primary-color);
-        }
-
-        .btn-outline-primary:hover {
-            background-color: var(--primary-color);
-            color: white;
-        }
-
-        .btn-outline-success {
-            border-color: var(--accent-color);
-            color: var(--accent-color);
-        }
-
+        .btn-outline-primary:hover,
         .btn-outline-success:hover {
-            background-color: var(--accent-color);
-            color: white;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
         }
 
         .modal-content {
             border-radius: var(--border-radius);
             border: none;
-            box-shadow: var(--shadow-lg);
+            box-shadow: var(--shadow-xl);
         }
 
         .modal-header {
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
             padding: 1.5rem;
         }
 
         .modal-body {
-            padding: 1.5rem;
+            padding: 2rem;
         }
 
         .modal-footer {
-            border-top: 1px solid var(--border-color);
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
             padding: 1.5rem;
         }
 
         .modal-title {
-            font-weight: 600;
-            color: var(--text-color);
-        }
-
-        .request-details {
-            background: var(--light-bg);
-            padding: 1.25rem;
-            border-radius: 8px;
-            margin-top: 1rem;
-        }
-
-        .request-details h6 {
-            color: var(--text-color);
-            font-weight: 600;
-            margin-bottom: 1rem;
-        }
-
-        .request-details p {
-            margin-bottom: 0.5rem;
-        }
-
-        .request-details strong {
+            font-weight: 700;
             color: var(--primary-color);
-        }
-
-        #requestImages img {
-            border-radius: 8px;
-            margin-right: 0.5rem;
-            margin-bottom: 0.5rem;
-            box-shadow: var(--shadow-sm);
         }
 
         /* Google Translate Styles */
         .goog-te-gadget {
-            font-family: 'Poppins', sans-serif !important;
+            font-family: 'Inter', sans-serif !important;
             text-transform: none !important;
         }
 
         .goog-te-gadget-simple {
             background-color: transparent !important;
-            border: 1px solid var(--border-color) !important;
+            border: 1px solid rgba(44, 62, 80, 0.2) !important;
             padding: 8px !important;
-            border-radius: 8px !important;
+            border-radius: 4px !important;
             cursor: pointer !important;
         }
 
@@ -283,118 +308,120 @@
             }
 
             .card {
-                padding: 1rem;
+                padding: 1.5rem;
             }
 
-            .match-card {
-                text-align: center;
+            .card-header {
+                padding: 1rem 1.5rem;
             }
 
-            .match-card .row {
-                flex-direction: column;
-            }
-
-            .match-card .col-md-2,
-            .match-card .col-md-7,
-            .match-card .col-md-3 {
-                width: 100%;
-                margin-bottom: 1rem;
-            }
-
-            .match-card .text-end {
-                text-align: center !important;
-            }
-
-            .match-card img {
-                margin: 0 auto 1rem;
+            .modal-body {
+                padding: 1.5rem;
             }
         }
     </style>
 </head>
 
 <body>
-    <!-- Navbar will be loaded here by navbar-loader.js -->
-
-    <div class="container">
-        <div class="row">
-            <div class="col-12">
-                <!-- Request Form -->
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="mb-0">Create a Tailoring Request</h5>
-                    </div>
-                    <div class="card-body">
-                        <form id="searchForm" class="needs-validation" novalidate>
-                            <div class="mb-3">
-                                <label for="location" class="form-label">Location</label>
-                                <input type="text" class="form-control" id="location" name="location"
-                                    placeholder="Enter your location" required>
-                                <div class="invalid-feedback">
-                                    Please provide your location.
-                                </div>
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="priceRange" class="form-label">Price Range</label>
-                                <select class="form-select" id="priceRange" name="priceRange" required>
-                                    <option value="">Select a price range</option>
-                                    <option value="0-250">Rs 0 - Rs 250</option>
-                                    <option value="251-500">Rs 251 - Rs 500</option>
-                                    <option value="501-1000">Rs 501 - Rs 1000</option>
-                                    <option value="1001-2500">Rs 1001 - Rs 2500</option>
-                                    <option value="2500+">Rs 2500+</option>
-                                </select>
-                                <div class="invalid-feedback">
-                                    Please select a price range.
-                                </div>
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="description" class="form-label">Idea Description</label>
-                                <textarea class="form-control" id="description" name="description"
-                                    placeholder="Describe your tailoring request in detail..." required></textarea>
-                                <div class="invalid-feedback">
-                                    Please provide a description of your request.
-                                </div>
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="imageUpload" class="form-label">Upload Images</label>
-                                <input type="file" class="form-control" id="imageUpload" name="images" accept="image/*"
-                                    multiple>
-                                <div class="form-text">Upload reference images or sketches (Max 5 images)</div>
-                            </div>
-
-                            <div class="d-grid">
-                                <button type="submit" class="btn btn-success">Find Tailors</button>
-                            </div>
-                        </form>
-                    </div>
+    <div class="dashboard-container">
+        <nav class="dashboard-nav">
+            <div class="container">
+                <div class="d-flex justify-content-between align-items-center">
+                    <a class="nav-logo" href="/">
+                        <img src="/images/logo.png" alt="UpThreaded Logo">
+                        UpThreaded
+                    </a>
+                    <ul class="nav-links">
+                        <li><a href="/user.html">Home</a></li>
+                        <li><a href="/profile">Profile</a></li>
+                        <li><a href="/imagegen">Generate Idea</a></li>
+                        <li><a href="/orders">My Orders</a></li>
+                        <li><a href="/logout" class="logout-link">Logout</a></li>
+                        <li>
+                            <div id="google_translate_element"></div>
+                        </li>
+                    </ul>
                 </div>
+            </div>
+        </nav>
 
-                <!-- Top Matches -->
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="mb-0">Top Matches</h5>
-                    </div>
-                    <div class="card-body">
-                        <div id="matchesContainer" class="matches-list">
-                            <div class="text-center p-4 text-muted" id="noMatchesMessage">
-                                <i class="fas fa-info-circle mb-2" style="font-size: 2rem;"></i>
-                                <p>Fill out the request form above to find tailors that match your requirements.</p>
+        <main class="dashboard-content">
+            <!-- Request Form -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Create a Tailoring Request</h5>
+                </div>
+                <div class="card-body">
+                    <form id="searchForm" class="needs-validation" novalidate>
+                        <div class="mb-3">
+                            <label for="location" class="form-label">Location</label>
+                            <input type="text" class="form-control" id="location" name="location"
+                                placeholder="Enter your location" required>
+                            <div class="invalid-feedback">
+                                Please provide your location.
                             </div>
-                            <div id="matchesSpinner" class="text-center py-4 d-none">
-                                <div class="spinner-border text-primary" role="status">
-                                    <span class="visually-hidden">Loading...</span>
-                                </div>
-                                <p class="mt-2">Finding the best matches for you...</p>
-                            </div>
-                            <div id="matchesList"></div>
                         </div>
+
+                        <div class="mb-3">
+                            <label for="priceRange" class="form-label">Price Range</label>
+                            <select class="form-select" id="priceRange" name="priceRange" required>
+                                <option value="">Select a price range</option>
+                                <option value="0-250">Rs 0 - Rs 250</option>
+                                <option value="251-500">Rs 251 - Rs 500</option>
+                                <option value="501-1000">Rs 501 - Rs 1000</option>
+                                <option value="1001-2500">Rs 1001 - Rs 2500</option>
+                                <option value="2500+">Rs 2500+</option>
+                            </select>
+                            <div class="invalid-feedback">
+                                Please select a price range.
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Idea Description</label>
+                            <textarea class="form-control" id="description" name="description"
+                                placeholder="Describe your tailoring request in detail..." required></textarea>
+                            <div class="invalid-feedback">
+                                Please provide a description of your request.
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="imageUpload" class="form-label">Upload Images</label>
+                            <input type="file" class="form-control" id="imageUpload" name="images" accept="image/*"
+                                multiple>
+                            <div class="form-text">Upload reference images or sketches (Max 5 images)</div>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-success">Find Tailors</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Top Matches -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Top Matches</h5>
+                </div>
+                <div class="card-body">
+                    <div id="matchesContainer" class="matches-list">
+                        <div class="text-center p-4 text-muted" id="noMatchesMessage">
+                            <i class="fas fa-info-circle mb-2" style="font-size: 2rem;"></i>
+                            <p>Fill out the request form above to find tailors that match your requirements.</p>
+                        </div>
+                        <div id="matchesSpinner" class="text-center py-4 d-none">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-2">Finding the best matches for you...</p>
+                        </div>
+                        <div id="matchesList"></div>
                     </div>
                 </div>
             </div>
-        </div>
+        </main>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
