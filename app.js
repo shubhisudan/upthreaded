@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
@@ -7,18 +9,19 @@ var indexRouter = require('./routes/index');
 var session = require('express-session');
 var fileUpload = require('express-fileupload');
 const mongoose = require('mongoose');
-const multer = require('multer');
 const cloudinary = require('cloudinary').v2;
 const fs = require('fs');
+const User = require('./models/User');
+const Design = require('./models/Design');
 var requestRouter = require('./routes/requests');
 var designsRouter = require('./routes/designs');
 const orderRoutes = require('./routes/orders');
 
-// Configure Cloudinary
+// Configure Cloudinary via environment variables
 cloudinary.config({
-  cloud_name: 'df0jikbzb',
-  api_key: '259449875815954',
-  api_secret: '-zJhaaLKLcmboY5RI-0ww8jHdgY',
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
   secure: true
 });
 
@@ -36,11 +39,14 @@ cloudinary.api.ping()
     console.error('Cloudinary connection failed:', error);
   });
 
-// Load environment variables
-require('dotenv').config();
-
 // Connect to MongoDB Atlas
 const uri = process.env.ATLAS_URI;
+
+if (!uri) {
+  console.error('ATLAS_URI is not defined. Please set it in your environment variables.');
+  process.exit(1);
+}
+
 mongoose.connect(uri, {
   useNewUrlParser: true,
   useUnifiedTopology: true
@@ -89,7 +95,7 @@ app.use(cookieParser());
 
 // Session middleware configuration
 app.use(session({
-  secret: 'your-secret-key', // Change this to a secure secret key
+  secret: process.env.SESSION_SECRET || 'insecure-default',
   resave: false,
   saveUninitialized: false,
   cookie: {
@@ -106,7 +112,7 @@ app.use(fileUpload({
   },
   abortOnLimit: true,
   useTempFiles: true,
-  tempFileDir: path.join(__dirname, 'tmp'),
+  tempFileDir: process.env.FILE_UPLOAD_TEMP_DIR || '/tmp',
   safeFileNames: true,
   preserveExtension: true
 }));
@@ -358,12 +364,6 @@ app.use(function (err, req, res, next) {
   } else {
     res.send('Error: ' + err.message);
   }
-});
-
-// Start the server
-const PORT = 4001;
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
 });
 
 module.exports = app;
